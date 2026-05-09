@@ -1,0 +1,345 @@
+package dev.unicompose.style
+
+import kotlin.jvm.JvmInline
+
+/**
+ * The styling primitive of unicompose — an immutable, typed description of how a
+ * widget should look and lay out its children.
+ *
+ * Each property maps to an equivalent on both backends:
+ *  - On Compose Multiplatform (Android / iOS) it reduces to a Compose `Modifier`
+ *    chain combined with `Row` / `Column` arrangement and alignment arguments.
+ *  - On Compose HTML it compiles to an atomic CSS class registered into a
+ *    singleton `<style>` element.
+ *
+ * The property surface is deliberately narrow: only properties whose semantics map
+ * cleanly to *both* backends are exposed. For platform-specific styling that does
+ * not generalize, drop down to a backend's native API.
+ *
+ * Construct styles by named arguments and combine them with [plus]:
+ * ```
+ * val card = Style(padding = Padding.all(16.dp), backgroundColor = Color.White)
+ * val emphasized = card + Style(borderRadius = 12.dp)
+ * ```
+ *
+ * @property padding Inside-edge spacing, applied via Compose's `Modifier.padding` / CSS `padding`.
+ * @property margin Outside-edge spacing. On Compose Multiplatform this is implemented
+ *   by an outer wrapping `Box` since Compose lacks a child-level margin modifier.
+ * @property backgroundColor Solid fill behind the element's content.
+ * @property color Foreground color used for text by default.
+ * @property fontSize Text size in scale-independent pixels.
+ * @property fontWeight Text weight — see [FontWeight] for supported values.
+ * @property borderRadius Uniform corner radius. Per-corner radii are not yet supported.
+ * @property flexDirection Layout axis for child widgets in a [dev.unicompose.UiBox].
+ *   Defaults to [FlexDirection.Column] (matching React Native), not the CSS default of `row`.
+ * @property alignItems Cross-axis alignment of children in a flex container.
+ * @property justifyContent Main-axis arrangement of children in a flex container.
+ * @property gap Spacing between adjacent children in a flex container.
+ * @property width Element width — see [Size] for supported sizing modes.
+ * @property height Element height — see [Size] for supported sizing modes.
+ * @property flex Flex grow factor for this element when it is a child of a flex
+ *   container. Mirrors CSS `flex: N`. On Compose Multiplatform this becomes
+ *   `RowScope.weight` / `ColumnScope.weight` via captured parent scope; outside
+ *   a flex container the property is a no-op (matching CSS).
+ * @property opacity Opacity in `[0f, 1f]`.
+ */
+public data class Style(
+    val padding: Padding? = null,
+    val margin: Margin? = null,
+    val backgroundColor: Color? = null,
+    val color: Color? = null,
+    val fontSize: Sp? = null,
+    val fontWeight: FontWeight? = null,
+    val borderRadius: Dp? = null,
+    val flexDirection: FlexDirection? = null,
+    val alignItems: Align? = null,
+    val justifyContent: Justify? = null,
+    val gap: Dp? = null,
+    val width: Size? = null,
+    val height: Size? = null,
+    val flex: Float? = null,
+    val opacity: Float? = null,
+) {
+    public companion object {
+        /** A [Style] with no properties set. Equivalent to passing no style at all. */
+        public val Empty: Style = Style()
+    }
+
+    /**
+     * Merge two styles. For each property, a non-null value in [other] takes
+     * precedence over the value in `this`. Useful for layering a base style with
+     * call-site overrides.
+     */
+    public operator fun plus(other: Style): Style = Style(
+        padding = other.padding ?: padding,
+        margin = other.margin ?: margin,
+        backgroundColor = other.backgroundColor ?: backgroundColor,
+        color = other.color ?: color,
+        fontSize = other.fontSize ?: fontSize,
+        fontWeight = other.fontWeight ?: fontWeight,
+        borderRadius = other.borderRadius ?: borderRadius,
+        flexDirection = other.flexDirection ?: flexDirection,
+        alignItems = other.alignItems ?: alignItems,
+        justifyContent = other.justifyContent ?: justifyContent,
+        gap = other.gap ?: gap,
+        width = other.width ?: width,
+        height = other.height ?: height,
+        flex = other.flex ?: flex,
+        opacity = other.opacity ?: opacity,
+    )
+}
+
+/**
+ * Inside-edge spacing, in scale-independent pixels.
+ *
+ * Each side may differ. Use [all] for uniform padding or [symmetric] for
+ * `vertical` / `horizontal` shorthand.
+ */
+public data class Padding(val top: Dp, val right: Dp, val bottom: Dp, val left: Dp) {
+    public companion object {
+        /** Padding with the same value on all four sides. */
+        public fun all(value: Dp): Padding = Padding(value, value, value, value)
+
+        /**
+         * Padding with one value for top + bottom and another for left + right.
+         * Defaults are zero.
+         */
+        public fun symmetric(vertical: Dp = 0.dp, horizontal: Dp = 0.dp): Padding =
+            Padding(vertical, horizontal, vertical, horizontal)
+    }
+}
+
+/**
+ * Outside-edge spacing, in scale-independent pixels.
+ *
+ * On Compose Multiplatform this is implemented by wrapping the widget in an outer
+ * `Box` with padding equal to the margin — there is no native child-level margin
+ * modifier in Compose. CSS-style margin collapse between adjacent siblings is not
+ * replicated.
+ */
+public data class Margin(val top: Dp, val right: Dp, val bottom: Dp, val left: Dp) {
+    public companion object {
+        /** Margin with the same value on all four sides. */
+        public fun all(value: Dp): Margin = Margin(value, value, value, value)
+
+        /**
+         * Margin with one value for top + bottom and another for left + right.
+         * Defaults are zero.
+         */
+        public fun symmetric(vertical: Dp = 0.dp, horizontal: Dp = 0.dp): Margin =
+            Margin(vertical, horizontal, vertical, horizontal)
+    }
+}
+
+/**
+ * Density-independent pixel.
+ *
+ * On Android / iOS this maps to Compose's `androidx.compose.ui.unit.Dp` (so
+ * `1.dp` is one device-independent pixel). On the web target it maps to CSS `px`,
+ * which already approximates the same physical size on typical displays.
+ *
+ * Construct via the [Int.dp] / [Float.dp] extensions: `16.dp`, `0.5f.dp`.
+ */
+@JvmInline
+public value class Dp(public val value: Float) {
+    public companion object {
+        /** Zero-length [Dp]. */
+        public val Zero: Dp = Dp(0f)
+    }
+}
+
+/** Construct a [Dp] from an integer literal — `16.dp`. */
+public val Int.dp: Dp get() = Dp(this.toFloat())
+
+/** Construct a [Dp] from a floating-point literal — `0.5f.dp`. */
+public val Float.dp: Dp get() = Dp(this)
+
+/**
+ * Scale-independent pixel for typography.
+ *
+ * Differs from [Dp] in that it respects the user's system font-scale setting on
+ * Android / iOS, and falls back to plain `px` on the web (no equivalent web concept).
+ *
+ * Construct via the [Int.sp] / [Float.sp] extensions: `14.sp`.
+ */
+@JvmInline
+public value class Sp(public val value: Float)
+
+/** Construct an [Sp] from an integer literal — `14.sp`. */
+public val Int.sp: Sp get() = Sp(this.toFloat())
+
+/** Construct an [Sp] from a floating-point literal — `13.5f.sp`. */
+public val Float.sp: Sp get() = Sp(this)
+
+/**
+ * 32-bit ARGB color, packed as `0xAARRGGBB`.
+ *
+ * Construct with the [rgb] / [argb] factory functions, or use one of the named
+ * constants on the companion object.
+ *
+ * @property argb Packed channel value. The high byte is alpha; remaining bytes are
+ *   red, green, blue, in that order.
+ */
+@JvmInline
+public value class Color(public val argb: Int) {
+    /** Alpha channel, in `[0, 255]`. */
+    public val alpha: Int get() = (argb ushr 24) and 0xFF
+
+    /** Red channel, in `[0, 255]`. */
+    public val red: Int get() = (argb ushr 16) and 0xFF
+
+    /** Green channel, in `[0, 255]`. */
+    public val green: Int get() = (argb ushr 8) and 0xFF
+
+    /** Blue channel, in `[0, 255]`. */
+    public val blue: Int get() = argb and 0xFF
+
+    public companion object {
+        /** Opaque black — `#000000`. */
+        public val Black: Color = rgb(0, 0, 0)
+
+        /** Opaque white — `#FFFFFF`. */
+        public val White: Color = rgb(255, 255, 255)
+
+        /** Fully transparent (zero in every channel). */
+        public val Transparent: Color = Color(0)
+    }
+}
+
+/**
+ * Construct an opaque [Color] from individual `[0, 255]` channels.
+ *
+ * @param r Red channel.
+ * @param g Green channel.
+ * @param b Blue channel.
+ */
+public fun rgb(r: Int, g: Int, b: Int): Color =
+    Color((0xFF shl 24) or ((r and 0xFF) shl 16) or ((g and 0xFF) shl 8) or (b and 0xFF))
+
+/**
+ * Construct a [Color] with explicit alpha.
+ *
+ * @param a Alpha channel, in `[0, 255]` — 0 fully transparent, 255 opaque.
+ * @param r Red channel.
+ * @param g Green channel.
+ * @param b Blue channel.
+ */
+public fun argb(a: Int, r: Int, g: Int, b: Int): Color =
+    Color(((a and 0xFF) shl 24) or ((r and 0xFF) shl 16) or ((g and 0xFF) shl 8) or (b and 0xFF))
+
+/**
+ * Type-weight for text rendering.
+ *
+ * Only the four most common weights are exposed. Each maps to its CSS numeric
+ * equivalent on web and to `androidx.compose.ui.text.font.FontWeight` on Compose.
+ *
+ * @property value CSS numeric font-weight value.
+ */
+public enum class FontWeight(public val value: Int) {
+    /** 400 — the standard non-bold weight. */
+    Normal(400),
+
+    /** 500. */
+    Medium(500),
+
+    /** 600. */
+    SemiBold(600),
+
+    /** 700. */
+    Bold(700),
+}
+
+/**
+ * Flex axis for a flex container — see [Style.flexDirection].
+ *
+ * Reverse modes (`row-reverse` / `column-reverse`) are intentionally omitted:
+ * Compose `Row` / `Column` have no native reverse mode, and faking it via
+ * `LayoutDirection.Rtl` inverts text direction inside, which is worse than not
+ * supporting it. Reverse layouts are rare in app UI; users who genuinely need
+ * them can `.reversed()` their children list in user code.
+ */
+public enum class FlexDirection {
+    /** Children laid out horizontally, main axis is the X axis. */
+    Row,
+
+    /** Children laid out vertically, main axis is the Y axis. The unicompose default. */
+    Column,
+}
+
+/**
+ * Cross-axis alignment of children in a flex container — see [Style.alignItems].
+ *
+ * "Cross-axis" is the axis perpendicular to [Style.flexDirection]: vertical for a
+ * Row, horizontal for a Column.
+ */
+public enum class Align {
+    /** Align children to the start of the cross-axis. The default. */
+    Start,
+
+    /** Center children on the cross-axis. */
+    Center,
+
+    /** Align children to the end of the cross-axis. */
+    End,
+
+    /**
+     * Stretch children to fill the cross-axis.
+     *
+     * On the web this is just CSS `align-items: stretch`. On Compose Multiplatform,
+     * `Row` / `Column` have no native cross-axis stretch, so each child instead
+     * applies `Modifier.fillMaxHeight()` / `Modifier.fillMaxWidth()` based on the
+     * parent's direction (propagated via composition local).
+     */
+    Stretch,
+}
+
+/**
+ * Main-axis arrangement of children in a flex container — see [Style.justifyContent].
+ *
+ * "Main-axis" is the axis defined by [Style.flexDirection]: horizontal for a Row,
+ * vertical for a Column.
+ */
+public enum class Justify {
+    /** Pack children at the start of the main axis. The default. */
+    Start,
+
+    /** Center children on the main axis. */
+    Center,
+
+    /** Pack children at the end of the main axis. */
+    End,
+
+    /** Equal space between adjacent children; no leading or trailing space. */
+    SpaceBetween,
+
+    /** Equal space around each child; outer halves leak to the container edges. */
+    SpaceAround,
+
+    /** Equal space between every child including container edges. */
+    SpaceEvenly,
+}
+
+/**
+ * Sizing mode for [Style.width] / [Style.height].
+ *
+ * The four modes mirror the equivalent web concepts — fixed pixels, full parent,
+ * intrinsic content, and fractional — so that one [Style] value renders
+ * equivalently on all backends.
+ */
+public sealed interface Size {
+    /** A fixed [Dp] dimension. Equivalent to CSS `Npx`. */
+    public data class Fixed(val dp: Dp) : Size
+
+    /** Fill the available parent dimension. Equivalent to CSS `100%`. */
+    public data object FillParent : Size
+
+    /** Size to the intrinsic content. Equivalent to CSS `auto`. */
+    public data object WrapContent : Size
+
+    /**
+     * Fractional fill of the parent dimension.
+     *
+     * @property value Fraction in `[0f, 1f]`. `0.5f` is half the parent.
+     */
+    public data class Fraction(val value: Float) : Size
+}
