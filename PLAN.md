@@ -130,7 +130,7 @@ We're **StyleX-shaped, not StyleX-robust** (~5–10% of StyleX's surface). We ha
 | `width`, `height` (Fixed/Fill/Wrap/Fraction) | shipped | |
 | `flex` | shipped | applies in flex-child context only |
 | `border` (per-side via `Border` + `BorderEdge`) | shipped | uniform via `Border.all`; per-side via the named-arg constructor. Uniform takes the `Modifier.border` fast path; per-side drops to `Modifier.drawBehind` |
-| `boxShadow` (blur + color) | shipped | offset-x/y omitted — `Modifier.shadow` ignores them; visually equivalent across backends, not pixel-equivalent |
+| `boxShadow` (offset + blur + spread + color) | shipped | hard shadow (blur=0) takes the `drawBehind` path with full offset+spread fidelity; blurred shadow uses `Modifier.shadow` elevation approximation (offset+spread ignored on CMP, full on web) |
 | `lineHeight`, `letterSpacing`, `textAlign` | shipped | text properties read by `UiText` from the active `Style` |
 | `transform` (translate / scale / rotate) | TODO | post-v0.1 |
 | `transition` (duration + easing on a property set) | TODO | post-v0.1 — needs care since CMP uses `animate*AsState`, not declarative transitions |
@@ -156,6 +156,7 @@ The proposed shape is `StyleStates(base, hover = …, disabled = …)`. `:focus`
 - [x] **Three-layer split** — `unicompose-style` (primitives), `unicompose` (mechanism + UA-stylesheet primitives), `unicompose-base` (opinionated design system). `Card`/`Badge`/`Tokens`/`UnicomposeTheme` moved to design module. Mechanism-level `LocalDefaultTextColor` for CSS-like text-color inheritance.
 - [x] **Style polish** — uniform `border`, `boxShadow` (blur + color), per-corner `borderRadius` via the new `BorderRadius` data class, `lineHeight`/`letterSpacing`/`textAlign`.
 - [x] **Per-side `border` + custom-drawing infrastructure** — `Border` + `BorderEdge` types support per-side widths/colors; CMP drops to `Modifier.drawBehind` when edges differ. Foundation for shadow offset, gradients, and other future Style properties that don't map to built-in modifiers.
+- [x] **Shadow offset + spread (hard path)** — `Shadow(offsetX, offsetY, blur, spread, color)` matches CSS `box-shadow`. When `blur = 0` ("hard" shadow), CMP renders via `drawBehind` with full offset+spread fidelity. When `blur > 0`, the existing `Modifier.shadow` elevation approximation is used and offset/spread are ignored on CMP — full Skia mask-filter blurred shadows are deferred to a future custom-drawing pass.
 - [ ] **`unicompose-base` widgets** — themed `Heading` wrapper (token color), themed `Button`/`TextField` wrappers (token-driven defaults). The design library equivalent of Material 3.
 - [ ] **Todo app sample** — multi-screen app on all three platforms. Forms, list, persistence (via shared KMP), exercises the theming layer with a dark-mode toggle. The v0.1 ship gate.
 - [ ] **Snapshot tests** — Paparazzi (Android) + screenshot tests (iOS) + Playwright (web), kitchen-sink + todo-app golden screens. Light + dark variants per screen.
@@ -163,7 +164,7 @@ The proposed shape is `StyleStates(base, hover = …, disabled = …)`. `:focus`
 
 ## Post-v0.1
 
-- **Shadow offset / spread** — CSS `box-shadow` supports per-axis offset and spread; Compose `Modifier.shadow` is elevation-only and ignores both. Needs platform-specific Skia mask filter access (`BlurMaskFilter` on Android, Skiko `MaskFilter` on iOS) — non-trivial cross-platform glue. The custom-drawing infrastructure introduced for per-side borders is the foundation; this is the next consumer of it.
+- **Blurred shadow with offset/spread on CMP** — the hard-path shipped above covers `blur = 0`. Combining offset/spread with `blur > 0` on CMP needs platform-specific Skia mask-filter access (`BlurMaskFilter` on Android, Skiko `MaskFilter.makeBlur` on iOS via `paint.asFrameworkPaint().maskFilter`). Requires splitting `composeAppMain` into separate `androidMain`/`iosMain` paths for the helper. ~50 LOC of platform-specific code; defer until a real consumer needs it.
 - **Linear gradients** — same situation as shadow offset; would build on the custom-drawing path. Web emits CSS gradients trivially; CMP needs `Modifier.background(brush = Brush.linearGradient(...))` plumbed through Style.
 - **Pseudo-states** (`:hover`, `:disabled`) — `StyleStates(base, hover, disabled)` shape; emit `:hover` selector on web and use `InteractionSource` on CMP.
 - **`transform`, `transition`, gradients** — covered in the Style-surface table above.
