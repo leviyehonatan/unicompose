@@ -171,8 +171,9 @@ We're **StyleX-shaped, not StyleX-robust** (~5–10% of StyleX's surface). We ha
 |---|---|---|
 | `Card` | shipped | `UiBox` + `CardDefaults.style()` reading `Tokens` |
 | `Badge` | shipped | `UiBox` + `UiText` + `BadgeDefaults.style()` reading `Tokens` |
-| themed `Heading` wrapper | post-v0.1 | `UiHeading` + token-aware color/weight |
-| themed inputs (TextField, Button) | post-v0.1 | underlying primitive + tokens |
+| `Heading` (H1/H2/H3) | shipped | `UiHeading` + `HeadingDefaults.style()` (token color, level-default size/weight) |
+| `Button` (Primary / Secondary / Ghost variants) | shipped | `UiButton` + `UiText` + `ButtonDefaults.style(variant)` (background, border, padding, radius, typography all token-driven) |
+| `TextField` (with optional label) | shipped | `UiTextField` + label `UiText` (label typography from tokens; input chrome stays platform-native pending richer style hooks on the primitive) |
 
 ## Style surface
 
@@ -217,7 +218,7 @@ The proposed shape is `StyleStates(base, hover = …, disabled = …)`. `:focus`
 - [x] **Per-side `border` + custom-drawing infrastructure** — `Border` + `BorderEdge` types support per-side widths/colors; CMP drops to `Modifier.drawBehind` when edges differ. Foundation for shadow offset, gradients, and other future Style properties that don't map to built-in modifiers.
 - [x] **Shadow offset + spread (hard path)** — `Shadow(offsetX, offsetY, blur, spread, color)` matches CSS `box-shadow`. When `blur = 0` ("hard" shadow), CMP renders via `drawBehind` with full offset+spread fidelity. When `blur > 0`, the existing `Modifier.shadow` elevation approximation is used and offset/spread are ignored on CMP — full Skia mask-filter blurred shadows are deferred to a future custom-drawing pass.
 - [x] **Linear gradients** — `LinearGradient(direction, colors, stops?)` for `Style.backgroundGradient`. Eight directions (4 axis-aligned + 4 diagonals), optional explicit color stops. Lowers to `Brush.linearGradient` on CMP and CSS `linear-gradient(...)` on web. Both built-in modifier paths — no drawing. Built on top of, not replacing, `backgroundColor`.
-- [ ] **`unicompose-base` widgets** — themed `Heading` wrapper (token color), themed `Button`/`TextField` wrappers (token-driven defaults). The design library equivalent of Material 3.
+- [x] **`unicompose-base` themed widgets** — `Heading` wrapper (token color, level-default size/weight), `Button` with Primary/Secondary/Ghost variants (token-driven backgrounds, borders, padding, radius, typography), `TextField` with optional label. Each widget pairs with a namespaced `*Defaults` object exposing the resolved style for advanced consumers.
 - [ ] **Todo app sample** — multi-screen app on all three platforms. Forms, list, persistence (via shared KMP), exercises the theming layer with a dark-mode toggle. The v0.1 ship gate.
 - [ ] **Snapshot tests** — Paparazzi (Android) + screenshot tests (iOS) + Playwright (web), kitchen-sink + todo-app golden screens. Light + dark variants per screen.
 - [ ] **API stability check** — Kotlinx Binary Compatibility Validator on `unicompose-style`, `unicompose`, and `unicompose-base` public surfaces.

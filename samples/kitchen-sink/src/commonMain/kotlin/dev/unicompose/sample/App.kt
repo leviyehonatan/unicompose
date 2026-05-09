@@ -5,30 +5,29 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import dev.unicompose.UiButton
+import dev.unicompose.HeadingLevel
 import dev.unicompose.UiColumn
 import dev.unicompose.UiRow
 import dev.unicompose.UiText
 import dev.unicompose.base.Badge
+import dev.unicompose.base.Button
+import dev.unicompose.base.ButtonVariant
 import dev.unicompose.base.Card
 import dev.unicompose.base.DarkTokens
+import dev.unicompose.base.Heading
 import dev.unicompose.base.LightTokens
 import dev.unicompose.base.UnicomposeTheme
 import dev.unicompose.base.currentTokens
 import dev.unicompose.style.Border
 import dev.unicompose.style.BorderEdge
-import dev.unicompose.style.BorderRadius
 import dev.unicompose.style.FontWeight
-import dev.unicompose.style.GradientDirection
 import dev.unicompose.style.Justify
-import dev.unicompose.style.LinearGradient
 import dev.unicompose.style.Padding
 import dev.unicompose.style.Shadow
 import dev.unicompose.style.Size
 import dev.unicompose.style.Style
 import dev.unicompose.style.argb
 import dev.unicompose.style.dp
-import dev.unicompose.style.rgb
 
 /**
  * Sample app — wraps everything in `UnicomposeTheme` from `unicompose-base`.
@@ -84,34 +83,16 @@ private fun Header(toggleDark: () -> Unit, isDark: Boolean) {
         ),
     ) {
         UiColumn(style = Style(gap = t.space.xs)) {
-            UiText("unicompose", style = Style(fontSize = t.type.xl, fontWeight = FontWeight.Bold))
+            // Themed Heading from unicompose-base — token color, level-defaulted size/weight.
+            Heading(HeadingLevel.H2, "unicompose")
             UiText(
                 "kitchen-sink — design system demo",
                 style = Style(fontSize = t.type.sm, color = t.colors.textSecondary),
             )
         }
-        UiButton(
-            onClick = toggleDark,
-            // Gradient background — exercises the new linear-gradient path on
-            // all three platforms. CMP uses Brush.linearGradient through
-            // Modifier.background; web emits a CSS linear-gradient.
-            style = Style(
-                backgroundGradient = LinearGradient(
-                    direction = GradientDirection.ToBottomRight,
-                    colors = listOf(
-                        t.colors.accent,
-                        rgb(t.colors.accent.red, t.colors.accent.green, (t.colors.accent.blue * 0.7).toInt()),
-                    ),
-                ),
-                padding = Padding.symmetric(vertical = t.space.sm, horizontal = t.space.md),
-                borderRadius = BorderRadius.all(t.radii.md),
-            ),
-        ) {
-            UiText(
-                if (isDark) "Light" else "Dark",
-                style = Style(color = t.colors.onAccent, fontSize = t.type.sm, fontWeight = FontWeight.Medium),
-            )
-        }
+        // Themed Button (Primary variant). All defaults — color, padding, radius,
+        // typography — pulled from the active Tokens. Theme switch re-themes it.
+        Button(onClick = toggleDark, text = if (isDark) "Light" else "Dark")
     }
 }
 
