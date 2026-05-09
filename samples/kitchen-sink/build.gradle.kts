@@ -48,6 +48,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(project(":unicompose"))
+            implementation(project(":unicompose-design"))
             implementation(compose.runtime)
         }
 
