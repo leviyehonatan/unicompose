@@ -9,7 +9,7 @@ Shared UI primitives for Kotlin: write Composables once, render them on Android,
 
 Inspired by [React Strict DOM](https://facebook.github.io/react-strict-dom/). Apache 2.0.
 
-> Status: pre-alpha. v0.1 in progress. See `/Users/nickst/.claude/plans/lets-write-a-plan-rosy-sun.md`.
+> Status: pre-alpha. v0.1 in progress. See [PLAN.md](PLAN.md) for goals, widget set, and roadmap.
 
 ## Quick example
 
