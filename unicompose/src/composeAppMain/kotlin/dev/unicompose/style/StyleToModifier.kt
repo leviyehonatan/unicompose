@@ -12,7 +12,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size as ComposeUiSize
 import androidx.compose.ui.graphics.Color as ComposeColor
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp as composeDp
@@ -73,7 +76,39 @@ public fun Style.toModifier(): Modifier {
     }
 
     border?.let { b ->
-        m = m.border(b.width.value.composeDp, b.color.toComposeColor(), shape)
+        m = if (b.isUniform) {
+            // Fast path: built-in Modifier.border follows the rounded shape correctly.
+            val edge = b.top!!
+            m.border(edge.width.value.composeDp, edge.color.toComposeColor(), shape)
+        } else {
+            // Per-side borders: drop into custom drawing. Adjacent differently-colored
+            // edges meet at corners with last-drawn-wins overlap (no CSS-style miter).
+            m.drawBehind {
+                fun drawEdgeRect(topLeft: Offset, w: Float, h: Float, color: Color) {
+                    drawRect(
+                        color = color.toComposeColor(),
+                        topLeft = topLeft,
+                        size = ComposeUiSize(w, h),
+                    )
+                }
+                b.top?.let { e ->
+                    val w = e.width.value * density
+                    drawEdgeRect(Offset.Zero, size.width, w, e.color)
+                }
+                b.right?.let { e ->
+                    val w = e.width.value * density
+                    drawEdgeRect(Offset(size.width - w, 0f), w, size.height, e.color)
+                }
+                b.bottom?.let { e ->
+                    val w = e.width.value * density
+                    drawEdgeRect(Offset(0f, size.height - w), size.width, w, e.color)
+                }
+                b.left?.let { e ->
+                    val w = e.width.value * density
+                    drawEdgeRect(Offset.Zero, w, size.height, e.color)
+                }
+            }
+        }
     }
 
     if (borderRadius != null) {

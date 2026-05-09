@@ -112,7 +112,19 @@ internal object AtomicCss {
                 "${r.topLeft.value}px ${r.topRight.value}px ${r.bottomRight.value}px ${r.bottomLeft.value}px"
         }
         style.border?.let { b ->
-            out += "border" to "${b.width.value}px solid ${b.color.toCss()}"
+            if (b.isUniform) {
+                val e = b.top!!
+                out += "border" to "${e.width.value}px solid ${e.color.toCss()}"
+            } else {
+                fun edgeRule(side: String, e: BorderEdge?) {
+                    val rule = if (e != null) "${e.width.value}px solid ${e.color.toCss()}" else "0"
+                    out += "border-$side" to rule
+                }
+                edgeRule("top", b.top)
+                edgeRule("right", b.right)
+                edgeRule("bottom", b.bottom)
+                edgeRule("left", b.left)
+            }
         }
         style.boxShadow?.let { s ->
             // Offset-x/-y intentionally zero — see Shadow doc for cross-platform caveat.

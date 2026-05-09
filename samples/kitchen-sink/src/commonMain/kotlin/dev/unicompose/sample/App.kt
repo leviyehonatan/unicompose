@@ -15,9 +15,12 @@ import dev.unicompose.base.DarkTokens
 import dev.unicompose.base.LightTokens
 import dev.unicompose.base.UnicomposeTheme
 import dev.unicompose.base.currentTokens
+import dev.unicompose.style.Border
+import dev.unicompose.style.BorderEdge
 import dev.unicompose.style.BorderRadius
 import dev.unicompose.style.FontWeight
 import dev.unicompose.style.Justify
+import dev.unicompose.style.dp
 import dev.unicompose.style.Padding
 import dev.unicompose.style.Size
 import dev.unicompose.style.Style
@@ -48,6 +51,7 @@ private fun Page(toggleDark: () -> Unit, isDark: Boolean) {
     ) {
         Header(toggleDark, isDark)
         StatRow()
+        Notice()
         Card {
             UiText(
                 "Layout works the same on three platforms.",
@@ -94,6 +98,29 @@ private fun Header(toggleDark: () -> Unit, isDark: Boolean) {
                 style = Style(color = t.colors.onAccent, fontSize = t.type.sm, fontWeight = FontWeight.Medium),
             )
         }
+    }
+}
+
+@Composable
+private fun Notice() {
+    val t = currentTokens()
+    // Demonstrates per-side border: a left accent bar plus a subtle bottom hairline.
+    // CMP draws via Modifier.drawBehind; web emits border-left + border-bottom shorthands.
+    UiRow(
+        style = Style(
+            backgroundColor = t.colors.bgSubtle,
+            padding = Padding.symmetric(vertical = t.space.sm, horizontal = t.space.md),
+            border = Border(
+                left = BorderEdge(width = 3.dp, color = t.colors.accent),
+                bottom = BorderEdge(width = 1.dp, color = t.colors.borderSubtle),
+            ),
+            width = Size.FillParent,
+        ),
+    ) {
+        UiText(
+            "Per-side borders work on three platforms via the new custom-drawing path.",
+            style = Style(fontSize = t.type.sm, color = t.colors.textSecondary),
+        )
     }
 }
 

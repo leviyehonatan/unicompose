@@ -176,17 +176,60 @@ public data class BorderRadius(
 }
 
 /**
- * Solid border around an element.
+ * A single edge of a [Border]. Use `null` for "no border on this side".
  *
- * v0.1 supports uniform borders only — same color and width on all four sides.
- * The border respects [Style.borderRadius] when both are set: the border draws
- * along the rounded shape.
- *
- * Per-side borders (different widths/colors per edge) are deferred to a later
- * milestone since Compose's `Modifier.border` is uniform; per-side requires
- * custom drawing on the CMP backend.
+ * @property width Edge thickness, drawn inward from the element's bounds.
+ * @property color Stroke color.
  */
-public data class Border(val width: Dp, val color: Color)
+public data class BorderEdge(val width: Dp, val color: Color)
+
+/**
+ * Solid border around an element, with independent control per side.
+ *
+ * Use [Border.all] for the uniform case (the most common — same color and width
+ * on all four sides), the named-argument constructor for asymmetric layouts:
+ *
+ * ```
+ * Border.all(1.dp, Color.Black)
+ * Border(bottom = BorderEdge(1.dp, dividerColor))
+ * Border(top = BorderEdge(2.dp, accent), bottom = BorderEdge(1.dp, divider))
+ * ```
+ *
+ * **Implementation note**: when all four edges are equal and non-null, the CMP
+ * backend uses Compose's built-in `Modifier.border` (fast, follows the rounded
+ * shape correctly). When edges differ — including any null edge — the backend
+ * drops to `Modifier.drawBehind` and paints each edge as a rectangle. With
+ * rounded corners and asymmetric edges, edges draw as straight lines clipped
+ * by the corner radius; CSS-style miter joins between adjacent differently-
+ * colored edges are not replicated (last-drawn-wins at the corner).
+ *
+ * @property top Edge along the top of the element, or null for no border.
+ * @property right Edge along the right.
+ * @property bottom Edge along the bottom.
+ * @property left Edge along the left.
+ */
+public data class Border(
+    val top: BorderEdge? = null,
+    val right: BorderEdge? = null,
+    val bottom: BorderEdge? = null,
+    val left: BorderEdge? = null,
+) {
+    public companion object {
+        /** Uniform border on all four sides. */
+        public fun all(width: Dp, color: Color): Border {
+            val edge = BorderEdge(width, color)
+            return Border(top = edge, right = edge, bottom = edge, left = edge)
+        }
+
+        /** Same edge for top + bottom; same edge (possibly different) for left + right. */
+        public fun symmetric(vertical: BorderEdge? = null, horizontal: BorderEdge? = null): Border =
+            Border(top = vertical, right = horizontal, bottom = vertical, left = horizontal)
+    }
+
+    /** True when all four edges are present and equal — the fast path. */
+    public val isUniform: Boolean
+        get() = top != null && top == right && right == bottom && bottom == left
+}
 
 /**
  * Drop shadow behind an element.
