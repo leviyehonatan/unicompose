@@ -13,8 +13,9 @@ import dev.unicompose.style.toModifier
 @Composable
 public actual fun UiText(text: String, style: Style) {
     val base = LocalTextStyle.current
+    val inheritedColor = style.color ?: currentDefaultTextColor()
     val merged = base.copy(
-        color = style.color?.toComposeColor() ?: ComposeColor.Unspecified,
+        color = inheritedColor?.toComposeColor() ?: ComposeColor.Unspecified,
         fontSize = style.fontSize?.value?.composeSp ?: base.fontSize,
         fontWeight = style.fontWeight?.let { ComposeFontWeight(it.value) } ?: base.fontWeight,
     )

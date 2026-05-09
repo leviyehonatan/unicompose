@@ -8,7 +8,13 @@ import org.jetbrains.compose.web.dom.Text
 
 @Composable
 public actual fun UiText(text: String, style: Style) {
-    val cls = AtomicCss.classFor(style)
+    // Inherit ambient text color when style.color is unset (CSS-like inheritance).
+    val effective = if (style.color == null) {
+        style.copy(color = currentDefaultTextColor())
+    } else {
+        style
+    }
+    val cls = AtomicCss.classFor(effective)
     Span(attrs = { classes(cls) }) {
         Text(text)
     }

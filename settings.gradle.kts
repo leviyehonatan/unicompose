@@ -47,5 +47,6 @@ rootProject.name = "unicompose-root"
 include(
     ":unicompose-style",
     ":unicompose",
+    ":unicompose-design",
     ":samples:kitchen-sink",
 )
