@@ -116,17 +116,16 @@ We're **StyleX-shaped, not StyleX-robust** (~5–10% of StyleX's surface). We ha
 | `padding`, `margin` | shipped | margin on CMP via outer-padding wrap |
 | `backgroundColor`, `color`, `opacity` | shipped | |
 | `fontSize`, `fontWeight` | shipped | |
-| `borderRadius` | shipped | uniform corners only |
+| `borderRadius` (per-corner via `BorderRadius`) | shipped | uniform via `BorderRadius.all`; per-corner via the data class constructor |
 | `flexDirection` (Row, Column) | shipped | reverse modes intentionally omitted |
 | `alignItems` (Start/Center/End/Stretch) | shipped | Stretch propagates to children on CMP |
 | `justifyContent` (incl. Space*) | shipped | |
 | `gap` | shipped | |
 | `width`, `height` (Fixed/Fill/Wrap/Fraction) | shipped | |
 | `flex` | shipped | applies in flex-child context only |
-| `border` (color + width, per-side) | TODO | pre-v0.1 — easy on both backends |
-| `boxShadow` (single layer) | TODO | pre-v0.1 — common need; maps cleanly |
-| per-corner border radii | TODO | pre-v0.1 — RoundedCornerShape on CMP, border-radius shorthand on CSS |
-| `lineHeight`, `letterSpacing`, `textAlign` | TODO | pre-v0.1 — typography polish |
+| `border` (uniform: color + width) | shipped | per-side deferred — `Modifier.border` on Compose is uniform; per-side requires custom drawing |
+| `boxShadow` (blur + color) | shipped | offset-x/y omitted — `Modifier.shadow` ignores them; visually equivalent across backends, not pixel-equivalent |
+| `lineHeight`, `letterSpacing`, `textAlign` | shipped | text properties read by `UiText` from the active `Style` |
 | `transform` (translate / scale / rotate) | TODO | post-v0.1 |
 | `transition` (duration + easing on a property set) | TODO | post-v0.1 — needs care since CMP uses `animate*AsState`, not declarative transitions |
 | linear gradients | TODO | post-v0.1 |
@@ -149,7 +148,7 @@ The proposed shape is `StyleStates(base, hover = …, disabled = …)`. `:focus`
 - [x] **Layout + Style** — `UiBox`/`UiRow`/`UiColumn`, full Style data class, atomic CSS, flex bridging.
 - [x] **Widget set in `unicompose`** — Spacer, Divider, Heading, Button, Checkbox, TextField, Link, Switch, RadioGroup all shipped. Image and Icon deferred to post-v0.1.
 - [x] **Three-layer split** — `unicompose-style` (primitives), `unicompose` (mechanism + UA-stylesheet primitives), `unicompose-base` (opinionated design system). `Card`/`Badge`/`Tokens`/`UnicomposeTheme` moved to design module. Mechanism-level `LocalDefaultTextColor` for CSS-like text-color inheritance.
-- [ ] **Style polish** — `border` (color + width, per-side), `boxShadow` (single layer), per-corner `borderRadius`, `lineHeight`/`letterSpacing`/`textAlign`. All map cleanly both ways. Land before snapshot tests so the goldens reflect realistic styling.
+- [x] **Style polish** — uniform `border`, `boxShadow` (blur + color), per-corner `borderRadius` via the new `BorderRadius` data class, `lineHeight`/`letterSpacing`/`textAlign`. Per-side border and shadow offset deferred to post-v0.1 (Compose lacks clean primitives for either).
 - [ ] **`unicompose-base` widgets** — themed `Heading` wrapper (token color), themed `Button`/`TextField` wrappers (token-driven defaults). The design library equivalent of Material 3.
 - [ ] **Todo app sample** — multi-screen app on all three platforms. Forms, list, persistence (via shared KMP), exercises the theming layer with a dark-mode toggle. The v0.1 ship gate.
 - [ ] **Snapshot tests** — Paparazzi (Android) + screenshot tests (iOS) + Playwright (web), kitchen-sink + todo-app golden screens. Light + dark variants per screen.
@@ -157,6 +156,8 @@ The proposed shape is `StyleStates(base, hover = …, disabled = …)`. `:focus`
 
 ## Post-v0.1
 
+- **Per-side `border`** — different widths/colors per edge. Trivial on web (`border-top`, etc.); requires `Modifier.drawBehind` with custom line drawing on CMP.
+- **Shadow offset / spread** — CSS `box-shadow` supports per-axis offset and spread. Compose `Modifier.shadow` is elevation-only and ignores both. Implementing offset/spread on CMP needs `Modifier.drawBehind { drawIntoCanvas { ... } }`.
 - **Pseudo-states** (`:hover`, `:disabled`) — `StyleStates(base, hover, disabled)` shape; emit `:hover` selector on web and use `InteractionSource` on CMP.
 - **`transform`, `transition`, gradients** — covered in the Style-surface table above.
 - `UiImage` — pulls Coil3 (multiplatform image loading) for async network images on CMP. On web it's `<img src>`. Decide on placeholder/error API.
