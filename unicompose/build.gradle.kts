@@ -14,13 +14,20 @@ kotlin {
     iosX64()
     iosArm64()
     iosSimulatorArm64()
+
+    // js(IR) — Compose HTML, real DOM (production web target)
+    // wasmJs — Compose Multiplatform for Web, Skia canvas (mobile preview)
+    // Two different target *types* so Kotlin's "one target per platform" rule
+    // is satisfied. wasmJs joins composeAppMain so its actuals come from the
+    // same CMP rendering code that runs on Android and iOS.
     js(IR) {
         browser()
     }
+    @OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
+    wasmJs {
+        browser()
+    }
 
-    // Shared source set "composeAppMain" hosts the Compose Multiplatform
-    // (Skia-rendered) backend, used by androidMain + iosMain. jsMain provides
-    // the Compose HTML (DOM) backend separately.
     @OptIn(org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class)
     applyDefaultHierarchyTemplate {
         common {
@@ -31,9 +38,7 @@ kotlin {
                     withIosArm64()
                     withIosSimulatorArm64()
                 }
-            }
-            group("web") {
-                withJs()
+                withWasmJs()
             }
         }
     }

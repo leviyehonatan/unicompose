@@ -17,6 +17,10 @@ kotlin {
     js(IR) {
         browser()
     }
+    @OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
+    wasmJs {
+        browser()
+    }
 
     @OptIn(org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class)
     applyDefaultHierarchyTemplate {
@@ -28,9 +32,7 @@ kotlin {
                     withIosArm64()
                     withIosSimulatorArm64()
                 }
-            }
-            group("web") {
-                withJs()
+                withWasmJs()
             }
         }
     }

@@ -53,6 +53,26 @@ Each multi-target module uses Kotlin's `expect`/`actual` with these source sets:
 
 Each unique `Style` is hashed into a deterministic class name and registered into a singleton `<style id="unicompose-styles">` element on first use. Subsequent usages reuse the cached class. Identical observable behavior to a build-time KSP extractor (same DOM, same SEO/perf properties), with substantially less build complexity.
 
+### Mobile preview via CMP-for-Web (canvas bundle)
+
+The kitchen-sink sample produces **two web bundles** from the same `commonMain` `App()`:
+
+| Bundle | Target | Renderer | Size | Use |
+|---|---|---|---|---|
+| `kitchen-sink-html.js` | `js(IR)` | Compose HTML → real `<span>`/`<div>`/`<button>` DOM | ~466 KB | Production web — SEO, accessibility, DOM interop. |
+| `kitchen-sink-canvas.js` | `wasmJs` | Compose Multiplatform for Web → Skia canvas via WASM | ~10 MB total (8.2 MB Skiko + 1.5 MB code) | Dev preview, visual regression test against mobile. **Same Skia renderer that runs on iOS/Android**, so this bundle's output is pixel-equivalent to mobile (modulo system font fallback). |
+
+The two targets use *different platform types* (`js` vs `wasmJs`) — Kotlin Multiplatform doesn't support two named JS targets in the same module, but `js` and `wasmJs` are distinct enough that they coexist cleanly. The canvas target joins `composeAppMain` in the source-set hierarchy so its rendering inherits the same CMP actuals that drive Android and iOS.
+
+**Build infrastructure**:
+- `./gradlew :samples:kitchen-sink:jsBrowserDistribution` → DOM bundle in `build/dist/js/productionExecutable/`.
+- `./gradlew :samples:kitchen-sink:wasmJsBrowserDistribution` → canvas bundle in `build/dist/wasmJs/productionExecutable/`.
+- `./gradlew :samples:kitchen-sink:previewSite` → both bundles copied into `build/dist/preview/{html,canvas}/` plus `compare.html` for side-by-side viewing. Serve with `python3 -m http.server` from `preview/` and open `compare.html`.
+
+This setup is designed for Playwright A/B comparison testing: both bundles live at predictable subpaths (`/html/`, `/canvas/`), so a Playwright script can render the same App in both, capture screenshots, and diff them. The DOM bundle's render is the production output; the canvas bundle's render is the mobile output. The diff catches visual regressions on both backends from a single test harness.
+
+Settings repos for WasmJs: `binaryen` releases from `github.com/WebAssembly/binaryen` (the wasm-opt toolchain) — added to `dependencyResolutionManagement.repositories` alongside the existing nodejs/yarn entries.
+
 ### CMP-side custom drawing
 
 Most Style properties lower to a built-in `Modifier` (padding, background, clip, etc.). A few don't have a clean built-in equivalent — per-side border is the first; CSS-style shadows with offset and gradients are next. For these, the CMP backend drops into `Modifier.drawBehind { ... }` and paints to the Skia canvas directly.

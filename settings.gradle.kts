@@ -39,6 +39,13 @@ dependencyResolutionManagement {
             metadataSources { artifact() }
             content { includeModule("com.yarnpkg", "yarn") }
         }
+        // Kotlin/Wasm plugin downloads Binaryen (the wasm-opt toolchain) from here.
+        ivy("https://github.com/WebAssembly/binaryen/releases/download/") {
+            name = "binaryen"
+            patternLayout { artifact("version_[revision]/[artifact]-version_[revision]-[classifier].[ext]") }
+            metadataSources { artifact() }
+            content { includeModule("com.github.webassembly", "binaryen") }
+        }
     }
 }
 
@@ -49,5 +56,4 @@ include(
     ":unicompose",
     ":unicompose-base",
     ":samples:kitchen-sink",
-    ":samples:spike-cmp-web",
 )
