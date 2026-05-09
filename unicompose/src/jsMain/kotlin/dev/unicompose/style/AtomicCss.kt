@@ -37,6 +37,40 @@ internal object AtomicCss {
     fun classForFlexContainer(style: Style): String =
         register(visualRules(style) + flexRules(style), prefix = "ucf")
 
+    /**
+     * Class name for a `<button>` element with browser-default styling reset.
+     * Reset rules come first so later user-provided properties override them
+     * via CSS cascade (e.g. `background:none` then `background-color:blue` → blue).
+     */
+    fun classForButton(style: Style): String =
+        register(buttonResetRules + visualRules(style), prefix = "ucb")
+
+    /** Class name for an `<input>` / form control with browser-default styling reset. */
+    fun classForInput(style: Style): String =
+        register(inputResetRules + visualRules(style), prefix = "uci")
+
+    private val buttonResetRules: List<Pair<String, String>> = listOf(
+        "border" to "0",
+        "background" to "none",
+        "font" to "inherit",
+        "color" to "inherit",
+        "padding" to "0",
+        "margin" to "0",
+        "cursor" to "pointer",
+        "outline" to "none",
+        "text-align" to "inherit",
+    )
+
+    private val inputResetRules: List<Pair<String, String>> = listOf(
+        "font" to "inherit",
+        "outline" to "none",
+        "border" to "1px solid #d0d4dc",
+        "border-radius" to "6px",
+        "padding" to "8px 10px",
+        "background" to "white",
+        "color" to "inherit",
+    )
+
     private fun register(rules: List<Pair<String, String>>, prefix: String): String {
         if (rules.isEmpty()) return "$prefix-empty"
         val key = prefix + "|" + rules.joinToString(";") { "${it.first}:${it.second}" }
