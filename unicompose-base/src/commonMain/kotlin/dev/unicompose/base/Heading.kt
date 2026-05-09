@@ -3,6 +3,7 @@ package dev.unicompose.base
 import androidx.compose.runtime.Composable
 import dev.unicompose.HeadingLevel
 import dev.unicompose.UiHeading
+import dev.unicompose.UiText
 import dev.unicompose.style.Style
 
 /**
@@ -16,15 +17,12 @@ import dev.unicompose.style.Style
  * underlying `UiHeading` in `unicompose` keeps the system text color so the
  * primitive remains usable without a theme.
  *
+ * For more HTML-like call sites, prefer the [H1] / [H2] / [H3] shortcuts —
+ * they're thin aliases that call this function with the matching level.
+ *
  * @param level The semantic level — see [HeadingLevel] in unicompose.
  * @param text The heading content.
  * @param style Visual overrides layered on top of token defaults.
- *
- * @sample
- * ```
- * Heading(HeadingLevel.H1, "unicompose")
- * Heading(HeadingLevel.H2, "Quick start", style = Style(color = currentTokens().colors.textSecondary))
- * ```
  */
 @Composable
 public fun Heading(
@@ -35,7 +33,22 @@ public fun Heading(
     UiHeading(level = level, text = text, style = HeadingDefaults.style() + style)
 }
 
-/** Default style helpers for [Heading]. */
+/** HTML-aligned shortcut for `Heading(HeadingLevel.H1, text, style)`. */
+@Composable
+public fun H1(text: String, style: Style = Style.Empty): Unit =
+    Heading(HeadingLevel.H1, text, style)
+
+/** HTML-aligned shortcut for `Heading(HeadingLevel.H2, text, style)`. */
+@Composable
+public fun H2(text: String, style: Style = Style.Empty): Unit =
+    Heading(HeadingLevel.H2, text, style)
+
+/** HTML-aligned shortcut for `Heading(HeadingLevel.H3, text, style)`. */
+@Composable
+public fun H3(text: String, style: Style = Style.Empty): Unit =
+    Heading(HeadingLevel.H3, text, style)
+
+/** Default style helpers for [Heading] / [H1] / [H2] / [H3]. */
 public object HeadingDefaults {
     /**
      * Default heading style, resolved from the active token set. Just sets
@@ -45,3 +58,15 @@ public object HeadingDefaults {
     @Composable
     public fun style(): Style = Style(color = currentTokens().colors.textPrimary)
 }
+
+/**
+ * Plain inline text — an alias over [dev.unicompose.UiText] for natural reading
+ * inside content lambdas like `Button(onClick = ...) { Text("Save") }`. Saves a
+ * `dev.unicompose` import jump on the call site.
+ *
+ * @param text The text to render.
+ * @param style Visual styling, layered on top of any inherited text properties.
+ */
+@Composable
+public fun Text(text: String, style: Style = Style.Empty): Unit =
+    UiText(text = text, style = style)

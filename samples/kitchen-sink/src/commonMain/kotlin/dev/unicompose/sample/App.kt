@@ -5,7 +5,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import dev.unicompose.HeadingLevel
 import dev.unicompose.UiColumn
 import dev.unicompose.UiRow
 import dev.unicompose.UiText
@@ -14,8 +13,9 @@ import dev.unicompose.base.Button
 import dev.unicompose.base.ButtonVariant
 import dev.unicompose.base.Card
 import dev.unicompose.base.DarkTokens
-import dev.unicompose.base.Heading
+import dev.unicompose.base.H2
 import dev.unicompose.base.LightTokens
+import dev.unicompose.base.Text
 import dev.unicompose.base.UnicomposeTheme
 import dev.unicompose.base.currentTokens
 import dev.unicompose.style.Border
@@ -83,16 +83,21 @@ private fun Header(toggleDark: () -> Unit, isDark: Boolean) {
         ),
     ) {
         UiColumn(style = Style(gap = t.space.xs)) {
-            // Themed Heading from unicompose-base — token color, level-defaulted size/weight.
-            Heading(HeadingLevel.H2, "unicompose")
+            // HTML-aligned heading shortcut from unicompose-base — same as
+            // Heading(HeadingLevel.H2, "unicompose") but reads like Kobweb.
+            H2("unicompose")
             UiText(
                 "kitchen-sink — design system demo",
                 style = Style(fontSize = t.type.sm, color = t.colors.textSecondary),
             )
         }
-        // Themed Button (Primary variant). All defaults — color, padding, radius,
-        // typography — pulled from the active Tokens. Theme switch re-themes it.
-        Button(onClick = toggleDark, text = if (isDark) "Light" else "Dark")
+        // Themed Button (Primary variant) using the content-lambda overload —
+        // Kobweb / HTML-style. The bare Text("...") inherits the Primary
+        // variant's onAccent color via ProvideDefaultTextColor, no explicit
+        // color needed. Theme switch re-themes everything.
+        Button(onClick = toggleDark) {
+            Text(if (isDark) "Light" else "Dark")
+        }
     }
 }
 

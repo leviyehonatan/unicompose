@@ -1,6 +1,7 @@
 package dev.unicompose.base
 
 import androidx.compose.runtime.Composable
+import dev.unicompose.ProvideDefaultTextColor
 import dev.unicompose.UiButton
 import dev.unicompose.UiText
 import dev.unicompose.style.Border
@@ -25,28 +26,19 @@ import dev.unicompose.style.dp
 public enum class ButtonVariant { Primary, Secondary, Ghost }
 
 /**
- * A themed button.
+ * A themed button with a string label.
  *
- * Wraps the unstyled [UiButton] primitive with token-driven default colors,
- * padding, corner radius, and label typography keyed off [variant]. Pass
- * [style] to override individual properties; the label inherits text color
- * from the variant unless overridden.
+ * Wraps the unstyled [UiButton] primitive with token-driven defaults keyed off
+ * [variant]. Style overrides layer on top of [ButtonDefaults.style]. The label
+ * inherits text color from the variant unless overridden.
  *
- * Lives in `unicompose-base` because the variant catalog and color choices
- * are design opinions. The underlying `UiButton` stays unstyled in
- * `unicompose` so other design libraries can layer their own button systems.
- *
- * @param onClick Invoked on click / tap / Enter.
- * @param text Label text.
- * @param variant Visual recipe — see [ButtonVariant]. Default is [ButtonVariant.Primary].
- * @param enabled When false, the button is dimmed and ignores input.
- * @param style Style overrides layered on top of [ButtonDefaults.style].
+ * For buttons with mixed inline content (icon + text, multiple text spans),
+ * use the content-lambda overload below.
  *
  * @sample
  * ```
- * Button(onClick = {}, text = "Save")
- * Button(onClick = {}, text = "Cancel", variant = ButtonVariant.Secondary)
- * Button(onClick = {}, text = "Learn more", variant = ButtonVariant.Ghost)
+ * Button(onClick = save, text = "Save")
+ * Button(onClick = cancel, text = "Cancel", variant = ButtonVariant.Secondary)
  * ```
  */
 @Composable
@@ -57,16 +49,46 @@ public fun Button(
     enabled: Boolean = true,
     style: Style = Style.Empty,
 ) {
+    Button(onClick = onClick, variant = variant, enabled = enabled, style = style) {
+        UiText(text)
+    }
+}
+
+/**
+ * A themed button with arbitrary inline content (Kobweb-style).
+ *
+ * Same defaults and variant catalog as the string-label overload, but the label
+ * is a Composable lambda — useful for icon + text combinations or any other
+ * inline content. The button's resolved label color is propagated to descendants
+ * via [ProvideDefaultTextColor], so a bare `Text("...")` in [content] picks it
+ * up automatically.
+ *
+ * @param onClick Invoked on click / tap / Enter.
+ * @param variant Visual recipe — see [ButtonVariant]. Default is [ButtonVariant.Primary].
+ * @param enabled When false, the button is dimmed and ignores input.
+ * @param style Style overrides layered on top of [ButtonDefaults.style].
+ * @param content Button label content. Typically `Text("...")`; can include icons.
+ *
+ * @sample
+ * ```
+ * Button(onClick = save) { Text("Save") }
+ * Button(onClick = retry, variant = ButtonVariant.Secondary) {
+ *     UiIcon(...)
+ *     Text("Retry")
+ * }
+ * ```
+ */
+@Composable
+public fun Button(
+    onClick: () -> Unit,
+    variant: ButtonVariant = ButtonVariant.Primary,
+    enabled: Boolean = true,
+    style: Style = Style.Empty,
+    content: @Composable () -> Unit,
+) {
     val resolved = ButtonDefaults.style(variant) + style
     UiButton(onClick = onClick, style = resolved, enabled = enabled) {
-        UiText(
-            text,
-            style = Style(
-                color = resolved.color,
-                fontSize = resolved.fontSize,
-                fontWeight = resolved.fontWeight,
-            ),
-        )
+        ProvideDefaultTextColor(resolved.color, content)
     }
 }
 

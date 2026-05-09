@@ -1,6 +1,7 @@
 package dev.unicompose.base
 
 import androidx.compose.runtime.Composable
+import dev.unicompose.ProvideDefaultTextColor
 import dev.unicompose.UiBox
 import dev.unicompose.UiText
 import dev.unicompose.style.BorderRadius
@@ -10,38 +11,45 @@ import dev.unicompose.style.Style
 import dev.unicompose.style.dp
 
 /**
- * Small inline indicator — a count, status pill, or tag.
+ * Small inline indicator with a string label — count, status pill, or tag.
  *
- * Wraps a [UiBox] (background + pill shape) around a [UiText] (label). Defaults
- * are pulled from the active [Tokens]; [style] overrides layer on top.
- *
- * Lives in `unicompose-base` (not `unicompose`) because badges are a design
- * opinion, not a primitive.
- *
- * @param text Label inside the badge.
- * @param style Overrides applied on top of [BadgeDefaults.style].
+ * For badges with mixed inline content (icon + text), use the content-lambda
+ * overload below.
  *
  * @sample
  * ```
  * Badge("3 new")
- * Badge("Beta", style = Style(
- *     backgroundColor = currentTokens().colors.accent,
- *     color = currentTokens().colors.onAccent,
- * ))
+ * Badge("Beta", style = Style(backgroundColor = currentTokens().colors.accent))
  * ```
  */
 @Composable
 public fun Badge(text: String, style: Style = Style.Empty) {
+    Badge(style = style) { UiText(text) }
+}
+
+/**
+ * Small inline indicator with arbitrary inline content (Kobweb-style).
+ *
+ * Default styling pulled from the active [Tokens]; the foreground color is
+ * propagated via [ProvideDefaultTextColor], so a bare `Text("...")` in
+ * [content] picks up the badge's text color.
+ *
+ * @param style Overrides applied on top of [BadgeDefaults.style].
+ * @param content Badge content; typically `Text("...")`.
+ *
+ * @sample
+ * ```
+ * Badge { Text("3 new") }
+ * ```
+ */
+@Composable
+public fun Badge(
+    style: Style = Style.Empty,
+    content: @Composable () -> Unit,
+) {
     val merged = BadgeDefaults.style() + style
     UiBox(style = merged) {
-        UiText(
-            text,
-            style = Style(
-                fontSize = merged.fontSize,
-                fontWeight = merged.fontWeight,
-                color = merged.color,
-            ),
-        )
+        ProvideDefaultTextColor(merged.color, content)
     }
 }
 
