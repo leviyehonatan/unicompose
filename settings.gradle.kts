@@ -49,4 +49,5 @@ include(
     ":unicompose",
     ":unicompose-base",
     ":samples:kitchen-sink",
+    ":samples:spike-cmp-web",
 )
