@@ -1,4 +1,4 @@
-package dev.unicompose.design
+package dev.unicompose.base
 
 import androidx.compose.runtime.Composable
 import dev.unicompose.UiBox
@@ -12,7 +12,7 @@ import dev.unicompose.style.Style
  * corner radius pulled from [currentTokens]. Pass [style] to override individual
  * properties at the call site.
  *
- * Lives in `unicompose-design` (not `unicompose`) because cards are a design
+ * Lives in `unicompose-base` (not `unicompose`) because cards are a design
  * opinion, not a primitive. The mechanism layer doesn't ship `Card`.
  *
  * @param style Overrides layered on top of [CardDefaults.style].

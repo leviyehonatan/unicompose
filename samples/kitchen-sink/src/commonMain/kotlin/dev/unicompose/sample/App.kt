@@ -9,12 +9,12 @@ import dev.unicompose.UiButton
 import dev.unicompose.UiColumn
 import dev.unicompose.UiRow
 import dev.unicompose.UiText
-import dev.unicompose.design.Badge
-import dev.unicompose.design.Card
-import dev.unicompose.design.DarkTokens
-import dev.unicompose.design.LightTokens
-import dev.unicompose.design.UnicomposeTheme
-import dev.unicompose.design.currentTokens
+import dev.unicompose.base.Badge
+import dev.unicompose.base.Card
+import dev.unicompose.base.DarkTokens
+import dev.unicompose.base.LightTokens
+import dev.unicompose.base.UnicomposeTheme
+import dev.unicompose.base.currentTokens
 import dev.unicompose.style.FontWeight
 import dev.unicompose.style.Justify
 import dev.unicompose.style.Padding
@@ -22,7 +22,7 @@ import dev.unicompose.style.Size
 import dev.unicompose.style.Style
 
 /**
- * Sample app — wraps everything in `UnicomposeTheme` from `unicompose-design`.
+ * Sample app — wraps everything in `UnicomposeTheme` from `unicompose-base`.
  * The `unicompose` library itself is just primitives; the theme + Card + Badge
  * come from the design system on top.
  */

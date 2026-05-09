@@ -1,4 +1,4 @@
-package dev.unicompose.design
+package dev.unicompose.base
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ProvidableCompositionLocal

@@ -1,4 +1,4 @@
-package dev.unicompose.design
+package dev.unicompose.base
 
 import dev.unicompose.style.Color
 import dev.unicompose.style.Dp
@@ -9,18 +9,18 @@ import dev.unicompose.style.rgb
 import dev.unicompose.style.sp
 
 /**
- * Design-token surface for the unicompose-design system — a small, opinionated set
+ * Design-token surface for the unicompose-base system — a small, opinionated set
  * of named values that themed widgets read instead of baking literals.
  *
  * Tokens are the only hook for theming, light/dark mode, and brand customization
- * within `unicompose-design`. Wrap your app in `UnicomposeTheme(tokens = MyTokens)`
+ * within `unicompose-base`. Wrap your app in `UnicomposeTheme(tokens = MyTokens)`
  * and every themed widget reads from the active set.
  *
  * The surface is deliberately narrow in v0.1 — ten color slots, a five-step
  * spacing scale, a five-step type scale, three corner radii. Apps with richer
  * needs layer their own typed token shape on top and convert at the boundary.
  *
- * Note: tokens live in `unicompose-design`, not in the underlying `unicompose`
+ * Note: tokens live in `unicompose-base`, not in the underlying `unicompose`
  * mechanism. The mechanism (Style + atomic CSS + flex) has no opinion about
  * design tokens — different design libraries can ship their own token shapes.
  *

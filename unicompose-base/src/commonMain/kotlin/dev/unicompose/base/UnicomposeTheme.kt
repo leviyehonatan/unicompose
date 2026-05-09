@@ -1,11 +1,11 @@
-package dev.unicompose.design
+package dev.unicompose.base
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import dev.unicompose.LocalDefaultTextColor
 
 /**
- * Provide the active [Tokens] set to all themed `unicompose-design` widgets in
+ * Provide the active [Tokens] set to all themed `unicompose-base` widgets in
  * [content], and propagate `tokens.colors.textPrimary` as the ambient text color
  * via the underlying mechanism's [LocalDefaultTextColor].
  *

@@ -1,4 +1,4 @@
-package dev.unicompose.design
+package dev.unicompose.base
 
 import androidx.compose.runtime.Composable
 import dev.unicompose.UiBox
@@ -14,7 +14,7 @@ import dev.unicompose.style.dp
  * Wraps a [UiBox] (background + pill shape) around a [UiText] (label). Defaults
  * are pulled from the active [Tokens]; [style] overrides layer on top.
  *
- * Lives in `unicompose-design` (not `unicompose`) because badges are a design
+ * Lives in `unicompose-base` (not `unicompose`) because badges are a design
  * opinion, not a primitive.
  *
  * @param text Label inside the badge.

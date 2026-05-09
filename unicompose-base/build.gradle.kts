@@ -57,7 +57,7 @@ kotlin {
 }
 
 android {
-    namespace = "dev.unicompose.design"
+    namespace = "dev.unicompose.base"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
