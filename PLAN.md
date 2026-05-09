@@ -53,6 +53,12 @@ Each multi-target module uses Kotlin's `expect`/`actual` with these source sets:
 
 Each unique `Style` is hashed into a deterministic class name and registered into a singleton `<style id="unicompose-styles">` element on first use. Subsequent usages reuse the cached class. Identical observable behavior to a build-time KSP extractor (same DOM, same SEO/perf properties), with substantially less build complexity.
 
+### CMP-side custom drawing
+
+Most Style properties lower to a built-in `Modifier` (padding, background, clip, etc.). A few don't have a clean built-in equivalent — per-side border is the first; CSS-style shadows with offset and gradients are next. For these, the CMP backend drops into `Modifier.drawBehind { ... }` and paints to the Skia canvas directly.
+
+The decision rule: **prefer a built-in modifier when one fits; reach for `drawBehind` only when the modifier surface is insufficient.** Custom drawing has real costs — it bypasses Compose's optimizations, doesn't compose well with elevation/blur effects, and is per-platform Skia code. The fast/slow split is exposed in the API where useful (e.g., `Border.isUniform` triggers the fast path).
+
 ### CMP-side flex bridging
 
 A `LocalFlexParent` CompositionLocal (commonMain) plus `LocalRowScope`/`LocalColumnScope` (composeAppMain) thread parent layout intent to children, so:
@@ -123,7 +129,7 @@ We're **StyleX-shaped, not StyleX-robust** (~5–10% of StyleX's surface). We ha
 | `gap` | shipped | |
 | `width`, `height` (Fixed/Fill/Wrap/Fraction) | shipped | |
 | `flex` | shipped | applies in flex-child context only |
-| `border` (uniform: color + width) | shipped | per-side deferred — `Modifier.border` on Compose is uniform; per-side requires custom drawing |
+| `border` (per-side via `Border` + `BorderEdge`) | shipped | uniform via `Border.all`; per-side via the named-arg constructor. Uniform takes the `Modifier.border` fast path; per-side drops to `Modifier.drawBehind` |
 | `boxShadow` (blur + color) | shipped | offset-x/y omitted — `Modifier.shadow` ignores them; visually equivalent across backends, not pixel-equivalent |
 | `lineHeight`, `letterSpacing`, `textAlign` | shipped | text properties read by `UiText` from the active `Style` |
 | `transform` (translate / scale / rotate) | TODO | post-v0.1 |
@@ -148,7 +154,8 @@ The proposed shape is `StyleStates(base, hover = …, disabled = …)`. `:focus`
 - [x] **Layout + Style** — `UiBox`/`UiRow`/`UiColumn`, full Style data class, atomic CSS, flex bridging.
 - [x] **Widget set in `unicompose`** — Spacer, Divider, Heading, Button, Checkbox, TextField, Link, Switch, RadioGroup all shipped. Image and Icon deferred to post-v0.1.
 - [x] **Three-layer split** — `unicompose-style` (primitives), `unicompose` (mechanism + UA-stylesheet primitives), `unicompose-base` (opinionated design system). `Card`/`Badge`/`Tokens`/`UnicomposeTheme` moved to design module. Mechanism-level `LocalDefaultTextColor` for CSS-like text-color inheritance.
-- [x] **Style polish** — uniform `border`, `boxShadow` (blur + color), per-corner `borderRadius` via the new `BorderRadius` data class, `lineHeight`/`letterSpacing`/`textAlign`. Per-side border and shadow offset deferred to post-v0.1 (Compose lacks clean primitives for either).
+- [x] **Style polish** — uniform `border`, `boxShadow` (blur + color), per-corner `borderRadius` via the new `BorderRadius` data class, `lineHeight`/`letterSpacing`/`textAlign`.
+- [x] **Per-side `border` + custom-drawing infrastructure** — `Border` + `BorderEdge` types support per-side widths/colors; CMP drops to `Modifier.drawBehind` when edges differ. Foundation for shadow offset, gradients, and other future Style properties that don't map to built-in modifiers.
 - [ ] **`unicompose-base` widgets** — themed `Heading` wrapper (token color), themed `Button`/`TextField` wrappers (token-driven defaults). The design library equivalent of Material 3.
 - [ ] **Todo app sample** — multi-screen app on all three platforms. Forms, list, persistence (via shared KMP), exercises the theming layer with a dark-mode toggle. The v0.1 ship gate.
 - [ ] **Snapshot tests** — Paparazzi (Android) + screenshot tests (iOS) + Playwright (web), kitchen-sink + todo-app golden screens. Light + dark variants per screen.
@@ -156,8 +163,8 @@ The proposed shape is `StyleStates(base, hover = …, disabled = …)`. `:focus`
 
 ## Post-v0.1
 
-- **Per-side `border`** — different widths/colors per edge. Trivial on web (`border-top`, etc.); requires `Modifier.drawBehind` with custom line drawing on CMP.
-- **Shadow offset / spread** — CSS `box-shadow` supports per-axis offset and spread. Compose `Modifier.shadow` is elevation-only and ignores both. Implementing offset/spread on CMP needs `Modifier.drawBehind { drawIntoCanvas { ... } }`.
+- **Shadow offset / spread** — CSS `box-shadow` supports per-axis offset and spread; Compose `Modifier.shadow` is elevation-only and ignores both. Needs platform-specific Skia mask filter access (`BlurMaskFilter` on Android, Skiko `MaskFilter` on iOS) — non-trivial cross-platform glue. The custom-drawing infrastructure introduced for per-side borders is the foundation; this is the next consumer of it.
+- **Linear gradients** — same situation as shadow offset; would build on the custom-drawing path. Web emits CSS gradients trivially; CMP needs `Modifier.background(brush = Brush.linearGradient(...))` plumbed through Style.
 - **Pseudo-states** (`:hover`, `:disabled`) — `StyleStates(base, hover, disabled)` shape; emit `:hover` selector on web and use `InteractionSource` on CMP.
 - **`transform`, `transition`, gradients** — covered in the Style-surface table above.
 - `UiImage` — pulls Coil3 (multiplatform image loading) for async network images on CMP. On web it's `<img src>`. Decide on placeholder/error API.
