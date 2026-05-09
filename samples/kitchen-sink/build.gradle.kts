@@ -27,6 +27,10 @@ kotlin {
     }
     @OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
     wasmJs {
+        // outputModuleName matches the canonical kotlin-wasm-compose-template;
+        // without it, webpack's bundle wrapping doesn't auto-invoke main()
+        // because the module name doesn't align with the entry chunk.
+        outputModuleName = "kitchenSink"
         browser {
             commonWebpackConfig {
                 outputFileName = "kitchen-sink-canvas.js"
@@ -86,6 +90,43 @@ kotlin {
 // directory containing both bundles plus a side-by-side compare.html. Serve with
 // `python3 -m http.server` from build/dist/preview/ to view both at once or to
 // drive Playwright A/B comparisons against /html/ and /canvas/ subpaths.
+//
+// `./gradlew :samples:kitchen-sink:visualTest` runs Playwright golden tests
+// against both bundles. See tests/visual/README.md for details.
+
+private val visualTestDir = rootProject.layout.projectDirectory.dir("tests/visual").asFile
+
+// Ensures node_modules/ is populated. Idempotent; npm skips when up-to-date.
+val visualTestNpmInstall by tasks.registering(Exec::class) {
+    workingDir = visualTestDir
+    commandLine = listOf("npm", "install", "--no-audit", "--no-fund")
+    inputs.file(File(visualTestDir, "package.json"))
+    outputs.dir(File(visualTestDir, "node_modules"))
+}
+
+// Downloads the Chromium binary Playwright drives. Cached per-machine in
+// ~/.cache/ms-playwright; the task is idempotent after first run.
+val visualTestInstallBrowsers by tasks.registering(Exec::class) {
+    dependsOn(visualTestNpmInstall)
+    workingDir = visualTestDir
+    commandLine = listOf("npx", "playwright", "install", "chromium")
+}
+
+val visualTest by tasks.registering(Exec::class) {
+    group = "verification"
+    description = "Run Playwright visual regression tests against the html + canvas bundles."
+    dependsOn(visualTestInstallBrowsers, "previewSite")
+    workingDir = visualTestDir
+    commandLine = listOf("npx", "playwright", "test")
+}
+
+val visualTestUpdate by tasks.registering(Exec::class) {
+    group = "verification"
+    description = "Regenerate Playwright golden screenshots."
+    dependsOn(visualTestInstallBrowsers, "previewSite")
+    workingDir = visualTestDir
+    commandLine = listOf("npx", "playwright", "test", "--update-snapshots")
+}
 val previewSite by tasks.registering(Copy::class) {
     dependsOn("jsBrowserDistribution", "wasmJsBrowserDistribution")
     from(layout.buildDirectory.dir("dist/js/productionExecutable")) { into("html") }

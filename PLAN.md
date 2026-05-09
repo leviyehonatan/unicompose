@@ -53,6 +53,25 @@ Each multi-target module uses Kotlin's `expect`/`actual` with these source sets:
 
 Each unique `Style` is hashed into a deterministic class name and registered into a singleton `<style id="unicompose-styles">` element on first use. Subsequent usages reuse the cached class. Identical observable behavior to a build-time KSP extractor (same DOM, same SEO/perf properties), with substantially less build complexity.
 
+### Known issues — canvas bundle
+
+The `kitchen-sink-canvas` (`wasmJs`) target **builds and links cleanly** but the
+webpack-emitted bundle does not invoke `main()` at runtime. After the bundle's
+promise resolves, the exposed module is `{ _initialize, memory }` — the wasm
+runtime is loaded but the Kotlin entry point is never called, so `ComposeViewport`
+never runs and no canvas appears in the DOM. With `CanvasBasedWindow` (deprecated)
+we get one step further (the canvas element is found) but hit
+`TypeError: ef is not a function` from a wasm→JS import.
+
+Likely root cause: webpack output mode in CMP 1.10's wasmJs default — the
+canonical [JetBrains template](https://github.com/Kotlin/kotlin-wasm-compose-template)
+is a single self-contained module and our cross-module setup may need additional
+config (`outputModuleName`, `useEsModules`, or a webpack tweak) to bootstrap
+correctly. See the Playwright `_debug-canvas` history for the diagnostic trail.
+
+The HTML bundle and the side-by-side `compare.html` work fine; the canvas pane
+in the comparison view is currently blank pending this fix.
+
 ### Mobile preview via CMP-for-Web (canvas bundle)
 
 The kitchen-sink sample produces **two web bundles** from the same `commonMain` `App()`:
