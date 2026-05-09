@@ -232,21 +232,49 @@ public data class Border(
 }
 
 /**
- * Drop shadow behind an element.
+ * Drop shadow behind an element. Mirrors CSS `box-shadow`'s parameter shape.
  *
- * **Cross-platform caveat**: CSS `box-shadow` supports per-axis offset
- * (`offsetX`, `offsetY`); Compose `Modifier.shadow` is elevation-based and
- * ignores horizontal/vertical offsets. The two backends produce *visually
- * equivalent* shadows (similar size and softness for the same [blur] value)
- * but not pixel-equivalent. If precise drop-shadow positioning matters,
- * drop down to platform-specific styling.
+ * **Two render paths on Compose Multiplatform**, picked by [blur]:
  *
- * Spread radius (CSS `box-shadow` 4th arg) is omitted — no Compose equivalent.
+ *  - **Hard shadow** ([blur] = 0): rendered via `Modifier.drawBehind` as a sharp
+ *    offset rectangle behind the element. [offsetX] / [offsetY] / [spread] all
+ *    work with full fidelity, matching CSS exactly.
+ *  - **Blurred shadow** ([blur] > 0): rendered via Compose's `Modifier.shadow`
+ *    with [blur] becoming the elevation. **In this path, [offsetX] / [offsetY] /
+ *    [spread] are ignored on CMP.** The shadow is centered with elevation-style
+ *    softness. This is the same approximation we shipped before; lifting it
+ *    requires platform-specific Skia mask-filter access (see PLAN.md, post-v0.1).
  *
- * @property blur Shadow blur radius / Compose elevation. Higher = softer + larger.
+ * On the web, all four parameters (offset, blur, spread) lower to native CSS
+ * `box-shadow` regardless of value.
+ *
+ * @property offsetX Horizontal shadow offset, positive = right.
+ * @property offsetY Vertical shadow offset, positive = down.
+ * @property blur Shadow blur radius. Set to `0.dp` for a sharp shadow; positive
+ *   values soften and enlarge the shadow.
+ * @property spread Shadow spread, positive grows the shadow outward, negative
+ *   shrinks it. Honored only in the hard-shadow path on CMP; web honors it always.
  * @property color Shadow color, typically a low-alpha black or theme tint.
  */
-public data class Shadow(val blur: Dp, val color: Color)
+public data class Shadow(
+    val offsetX: Dp = 0.dp,
+    val offsetY: Dp = 0.dp,
+    val blur: Dp = 0.dp,
+    val spread: Dp = 0.dp,
+    val color: Color,
+) {
+    public companion object {
+        /** Convenience for the centered elevation-style shadow shape (no offset, no spread). */
+        public fun elevation(blur: Dp, color: Color): Shadow = Shadow(blur = blur, color = color)
+
+        /** Convenience for a hard sharp drop shadow with no blur. */
+        public fun drop(offsetX: Dp, offsetY: Dp, color: Color, spread: Dp = 0.dp): Shadow =
+            Shadow(offsetX = offsetX, offsetY = offsetY, blur = 0.dp, spread = spread, color = color)
+    }
+
+    /** True when no blur is requested — eligible for the drawBehind fast path. */
+    public val isHard: Boolean get() = blur.value == 0f
+}
 
 /**
  * Horizontal alignment of text within its line box.

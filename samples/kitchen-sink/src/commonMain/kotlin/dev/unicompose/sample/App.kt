@@ -20,10 +20,12 @@ import dev.unicompose.style.BorderEdge
 import dev.unicompose.style.BorderRadius
 import dev.unicompose.style.FontWeight
 import dev.unicompose.style.Justify
-import dev.unicompose.style.dp
 import dev.unicompose.style.Padding
+import dev.unicompose.style.Shadow
 import dev.unicompose.style.Size
 import dev.unicompose.style.Style
+import dev.unicompose.style.argb
+import dev.unicompose.style.dp
 
 /**
  * Sample app — wraps everything in `UnicomposeTheme` from `unicompose-base`.
@@ -114,11 +116,14 @@ private fun Notice() {
                 left = BorderEdge(width = 3.dp, color = t.colors.accent),
                 bottom = BorderEdge(width = 1.dp, color = t.colors.borderSubtle),
             ),
+            // Hard offset shadow — exercises the drawBehind path with full
+            // offset+spread fidelity on CMP. blur = 0, so we skip Modifier.shadow.
+            boxShadow = Shadow.drop(offsetX = 2.dp, offsetY = 2.dp, color = argb(20, 0, 0, 0)),
             width = Size.FillParent,
         ),
     ) {
         UiText(
-            "Per-side borders work on three platforms via the new custom-drawing path.",
+            "Per-side borders + hard drop shadows work on three platforms via custom drawing.",
             style = Style(fontSize = t.type.sm, color = t.colors.textSecondary),
         )
     }

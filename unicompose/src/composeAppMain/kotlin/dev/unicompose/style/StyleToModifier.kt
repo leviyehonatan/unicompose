@@ -52,14 +52,39 @@ public fun Style.toModifier(): Modifier {
     val shape: Shape = borderRadius?.toShape() ?: RoundedCornerShape(0.composeDp)
 
     // Shadow before padding so it draws around the element's bounds, not inside.
-    // Compose ignores X/Y offset; this is the documented cross-platform compromise.
+    // Hard path: drawBehind with full offset+spread fidelity.
+    // Blurred path: Modifier.shadow elevation approximation; offset/spread ignored.
     boxShadow?.let { s ->
-        m = m.shadow(
-            elevation = s.blur.value.composeDp,
-            shape = shape,
-            ambientColor = s.color.toComposeColor(),
-            spotColor = s.color.toComposeColor(),
-        )
+        m = if (s.isHard) {
+            val br = borderRadius
+            m.drawBehind {
+                val ox = s.offsetX.value * density
+                val oy = s.offsetY.value * density
+                val sp = s.spread.value * density
+                val rect = Offset(ox - sp, oy - sp)
+                val w = size.width + 2 * sp
+                val h = size.height + 2 * sp
+                if (br != null) {
+                    drawRoundRect(
+                        color = s.color.toComposeColor(),
+                        topLeft = rect,
+                        size = ComposeUiSize(w, h),
+                        cornerRadius = androidx.compose.ui.geometry.CornerRadius(
+                            (br.topLeft.value + sp).coerceAtLeast(0f) * density,
+                        ),
+                    )
+                } else {
+                    drawRect(color = s.color.toComposeColor(), topLeft = rect, size = ComposeUiSize(w, h))
+                }
+            }
+        } else {
+            m.shadow(
+                elevation = s.blur.value.composeDp,
+                shape = shape,
+                ambientColor = s.color.toComposeColor(),
+                spotColor = s.color.toComposeColor(),
+            )
+        }
     }
 
     padding?.let { p ->

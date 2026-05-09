@@ -127,8 +127,9 @@ internal object AtomicCss {
             }
         }
         style.boxShadow?.let { s ->
-            // Offset-x/-y intentionally zero — see Shadow doc for cross-platform caveat.
-            out += "box-shadow" to "0 0 ${s.blur.value}px ${s.color.toCss()}"
+            // CSS box-shadow: offset-x offset-y blur spread color. All four supported on web.
+            out += "box-shadow" to
+                "${s.offsetX.value}px ${s.offsetY.value}px ${s.blur.value}px ${s.spread.value}px ${s.color.toCss()}"
         }
         style.opacity?.let { out += "opacity" to it.toString() }
         when (val w = style.width) {
