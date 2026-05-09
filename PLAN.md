@@ -56,18 +56,38 @@ Each unique `Style` is hashed into a deterministic class name and registered int
 ### Known issues — canvas bundle
 
 The `kitchen-sink-canvas` (`wasmJs`) target **builds and links cleanly** but the
-webpack-emitted bundle does not invoke `main()` at runtime. After the bundle's
-promise resolves, the exposed module is `{ _initialize, memory }` — the wasm
-runtime is loaded but the Kotlin entry point is never called, so `ComposeViewport`
-never runs and no canvas appears in the DOM. With `CanvasBasedWindow` (deprecated)
-we get one step further (the canvas element is found) but hit
-`TypeError: ef is not a function` from a wasm→JS import.
+canvas never actually renders at runtime. Symptoms:
 
-Likely root cause: webpack output mode in CMP 1.10's wasmJs default — the
-canonical [JetBrains template](https://github.com/Kotlin/kotlin-wasm-compose-template)
-is a single self-contained module and our cross-module setup may need additional
-config (`outputModuleName`, `useEsModules`, or a webpack tweak) to bootstrap
-correctly. See the Playwright `_debug-canvas` history for the diagnostic trail.
+- Webpack-built bundle served via `http-server`: bundle's promise resolves to
+  `{ _initialize, memory }`. `main()` never invoked, no canvas in DOM.
+- CMP webpack-dev-server (`./gradlew :samples:kitchen-sink:wasmJsBrowserDevelopmentRun`):
+  **same result** — WebGL initializes (visible warnings), no canvas, no text.
+- `CanvasBasedWindow` + `<canvas id=ComposeTarget>`: canvas element is found,
+  but `TypeError: ef is not a function` from a wasm→JS import.
+
+Both serving paths fail identically, so the issue is **not in how we serve the
+bundle** — it's in our build/code. The canvas bundle is dead in this
+configuration even with CMP's own canonical dev server.
+
+Suspected causes (in order of likelihood):
+
+1. Cross-module `composeApp` source-set hierarchy interaction with `wasmJs`
+   target — our `unicompose` and `unicompose-base` modules both extend
+   `composeAppMain` to include `wasmJs`. The canonical
+   [kotlin-wasm-compose-template](https://github.com/Kotlin/kotlin-wasm-compose-template)
+   is a single self-contained module. May need to verify cross-module wasmJs
+   actually works in CMP 1.10.
+2. Material 3 on wasmJs — the canonical template uses Material 2; we use
+   Material 3 throughout. Possibly a wasmJs incompatibility in the version
+   of Material 3 we pull in.
+3. Some component in `App()` triggers a wasm→JS import that's missing in the
+   webpack bundle. Unlikely since the same failure happens with a minimal
+   `Text("Hello")` `main()`, but worth confirming on a clean spike.
+
+Reproduction path for whoever picks this up: clone the canonical
+kotlin-wasm-compose-template, confirm it renders in the dev server, then
+incrementally migrate it toward our setup (add a second module dependency,
+swap Material 2 → Material 3, etc.) until rendering breaks.
 
 The HTML bundle and the side-by-side `compare.html` work fine; the canvas pane
 in the comparison view is currently blank pending this fix.
