@@ -19,7 +19,7 @@ import kotlin.jvm.JvmInline
  * Construct styles by named arguments and combine them with [plus]:
  * ```
  * val card = Style(padding = Padding.all(16.dp), backgroundColor = Color.White)
- * val emphasized = card + Style(borderRadius = 12.dp)
+ * val emphasized = card + Style(borderRadius = BorderRadius.all(12.dp))
  * ```
  *
  * @property padding Inside-edge spacing, applied via Compose's `Modifier.padding` / CSS `padding`.
@@ -29,7 +29,18 @@ import kotlin.jvm.JvmInline
  * @property color Foreground color used for text by default.
  * @property fontSize Text size in scale-independent pixels.
  * @property fontWeight Text weight — see [FontWeight] for supported values.
- * @property borderRadius Uniform corner radius. Per-corner radii are not yet supported.
+ * @property lineHeight Line height for text content. Treated as an absolute size
+ *   (Sp on CMP, px on web), not a CSS unitless multiplier.
+ * @property letterSpacing Tracking applied between glyphs in text content.
+ * @property textAlign Horizontal alignment of text content within its line box.
+ * @property borderRadius Corner radius — uniform via [BorderRadius.all] or per-corner
+ *   via [BorderRadius.Companion.invoke]. Affects element shape and clipping.
+ * @property border Solid border around the element. v0.1 supports uniform borders only;
+ *   per-side borders (different colors/widths per edge) are deferred — Compose's
+ *   `Modifier.border` is uniform and per-side requires custom drawing.
+ * @property boxShadow Drop shadow behind the element. Visually equivalent across
+ *   backends but not pixel-equivalent — see [Shadow] for the cross-platform caveat
+ *   about offset.
  * @property flexDirection Layout axis for child widgets in a [dev.unicompose.UiBox].
  *   Defaults to [FlexDirection.Column] (matching React Native), not the CSS default of `row`.
  * @property alignItems Cross-axis alignment of children in a flex container.
@@ -50,7 +61,12 @@ public data class Style(
     val color: Color? = null,
     val fontSize: Sp? = null,
     val fontWeight: FontWeight? = null,
-    val borderRadius: Dp? = null,
+    val lineHeight: Sp? = null,
+    val letterSpacing: Sp? = null,
+    val textAlign: TextAlign? = null,
+    val borderRadius: BorderRadius? = null,
+    val border: Border? = null,
+    val boxShadow: Shadow? = null,
     val flexDirection: FlexDirection? = null,
     val alignItems: Align? = null,
     val justifyContent: Justify? = null,
@@ -77,7 +93,12 @@ public data class Style(
         color = other.color ?: color,
         fontSize = other.fontSize ?: fontSize,
         fontWeight = other.fontWeight ?: fontWeight,
+        lineHeight = other.lineHeight ?: lineHeight,
+        letterSpacing = other.letterSpacing ?: letterSpacing,
+        textAlign = other.textAlign ?: textAlign,
         borderRadius = other.borderRadius ?: borderRadius,
+        border = other.border ?: border,
+        boxShadow = other.boxShadow ?: boxShadow,
         flexDirection = other.flexDirection ?: flexDirection,
         alignItems = other.alignItems ?: alignItems,
         justifyContent = other.justifyContent ?: justifyContent,
@@ -132,14 +153,77 @@ public data class Margin(val top: Dp, val right: Dp, val bottom: Dp, val left: D
 }
 
 /**
- * Density-independent pixel.
+ * Per-corner radius for an element's rounded shape.
  *
- * On Android / iOS this maps to Compose's `androidx.compose.ui.unit.Dp` (so
- * `1.dp` is one device-independent pixel). On the web target it maps to CSS `px`,
- * which already approximates the same physical size on typical displays.
- *
- * Construct via the [Int.dp] / [Float.dp] extensions: `16.dp`, `0.5f.dp`.
+ * Use [all] for uniform radius (the most common case). Pass per-corner values to
+ * the constructor for asymmetric shapes — e.g. a top-rounded sheet:
+ * `BorderRadius(topLeft = 16.dp, topRight = 16.dp, bottomRight = 0.dp, bottomLeft = 0.dp)`.
  */
+public data class BorderRadius(
+    val topLeft: Dp,
+    val topRight: Dp,
+    val bottomRight: Dp,
+    val bottomLeft: Dp,
+) {
+    public companion object {
+        /** Uniform corner radius on all four corners. */
+        public fun all(value: Dp): BorderRadius = BorderRadius(value, value, value, value)
+
+        /** Top corners get [top]; bottom corners get [bottom]. */
+        public fun topBottom(top: Dp, bottom: Dp): BorderRadius =
+            BorderRadius(top, top, bottom, bottom)
+    }
+}
+
+/**
+ * Solid border around an element.
+ *
+ * v0.1 supports uniform borders only — same color and width on all four sides.
+ * The border respects [Style.borderRadius] when both are set: the border draws
+ * along the rounded shape.
+ *
+ * Per-side borders (different widths/colors per edge) are deferred to a later
+ * milestone since Compose's `Modifier.border` is uniform; per-side requires
+ * custom drawing on the CMP backend.
+ */
+public data class Border(val width: Dp, val color: Color)
+
+/**
+ * Drop shadow behind an element.
+ *
+ * **Cross-platform caveat**: CSS `box-shadow` supports per-axis offset
+ * (`offsetX`, `offsetY`); Compose `Modifier.shadow` is elevation-based and
+ * ignores horizontal/vertical offsets. The two backends produce *visually
+ * equivalent* shadows (similar size and softness for the same [blur] value)
+ * but not pixel-equivalent. If precise drop-shadow positioning matters,
+ * drop down to platform-specific styling.
+ *
+ * Spread radius (CSS `box-shadow` 4th arg) is omitted — no Compose equivalent.
+ *
+ * @property blur Shadow blur radius / Compose elevation. Higher = softer + larger.
+ * @property color Shadow color, typically a low-alpha black or theme tint.
+ */
+public data class Shadow(val blur: Dp, val color: Color)
+
+/**
+ * Horizontal alignment of text within its line box.
+ *
+ * Maps to CSS `text-align` and Compose's `androidx.compose.ui.text.style.TextAlign`.
+ */
+public enum class TextAlign {
+    /** Align to the start of the writing direction (left in LTR, right in RTL). */
+    Start,
+
+    /** Center on the line. */
+    Center,
+
+    /** Align to the end of the writing direction. */
+    End,
+
+    /** Stretch to both edges by adjusting word spacing (CSS `justify`). */
+    Justify,
+}
+
 @JvmInline
 public value class Dp(public val value: Float) {
     public companion object {

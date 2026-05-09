@@ -31,7 +31,7 @@ import dev.unicompose.style.Style
  *     style = Style(
  *         backgroundColor = Accent,
  *         padding = Padding.symmetric(vertical = 10.dp, horizontal = 16.dp),
- *         borderRadius = 8.dp,
+ *         borderRadius = BorderRadius.all(8.dp),
  *     ),
  * ) {
  *     UiText("Save", style = Style(color = Color.White))

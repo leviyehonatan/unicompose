@@ -96,7 +96,28 @@ internal object AtomicCss {
         style.color?.let { out += "color" to it.toCss() }
         style.fontSize?.let { out += "font-size" to "${it.value}px" }
         style.fontWeight?.let { out += "font-weight" to it.value.toString() }
-        style.borderRadius?.let { out += "border-radius" to "${it.value}px" }
+        style.lineHeight?.let { out += "line-height" to "${it.value}px" }
+        style.letterSpacing?.let { out += "letter-spacing" to "${it.value}px" }
+        style.textAlign?.let {
+            out += "text-align" to when (it) {
+                TextAlign.Start -> "start"
+                TextAlign.Center -> "center"
+                TextAlign.End -> "end"
+                TextAlign.Justify -> "justify"
+            }
+        }
+        style.borderRadius?.let { r ->
+            // CSS border-radius shorthand: top-left top-right bottom-right bottom-left
+            out += "border-radius" to
+                "${r.topLeft.value}px ${r.topRight.value}px ${r.bottomRight.value}px ${r.bottomLeft.value}px"
+        }
+        style.border?.let { b ->
+            out += "border" to "${b.width.value}px solid ${b.color.toCss()}"
+        }
+        style.boxShadow?.let { s ->
+            // Offset-x/-y intentionally zero — see Shadow doc for cross-platform caveat.
+            out += "box-shadow" to "0 0 ${s.blur.value}px ${s.color.toCss()}"
+        }
         style.opacity?.let { out += "opacity" to it.toString() }
         when (val w = style.width) {
             is Size.Fixed -> out += "width" to "${w.dp.value}px"

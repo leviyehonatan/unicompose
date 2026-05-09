@@ -3,6 +3,7 @@ package dev.unicompose.base
 import androidx.compose.runtime.Composable
 import dev.unicompose.UiBox
 import dev.unicompose.UiText
+import dev.unicompose.style.BorderRadius
 import dev.unicompose.style.FontWeight
 import dev.unicompose.style.Padding
 import dev.unicompose.style.Style
@@ -62,7 +63,7 @@ public object BadgeDefaults {
         return Style(
             backgroundColor = t.colors.bgSubtle,
             color = t.colors.textPrimary,
-            borderRadius = 999.dp,
+            borderRadius = BorderRadius.all(999.dp),
             padding = Padding.symmetric(vertical = 2.dp, horizontal = t.space.sm),
             fontSize = t.type.xs,
             fontWeight = FontWeight.Medium,

@@ -2,6 +2,7 @@ package dev.unicompose.base
 
 import androidx.compose.runtime.Composable
 import dev.unicompose.UiBox
+import dev.unicompose.style.BorderRadius
 import dev.unicompose.style.Padding
 import dev.unicompose.style.Style
 
@@ -48,7 +49,7 @@ public object CardDefaults {
         return Style(
             backgroundColor = t.colors.bgSurface,
             padding = Padding.all(t.space.md),
-            borderRadius = t.radii.lg,
+            borderRadius = BorderRadius.all(t.radii.lg),
         )
     }
 }

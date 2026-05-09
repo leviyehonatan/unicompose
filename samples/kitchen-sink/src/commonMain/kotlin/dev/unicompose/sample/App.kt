@@ -15,6 +15,7 @@ import dev.unicompose.base.DarkTokens
 import dev.unicompose.base.LightTokens
 import dev.unicompose.base.UnicomposeTheme
 import dev.unicompose.base.currentTokens
+import dev.unicompose.style.BorderRadius
 import dev.unicompose.style.FontWeight
 import dev.unicompose.style.Justify
 import dev.unicompose.style.Padding
@@ -85,7 +86,7 @@ private fun Header(toggleDark: () -> Unit, isDark: Boolean) {
             style = Style(
                 backgroundColor = t.colors.accent,
                 padding = Padding.symmetric(vertical = t.space.sm, horizontal = t.space.md),
-                borderRadius = t.radii.md,
+                borderRadius = BorderRadius.all(t.radii.md),
             ),
         ) {
             UiText(
