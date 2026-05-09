@@ -29,13 +29,25 @@ Cross-platform Kotlin UI today forces a hard pick:
 
 ## Architecture
 
-Single multi-target Gradle module (`unicompose`) — Kotlin `expect`/`actual` requires both sides in the same module. Source sets:
+The codebase is split into three layers, mirroring how CSS itself is layered (UA stylesheet → CSS mechanism → author design system):
+
+| Module | Layer | Role |
+|---|---|---|
+| `unicompose-style` | primitives | Pure-Kotlin `Style` data class + value types (`Dp`, `Sp`, `Color`, layout enums). No Compose dependency. |
+| `unicompose` | mechanism + UA-stylesheet equivalents | The styling pipeline (atomic CSS, flex bridging, text-color inheritance) plus unstyled primitives (`UiText`, `UiBox`, `UiButton`, etc.). Minimal "looks reasonable on both platforms" defaults — no theme, no design opinions. |
+| `unicompose-design` | design system | Opinionated layer on top: `Tokens`, `UnicomposeTheme`, `Card`, `Badge`. Themed widgets read from the active token set. Optional — consumers can swap with their own design library. |
+
+This mirrors how the web actually works: the browser ships a minimal UA stylesheet and the styling mechanism (CSS); design systems like Material, Bootstrap, and Tailwind UI are layered on top by app authors. **`unicompose` is the styling mechanism + UA stylesheet equivalent. `unicompose-design` is one design system on top — replaceable.**
+
+Each multi-target module uses Kotlin's `expect`/`actual` with these source sets:
 
 - `commonMain` — public `expect` declarations + commonMain helpers.
 - `composeAppMain` — Compose Multiplatform `actual`s, shared by `androidMain` + `iosMain`.
 - `jsMain` — Compose HTML `actual`s.
 
-Auxiliary module `unicompose-style` is pure-Kotlin (no Compose dep) and holds the `Style` data class + primitives (`Dp`, `Sp`, `Color`, layout enums).
+### Mechanism-layer text inheritance
+
+`unicompose` exposes a `LocalDefaultTextColor: CompositionLocal<Color?>` that `UiText` reads when `style.color` is null — CSS-like inheritance for the only typographic property that always cascades. Design libraries (and consumers building their own) write to this local at theme-provider time. Inheritance for `fontSize`/`fontWeight`/font family will be added when those properties have clear cross-platform semantics.
 
 ### Web styling: runtime atomic CSS
 
@@ -49,18 +61,16 @@ A `LocalFlexParent` CompositionLocal (commonMain) plus `LocalRowScope`/`LocalCol
 - `alignItems = Stretch` propagates so children apply `fillMaxHeight` / `fillMaxWidth`.
 - `Style.margin` is implemented via an outer `Box(Modifier.padding(margin))` since Compose has no native child-level margin.
 
-### Design tokens / theming (planned, pre-v0.1)
+### Design tokens / theming (in `unicompose-design`)
 
-Per-component defaults (`DefaultCardStyle`, `DefaultBadgeStyle`, etc.) live in their respective widget files today. The styling system itself has **no design-token layer** — colors, sizes, and typography are baked into call-site values or per-widget defaults. That's the biggest pre-v0.1 gap.
+Tokens are an opinion layer, not a primitive — so they live in `unicompose-design`, not in the underlying mechanism. The model mirrors StyleX's `defineVars` / `createTheme`:
 
-The planned model mirrors StyleX's `defineVars` / `createTheme`:
+- `Tokens` data class declares the design surface (`accent`, `bgPage`, `bgSurface`, `bgSubtle`, `textPrimary`, `textSecondary`, `borderSubtle`, `error`, `success`, plus spacing/type/radius scales).
+- `UnicomposeTheme(tokens = …)` provider sets the active theme via `LocalTokens` and propagates `tokens.colors.textPrimary` to the underlying `LocalDefaultTextColor`.
+- `LightTokens` and `DarkTokens` ship as defaults.
+- Widget defaults (`CardDefaults.style()`, `BadgeDefaults.style()`) are `@Composable` functions that read from `currentTokens()`.
 
-- A `Tokens` data class declares the design surface (`accent`, `bgSurface`, `textPrimary`, `borderSubtle`, spacing scale, type scale, …).
-- A `UnicomposeTheme(tokens = …)` provider sets the active theme.
-- On Compose Multiplatform, tokens are exposed via a `CompositionLocal<Tokens>`.
-- On the web, tokens are emitted as CSS custom properties on the document root; atomic CSS rules reference `var(--uc-accent)` etc. Theme switching becomes a single attribute change without reflowing every styled element.
-
-Without this layer, theming requires forking widgets and consumers can't ship light/dark mode or brand customization.
+CSS custom-property emission to `:root` is a planned follow-up — once shipped, atomic CSS rules can reference `var(--uc-accent)` and theme switches happen without recomposition. Mechanism doesn't change; the runtime gets faster.
 
 ### vs StyleX
 
@@ -68,27 +78,36 @@ We're **StyleX-shaped, not StyleX-robust** (~5–10% of StyleX's surface). We ha
 
 ## Widget set
 
+### `unicompose` — primitives (unstyled, mechanism layer)
+
 | Widget | Status | Web emits | CMP emits |
 |---|---|---|---|
 | `UiText` | shipped | `<span>` | Material3 `Text` |
-| `UiHeading` (H1/H2/H3) | shipped | `<h1>` / `<h2>` / `<h3>` | styled `Text` |
+| `UiHeading` (H1/H2/H3) | shipped | `<h1>` / `<h2>` / `<h3>` | styled `Text` (UA-stylesheet sizes) |
 | `UiBox` | shipped | `<div display:flex>` | `Row` or `Column` |
 | `UiRow` / `UiColumn` | shipped (commonMain wrappers) | — | — |
 | `UiSpacer` | shipped (commonMain wrapper) | — | — |
 | `UiDivider` | shipped | `<hr>` | thin `Box` |
-| `UiCard` | shipped (commonMain wrapper) | — | — |
-| `UiButton` | shipped | `<button>` | clickable `Box` |
+| `UiButton` | shipped | `<button>` (browser defaults reset) | clickable `Box` |
 | `UiCheckbox` | shipped | `<input type=checkbox>` | Material3 `Checkbox` |
 | `UiTextField` | shipped | `<input type=text>` | `OutlinedTextField` |
 | `UiLink` | shipped | `<a href>` | clickable styled `Text` (uses `LocalUriHandler`) |
 | `UiSwitch` | shipped | `<input type=checkbox role=switch>` | Material3 `Switch` |
-| `UiBadge` | shipped (commonMain wrapper) | — | — |
 | `UiRadioGroup` | shipped | `<div role=radiogroup>` of `<input type=radio>` | `Column` of Material3 `RadioButton` rows |
 | `UiImage` | post-v0.1 | `<img>` | needs Coil3 — defer |
 | `UiIcon` | post-v0.1 | inline SVG | needs vector source — defer |
 | `UiLazyColumn` / `UiLazyRow` | post-v0.1 | DOM windowing via IntersectionObserver | `LazyColumn` / `LazyRow` |
 | `UiModal` / `UiPopover` / `UiToast` | post-v0.1 | `<dialog>` / portal | `Dialog` / `ModalBottomSheet` |
 | `UiNavHost` / `UiNavLink` | post-v0.1 | History API + Composable router | Compose Navigation 3 |
+
+### `unicompose-design` — themed widgets (opinion layer)
+
+| Widget | Status | Built from |
+|---|---|---|
+| `Card` | shipped | `UiBox` + `CardDefaults.style()` reading `Tokens` |
+| `Badge` | shipped | `UiBox` + `UiText` + `BadgeDefaults.style()` reading `Tokens` |
+| themed `Heading` wrapper | post-v0.1 | `UiHeading` + token-aware color/weight |
+| themed inputs (TextField, Button) | post-v0.1 | underlying primitive + tokens |
 
 ## Style surface
 
@@ -128,12 +147,13 @@ The proposed shape is `StyleStates(base, hover = …, disabled = …)`. `:focus`
 
 - [x] **Skeleton** — Gradle multi-target setup, "hello world" `UiText` on three platforms.
 - [x] **Layout + Style** — `UiBox`/`UiRow`/`UiColumn`, full Style data class, atomic CSS, flex bridging.
-- [x] **Widget set** — Spacer, Divider, Heading, Card, Button, Checkbox, TextField, Link, Switch, Badge, RadioGroup all shipped. Image and Icon deferred to post-v0.1 (need external deps).
-- [ ] **Theming / design tokens** — `Tokens` data class, `UnicomposeTheme` provider, CSS custom-property emission on web, `CompositionLocal<Tokens>` on CMP. Light + dark token sets shipped as defaults. **Highest-leverage missing piece** — every widget that exists today gets re-touched to read tokens instead of literals. Should land before the todo-app sample so the sample exercises the theme path.
-- [ ] **Style polish** — `border` (color + width, per-side), `boxShadow` (single layer), per-corner `borderRadius`, `lineHeight`/`letterSpacing`/`textAlign`. All map cleanly both ways; deferred only because they weren't blocking. Land before snapshot tests so the goldens reflect realistic styling.
+- [x] **Widget set in `unicompose`** — Spacer, Divider, Heading, Button, Checkbox, TextField, Link, Switch, RadioGroup all shipped. Image and Icon deferred to post-v0.1.
+- [x] **Three-layer split** — `unicompose-style` (primitives), `unicompose` (mechanism + UA-stylesheet primitives), `unicompose-design` (opinionated design system). `Card`/`Badge`/`Tokens`/`UnicomposeTheme` moved to design module. Mechanism-level `LocalDefaultTextColor` for CSS-like text-color inheritance.
+- [ ] **Style polish** — `border` (color + width, per-side), `boxShadow` (single layer), per-corner `borderRadius`, `lineHeight`/`letterSpacing`/`textAlign`. All map cleanly both ways. Land before snapshot tests so the goldens reflect realistic styling.
+- [ ] **`unicompose-design` widgets** — themed `Heading` wrapper (token color), themed `Button`/`TextField` wrappers (token-driven defaults). The design library equivalent of Material 3.
 - [ ] **Todo app sample** — multi-screen app on all three platforms. Forms, list, persistence (via shared KMP), exercises the theming layer with a dark-mode toggle. The v0.1 ship gate.
 - [ ] **Snapshot tests** — Paparazzi (Android) + screenshot tests (iOS) + Playwright (web), kitchen-sink + todo-app golden screens. Light + dark variants per screen.
-- [ ] **API stability check** — Kotlinx Binary Compatibility Validator on `unicompose-style` + public surface of `unicompose`.
+- [ ] **API stability check** — Kotlinx Binary Compatibility Validator on `unicompose-style`, `unicompose`, and `unicompose-design` public surfaces.
 
 ## Post-v0.1
 
