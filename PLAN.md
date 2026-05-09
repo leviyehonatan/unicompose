@@ -63,12 +63,12 @@ A `LocalFlexParent` CompositionLocal (commonMain) plus `LocalRowScope`/`LocalCol
 | `UiButton` | shipped | `<button>` | clickable `Box` |
 | `UiCheckbox` | shipped | `<input type=checkbox>` | Material3 `Checkbox` |
 | `UiTextField` | shipped | `<input type=text>` | `OutlinedTextField` |
-| `UiLink` | TODO | `<a href>` | clickable styled `Text` |
-| `UiImage` | TODO | `<img>` | `AsyncImage` (Coil3) |
-| `UiSwitch` | TODO | `<input type=checkbox role=switch>` | Material3 `Switch` |
-| `UiRadioGroup` | TODO | `<input type=radio>` | Material3 `RadioButton` |
-| `UiBadge` | TODO | `<span class>` | Material3 `Badge` |
-| `UiIcon` | TODO | inline SVG | `Icon` |
+| `UiLink` | shipped | `<a href>` | clickable styled `Text` (uses `LocalUriHandler`) |
+| `UiSwitch` | shipped | `<input type=checkbox role=switch>` | Material3 `Switch` |
+| `UiBadge` | shipped (commonMain wrapper) | — | — |
+| `UiRadioGroup` | shipped | `<div role=radiogroup>` of `<input type=radio>` | `Column` of Material3 `RadioButton` rows |
+| `UiImage` | post-v0.1 | `<img>` | needs Coil3 — defer |
+| `UiIcon` | post-v0.1 | inline SVG | needs vector source — defer |
 | `UiLazyColumn` / `UiLazyRow` | post-v0.1 | DOM windowing via IntersectionObserver | `LazyColumn` / `LazyRow` |
 | `UiModal` / `UiPopover` / `UiToast` | post-v0.1 | `<dialog>` / portal | `Dialog` / `ModalBottomSheet` |
 | `UiNavHost` / `UiNavLink` | post-v0.1 | History API + Composable router | Compose Navigation 3 |
@@ -95,13 +95,15 @@ A `LocalFlexParent` CompositionLocal (commonMain) plus `LocalRowScope`/`LocalCol
 
 - [x] **Skeleton** — Gradle multi-target setup, "hello world" `UiText` on three platforms.
 - [x] **Layout + Style** — `UiBox`/`UiRow`/`UiColumn`, full Style data class, atomic CSS, flex bridging.
-- [ ] **Widget set** — finish the table above through `UiBadge`/`UiIcon`. ~6 widgets remaining.
+- [x] **Widget set** — Spacer, Divider, Heading, Card, Button, Checkbox, TextField, Link, Switch, Badge, RadioGroup all shipped. Image and Icon deferred to post-v0.1 (need external deps).
 - [ ] **Todo app sample** — multi-screen app on all three platforms. Forms, list, persistence (via shared KMP). The v0.1 ship gate.
 - [ ] **Snapshot tests** — Paparazzi (Android) + screenshot tests (iOS) + Playwright (web), kitchen-sink + todo-app golden screens.
 - [ ] **API stability check** — Kotlinx Binary Compatibility Validator on `unicompose-style` + public surface of `unicompose`.
 
 ## Post-v0.1
 
+- `UiImage` — pulls Coil3 (multiplatform image loading) for async network images on CMP. On web it's `<img src>`. Decide on placeholder/error API.
+- `UiIcon` — needs a vector icon source. Options: SVG strings as resources, Material Symbols font, or inline SVG paths. Each has tradeoffs.
 - `UiLazyColumn`/`UiLazyRow` — DOM virtualization is the hardest single piece.
 - `UiModal`/`UiPopover`/`UiToast` — overlay rendering.
 - `UiNavHost`/`UiNavLink` — wraps Compose Navigation 3 and the History API.
