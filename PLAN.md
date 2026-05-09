@@ -134,7 +134,7 @@ We're **StyleX-shaped, not StyleX-robust** (~5–10% of StyleX's surface). We ha
 | `lineHeight`, `letterSpacing`, `textAlign` | shipped | text properties read by `UiText` from the active `Style` |
 | `transform` (translate / scale / rotate) | TODO | post-v0.1 |
 | `transition` (duration + easing on a property set) | TODO | post-v0.1 — needs care since CMP uses `animate*AsState`, not declarative transitions |
-| linear gradients | TODO | post-v0.1 |
+| linear gradients (`backgroundGradient: LinearGradient?`) | shipped | `Brush.linearGradient` via `Modifier.background` on CMP; `background-image: linear-gradient(...)` on web. 8 directions; optional explicit color stops. Stays on the fast path — no custom drawing needed. |
 | `:hover` / `:disabled` variants | TODO | post-v0.1 — see "Pseudo-states" below |
 | `@media` queries | not planned | no clean Compose analog; use the theming layer instead |
 | keyframes / animations | not planned | use CMP's `animate*AsState` directly |
@@ -157,6 +157,7 @@ The proposed shape is `StyleStates(base, hover = …, disabled = …)`. `:focus`
 - [x] **Style polish** — uniform `border`, `boxShadow` (blur + color), per-corner `borderRadius` via the new `BorderRadius` data class, `lineHeight`/`letterSpacing`/`textAlign`.
 - [x] **Per-side `border` + custom-drawing infrastructure** — `Border` + `BorderEdge` types support per-side widths/colors; CMP drops to `Modifier.drawBehind` when edges differ. Foundation for shadow offset, gradients, and other future Style properties that don't map to built-in modifiers.
 - [x] **Shadow offset + spread (hard path)** — `Shadow(offsetX, offsetY, blur, spread, color)` matches CSS `box-shadow`. When `blur = 0` ("hard" shadow), CMP renders via `drawBehind` with full offset+spread fidelity. When `blur > 0`, the existing `Modifier.shadow` elevation approximation is used and offset/spread are ignored on CMP — full Skia mask-filter blurred shadows are deferred to a future custom-drawing pass.
+- [x] **Linear gradients** — `LinearGradient(direction, colors, stops?)` for `Style.backgroundGradient`. Eight directions (4 axis-aligned + 4 diagonals), optional explicit color stops. Lowers to `Brush.linearGradient` on CMP and CSS `linear-gradient(...)` on web. Both built-in modifier paths — no drawing. Built on top of, not replacing, `backgroundColor`.
 - [ ] **`unicompose-base` widgets** — themed `Heading` wrapper (token color), themed `Button`/`TextField` wrappers (token-driven defaults). The design library equivalent of Material 3.
 - [ ] **Todo app sample** — multi-screen app on all three platforms. Forms, list, persistence (via shared KMP), exercises the theming layer with a dark-mode toggle. The v0.1 ship gate.
 - [ ] **Snapshot tests** — Paparazzi (Android) + screenshot tests (iOS) + Playwright (web), kitchen-sink + todo-app golden screens. Light + dark variants per screen.
@@ -165,7 +166,7 @@ The proposed shape is `StyleStates(base, hover = …, disabled = …)`. `:focus`
 ## Post-v0.1
 
 - **Blurred shadow with offset/spread on CMP** — the hard-path shipped above covers `blur = 0`. Combining offset/spread with `blur > 0` on CMP needs platform-specific Skia mask-filter access (`BlurMaskFilter` on Android, Skiko `MaskFilter.makeBlur` on iOS via `paint.asFrameworkPaint().maskFilter`). Requires splitting `composeAppMain` into separate `androidMain`/`iosMain` paths for the helper. ~50 LOC of platform-specific code; defer until a real consumer needs it.
-- **Linear gradients** — same situation as shadow offset; would build on the custom-drawing path. Web emits CSS gradients trivially; CMP needs `Modifier.background(brush = Brush.linearGradient(...))` plumbed through Style.
+- **Radial / conic gradients** — natural follow-ups to linear gradients. `Brush.radialGradient` / `Brush.sweepGradient` exist on CMP; CSS has `radial-gradient(...)` / `conic-gradient(...)`. Same shape as the linear gradient implementation, just a sealed `Gradient` type.
 - **Pseudo-states** (`:hover`, `:disabled`) — `StyleStates(base, hover, disabled)` shape; emit `:hover` selector on web and use `InteractionSource` on CMP.
 - **`transform`, `transition`, gradients** — covered in the Style-surface table above.
 - `UiImage` — pulls Coil3 (multiplatform image loading) for async network images on CMP. On web it's `<img src>`. Decide on placeholder/error API.
