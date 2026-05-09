@@ -93,6 +93,9 @@ internal object AtomicCss {
             out += "margin" to "${m.top.value}px ${m.right.value}px ${m.bottom.value}px ${m.left.value}px"
         }
         style.backgroundColor?.let { out += "background-color" to it.toCss() }
+        style.backgroundGradient?.let { g ->
+            out += "background-image" to g.toCss()
+        }
         style.color?.let { out += "color" to it.toCss() }
         style.fontSize?.let { out += "font-size" to "${it.value}px" }
         style.fontWeight?.let { out += "font-weight" to it.value.toString() }
@@ -183,6 +186,26 @@ internal object AtomicCss {
 
 private fun Color.toCss(): String =
     if (alpha == 0xFF) "rgb($red,$green,$blue)" else "rgba($red,$green,$blue,${alpha / 255.0})"
+
+private fun LinearGradient.toCss(): String {
+    val dir = when (direction) {
+        GradientDirection.ToTop -> "to top"
+        GradientDirection.ToBottom -> "to bottom"
+        GradientDirection.ToLeft -> "to left"
+        GradientDirection.ToRight -> "to right"
+        GradientDirection.ToTopLeft -> "to top left"
+        GradientDirection.ToTopRight -> "to top right"
+        GradientDirection.ToBottomLeft -> "to bottom left"
+        GradientDirection.ToBottomRight -> "to bottom right"
+    }
+    val localStops = stops
+    val stopList = if (localStops != null) {
+        colors.zip(localStops).joinToString(", ") { (c, s) -> "${c.toCss()} ${s * 100}%" }
+    } else {
+        colors.joinToString(", ") { it.toCss() }
+    }
+    return "linear-gradient($dir, $stopList)"
+}
 
 /** djb2-style hash producing a short, URL-safe alphanumeric suffix. */
 private fun stableHash(input: String): String {

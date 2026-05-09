@@ -25,7 +25,11 @@ import kotlin.jvm.JvmInline
  * @property padding Inside-edge spacing, applied via Compose's `Modifier.padding` / CSS `padding`.
  * @property margin Outside-edge spacing. On Compose Multiplatform this is implemented
  *   by an outer wrapping `Box` since Compose lacks a child-level margin modifier.
- * @property backgroundColor Solid fill behind the element's content.
+ * @property backgroundColor Solid fill behind the element's content. When
+ *   [backgroundGradient] is also set, the gradient paints on top of this color
+ *   (matches CSS: solid color first, gradient image on top).
+ * @property backgroundGradient Linear gradient fill behind the element's content,
+ *   above [backgroundColor] if both are set. See [LinearGradient].
  * @property color Foreground color used for text by default.
  * @property fontSize Text size in scale-independent pixels.
  * @property fontWeight Text weight — see [FontWeight] for supported values.
@@ -58,6 +62,7 @@ public data class Style(
     val padding: Padding? = null,
     val margin: Margin? = null,
     val backgroundColor: Color? = null,
+    val backgroundGradient: LinearGradient? = null,
     val color: Color? = null,
     val fontSize: Sp? = null,
     val fontWeight: FontWeight? = null,
@@ -90,6 +95,7 @@ public data class Style(
         padding = other.padding ?: padding,
         margin = other.margin ?: margin,
         backgroundColor = other.backgroundColor ?: backgroundColor,
+        backgroundGradient = other.backgroundGradient ?: backgroundGradient,
         color = other.color ?: color,
         fontSize = other.fontSize ?: fontSize,
         fontWeight = other.fontWeight ?: fontWeight,
@@ -173,6 +179,59 @@ public data class BorderRadius(
         public fun topBottom(top: Dp, bottom: Dp): BorderRadius =
             BorderRadius(top, top, bottom, bottom)
     }
+}
+
+/**
+ * A linear color gradient — fill that smoothly transitions across the element
+ * along [direction]. Mirrors CSS `linear-gradient`.
+ *
+ * On Compose Multiplatform this lowers to `Brush.linearGradient(colors, start, end)`
+ * with start/end derived from [direction] and the element's bounds at draw time
+ * — uses the built-in modifier surface, no custom drawing.
+ *
+ * On the web this emits CSS `background-image: linear-gradient(<direction>, …)`.
+ *
+ * Use as `Style(backgroundGradient = LinearGradient(...))`. When both
+ * [Style.backgroundColor] and [Style.backgroundGradient] are set, the gradient
+ * is rendered on top of the solid color (matching CSS behavior, where the
+ * solid `background-color` paints first and `background-image` paints over it).
+ *
+ * @property direction Axis along which the gradient interpolates. See [GradientDirection].
+ * @property colors Two or more colors to interpolate between. At least two required.
+ * @property stops Optional fractional positions in `[0f, 1f]` for each color. When
+ *   `null`, colors are spaced evenly. When provided, must have the same size as
+ *   [colors].
+ */
+public data class LinearGradient(
+    val direction: GradientDirection,
+    val colors: List<Color>,
+    val stops: List<Float>? = null,
+) {
+    init {
+        require(colors.size >= 2) { "LinearGradient needs at least 2 colors, got ${colors.size}" }
+        if (stops != null) {
+            require(stops.size == colors.size) {
+                "LinearGradient stops size (${stops.size}) must match colors size (${colors.size})"
+            }
+        }
+    }
+}
+
+/**
+ * Direction of a [LinearGradient] — which way the colors flow.
+ *
+ * Naming matches CSS `linear-gradient(to <direction>, …)`. `ToBottom` means
+ * the first color is at the top and the last color is at the bottom.
+ */
+public enum class GradientDirection {
+    ToTop,
+    ToBottom,
+    ToLeft,
+    ToRight,
+    ToTopLeft,
+    ToTopRight,
+    ToBottomLeft,
+    ToBottomRight,
 }
 
 /**

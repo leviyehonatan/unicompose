@@ -19,13 +19,16 @@ import dev.unicompose.style.Border
 import dev.unicompose.style.BorderEdge
 import dev.unicompose.style.BorderRadius
 import dev.unicompose.style.FontWeight
+import dev.unicompose.style.GradientDirection
 import dev.unicompose.style.Justify
+import dev.unicompose.style.LinearGradient
 import dev.unicompose.style.Padding
 import dev.unicompose.style.Shadow
 import dev.unicompose.style.Size
 import dev.unicompose.style.Style
 import dev.unicompose.style.argb
 import dev.unicompose.style.dp
+import dev.unicompose.style.rgb
 
 /**
  * Sample app — wraps everything in `UnicomposeTheme` from `unicompose-base`.
@@ -89,8 +92,17 @@ private fun Header(toggleDark: () -> Unit, isDark: Boolean) {
         }
         UiButton(
             onClick = toggleDark,
+            // Gradient background — exercises the new linear-gradient path on
+            // all three platforms. CMP uses Brush.linearGradient through
+            // Modifier.background; web emits a CSS linear-gradient.
             style = Style(
-                backgroundColor = t.colors.accent,
+                backgroundGradient = LinearGradient(
+                    direction = GradientDirection.ToBottomRight,
+                    colors = listOf(
+                        t.colors.accent,
+                        rgb(t.colors.accent.red, t.colors.accent.green, (t.colors.accent.blue * 0.7).toInt()),
+                    ),
+                ),
                 padding = Padding.symmetric(vertical = t.space.sm, horizontal = t.space.md),
                 borderRadius = BorderRadius.all(t.radii.md),
             ),

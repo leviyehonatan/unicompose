@@ -100,6 +100,10 @@ public fun Style.toModifier(): Modifier {
         m = m.background(c.toComposeColor(), shape)
     }
 
+    backgroundGradient?.let { g ->
+        m = m.background(brush = g.toComposeBrush(), shape = shape)
+    }
+
     border?.let { b ->
         m = if (b.isUniform) {
             // Fast path: built-in Modifier.border follows the rounded shape correctly.
@@ -154,5 +158,38 @@ internal fun BorderRadius.toShape(): RoundedCornerShape = RoundedCornerShape(
     bottomEnd = bottomRight.value.composeDp,
     bottomStart = bottomLeft.value.composeDp,
 )
+
+/**
+ * Translate a [LinearGradient] to a Compose `Brush.linearGradient`.
+ *
+ * Compose uses pixel-space `start` / `end` offsets; we use `Float.POSITIVE_INFINITY`
+ * which Compose interprets as "the end of the painted area" along that axis.
+ * The combination produces the requested direction for any element size.
+ */
+internal fun LinearGradient.toComposeBrush(): androidx.compose.ui.graphics.Brush {
+    val (start, end) = direction.toComposeOffsets()
+    val composeColors = colors.map { it.toComposeColor() }
+    val localStops = stops
+    return if (localStops != null) {
+        val pairs = localStops.zip(composeColors).map { (s, c) -> s to c }.toTypedArray()
+        androidx.compose.ui.graphics.Brush.linearGradient(*pairs, start = start, end = end)
+    } else {
+        androidx.compose.ui.graphics.Brush.linearGradient(composeColors, start = start, end = end)
+    }
+}
+
+private fun GradientDirection.toComposeOffsets(): Pair<Offset, Offset> {
+    val inf = Float.POSITIVE_INFINITY
+    return when (this) {
+        GradientDirection.ToTop -> Offset(0f, inf) to Offset.Zero
+        GradientDirection.ToBottom -> Offset.Zero to Offset(0f, inf)
+        GradientDirection.ToLeft -> Offset(inf, 0f) to Offset.Zero
+        GradientDirection.ToRight -> Offset.Zero to Offset(inf, 0f)
+        GradientDirection.ToTopLeft -> Offset(inf, inf) to Offset.Zero
+        GradientDirection.ToTopRight -> Offset(0f, inf) to Offset(inf, 0f)
+        GradientDirection.ToBottomLeft -> Offset(inf, 0f) to Offset(0f, inf)
+        GradientDirection.ToBottomRight -> Offset.Zero to Offset(inf, inf)
+    }
+}
 
 internal fun Color.toComposeColor(): ComposeColor = ComposeColor(argb)
