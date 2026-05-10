@@ -77,8 +77,12 @@ kotlin {
 
         val composeAppMain by getting {
             dependencies {
-                implementation(compose.foundation)
-                implementation(compose.material3)
+                // compose.ui for the platform window/host APIs:
+                //   - ComposeUIViewController on iOS (iosMain/MainViewController.kt)
+                //   - CanvasBasedWindow on wasmJs (wasmJsMain/main.kt)
+                // unicompose-style/unicompose pull in compose.foundation
+                // transitively for layout primitives, so we don't need it here.
+                // material3 was removed when the mechanism layer dropped it.
                 implementation(compose.ui)
             }
         }

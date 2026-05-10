@@ -67,8 +67,8 @@ kotlin {
 
         val composeAppMain by getting {
             dependencies {
-                implementation(compose.foundation)
-                implementation(compose.material3)
+                // See samples/todo-app/build.gradle.kts for the rationale:
+                // only compose.ui is directly used by the platform entry points.
                 implementation(compose.ui)
             }
         }
