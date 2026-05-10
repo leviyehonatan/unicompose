@@ -98,6 +98,11 @@ public data class Style(
     val colorRef: String? = null,
     val backgroundColorRef: String? = null,
     val gapRef: String? = null,
+    val fontSizeRef: String? = null,
+    /** Single CSS variable applied uniformly to all four padding sides. */
+    val paddingAllRef: String? = null,
+    /** Single CSS variable applied uniformly to all four corners. */
+    val borderRadiusAllRef: String? = null,
 ) {
     public companion object {
         /** A [Style] with no properties set. Equivalent to passing no style at all. */
@@ -135,6 +140,9 @@ public data class Style(
         colorRef = other.colorRef ?: colorRef,
         backgroundColorRef = other.backgroundColorRef ?: backgroundColorRef,
         gapRef = other.gapRef ?: gapRef,
+        fontSizeRef = other.fontSizeRef ?: fontSizeRef,
+        paddingAllRef = other.paddingAllRef ?: paddingAllRef,
+        borderRadiusAllRef = other.borderRadiusAllRef ?: borderRadiusAllRef,
     )
 }
 

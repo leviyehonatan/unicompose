@@ -30,26 +30,29 @@ import dev.unicompose.style.Style
  */
 @Composable
 public fun Card(style: Style = Style.Empty, content: @Composable () -> Unit) {
-    UiBox(style = CardDefaults.style() + style, content = content)
+    UiBox(style = (CardStyle + style).resolveRefs(currentTokens()), content = content)
 }
+
+/**
+ * The default styling layered under user-provided overrides in [Card],
+ * declared as a top-level constant referencing theme tokens by CSS variable
+ * name. Statically extractable by the unicompose-css-extractor build-time
+ * plugin: emits a single `.uc-{hash}` class to `unicompose-generated.css`
+ * whose properties resolve via `var(--uc-...)` against the active theme.
+ *
+ * - background: `colors.bgSurface`
+ * - padding: `space.md` on all sides
+ * - corner radius: `radii.lg`
+ */
+public val CardStyle: Style = Style(
+    backgroundColorRef = TokenRefs.colors.bgSurface,
+    paddingAllRef = TokenRefs.space.md,
+    borderRadiusAllRef = TokenRefs.radii.lg,
+)
 
 /** Default style helpers for [Card]. Namespaced object follows the Compose convention. */
 public object CardDefaults {
-    /**
-     * The default styling layered under user-provided overrides in [Card],
-     * resolved from the active token set.
-     *
-     * - background: `colors.bgSurface`
-     * - padding: `space.md` on all sides
-     * - corner radius: `radii.lg`
-     */
+    /** Backwards-compatible accessor — returns the same [CardStyle] constant. */
     @Composable
-    public fun style(): Style {
-        val t = currentTokens()
-        return Style(
-            backgroundColor = t.colors.bgSurface,
-            padding = Padding.all(t.space.md),
-            borderRadius = BorderRadius.all(t.radii.lg),
-        )
-    }
+    public fun style(): Style = CardStyle
 }

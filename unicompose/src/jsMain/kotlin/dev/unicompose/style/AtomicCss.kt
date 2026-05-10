@@ -131,7 +131,9 @@ internal object AtomicCss {
 
     private fun visualRules(style: Style): List<Pair<String, String>> {
         val out = mutableListOf<Pair<String, String>>()
-        style.padding?.let { p ->
+        if (style.paddingAllRef != null) {
+            out += "padding" to "var(${style.paddingAllRef})"
+        } else style.padding?.let { p ->
             out += "padding" to "${p.top.value}px ${p.right.value}px ${p.bottom.value}px ${p.left.value}px"
         }
         style.margin?.let { m ->
@@ -148,7 +150,9 @@ internal object AtomicCss {
         if (style.colorRef != null) {
             out += "color" to "var(${style.colorRef})"
         } else style.color?.let { out += "color" to it.toCss() }
-        style.fontSize?.let { out += "font-size" to "${it.value}px" }
+        if (style.fontSizeRef != null) {
+            out += "font-size" to "var(${style.fontSizeRef})"
+        } else style.fontSize?.let { out += "font-size" to "${it.value}px" }
         style.fontWeight?.let { out += "font-weight" to it.value.toString() }
         style.fontFamily?.let {
             out += "font-family" to when (it) {
@@ -168,7 +172,9 @@ internal object AtomicCss {
                 TextAlign.Justify -> "justify"
             }
         }
-        style.borderRadius?.let { r ->
+        if (style.borderRadiusAllRef != null) {
+            out += "border-radius" to "var(${style.borderRadiusAllRef})"
+        } else style.borderRadius?.let { r ->
             // CSS border-radius shorthand: top-left top-right bottom-right bottom-left
             out += "border-radius" to
                 "${r.topLeft.value}px ${r.topRight.value}px ${r.bottomRight.value}px ${r.bottomLeft.value}px"

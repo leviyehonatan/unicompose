@@ -50,11 +50,12 @@ internal object CssEmitter {
      * different hash (correct — different rule).
      */
     private val ParamOrder = listOf(
-        "padding", "margin",
+        "padding", "paddingAllRef", "margin",
         "backgroundColor", "backgroundColorRef",
         "color", "colorRef",
-        "fontSize", "fontWeight",
-        "fontFamily", "lineHeight", "letterSpacing", "textAlign", "borderRadius",
+        "fontSize", "fontSizeRef", "fontWeight",
+        "fontFamily", "lineHeight", "letterSpacing", "textAlign",
+        "borderRadius", "borderRadiusAllRef",
         "border", "boxShadow", "opacity", "width", "height", "flex",
         "gap", "gapRef",
     )
@@ -63,6 +64,7 @@ internal object CssEmitter {
         "padding" -> (v as? Evaluator.V.Padding)?.let {
             "padding" to "${it.top.fmt()}px ${it.right.fmt()}px ${it.bottom.fmt()}px ${it.left.fmt()}px"
         }
+        "paddingAllRef" -> (v as? Evaluator.V.Str)?.let { "padding" to "var(${it.v})" }
         "margin" -> (v as? Evaluator.V.Padding)?.let {
             "margin" to "${it.top.fmt()}px ${it.right.fmt()}px ${it.bottom.fmt()}px ${it.left.fmt()}px"
         }
@@ -73,6 +75,7 @@ internal object CssEmitter {
         "gap" -> (v as? Evaluator.V.Dp)?.let { "gap" to "${it.v.fmt()}px" }
         "gapRef" -> (v as? Evaluator.V.Str)?.let { "gap" to "var(${it.v})" }
         "fontSize" -> (v as? Evaluator.V.Sp)?.let { "font-size" to "${it.v.fmt()}px" }
+        "fontSizeRef" -> (v as? Evaluator.V.Str)?.let { "font-size" to "var(${it.v})" }
         "fontWeight" -> (v as? Evaluator.V.EnumEntry)?.let { fontWeightCss(it.name) }
         "fontFamily" -> (v as? Evaluator.V.EnumEntry)?.let { fontFamilyCss(it.name) }
         "lineHeight" -> (v as? Evaluator.V.Sp)?.let { "line-height" to "${it.v.fmt()}px" }
@@ -81,6 +84,7 @@ internal object CssEmitter {
         "borderRadius" -> (v as? Evaluator.V.BorderRadius)?.let {
             "border-radius" to "${it.tl.fmt()}px ${it.tr.fmt()}px ${it.br.fmt()}px ${it.bl.fmt()}px"
         }
+        "borderRadiusAllRef" -> (v as? Evaluator.V.Str)?.let { "border-radius" to "var(${it.v})" }
         "opacity" -> when (v) {
             is Evaluator.V.Float -> "opacity" to v.v.toString()
             is Evaluator.V.Int -> "opacity" to v.v.toString()
