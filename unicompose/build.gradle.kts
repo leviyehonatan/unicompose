@@ -52,7 +52,6 @@ kotlin {
         val composeAppMain by getting {
             dependencies {
                 implementation(compose.foundation)
-                implementation(compose.material3)
                 implementation(compose.ui)
             }
         }

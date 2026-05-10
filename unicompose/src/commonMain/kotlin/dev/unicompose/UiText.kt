@@ -7,7 +7,7 @@ import dev.unicompose.style.Style
  * Render a single string of text.
  *
  * Backed by:
- *  - `androidx.compose.material3.Text` on Compose Multiplatform (Android, iOS),
+ *  - `androidx.compose.foundation.text.BasicText` on Compose Multiplatform (Android, iOS, wasmJs canvas),
  *  - a semantic `<span>` element on the Compose HTML target.
  *
  * The [Style] properties that apply to text are

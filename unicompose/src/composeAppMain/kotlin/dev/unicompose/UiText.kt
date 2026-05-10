@@ -1,9 +1,9 @@
 package dev.unicompose
 
-import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.Text
+import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color as ComposeColor
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily as ComposeFontFamily
 import androidx.compose.ui.text.font.FontWeight as ComposeFontWeight
 import androidx.compose.ui.text.style.TextAlign as ComposeTextAlign
@@ -25,17 +25,16 @@ public actual fun UiText(text: String, style: Style) {
     val letterSpacing = style.letterSpacing ?: inherited.letterSpacing
     val textAlign = style.textAlign ?: inherited.textAlign
 
-    val base = LocalTextStyle.current
-    val merged = base.copy(
+    val merged = TextStyle(
         color = color?.toComposeColor() ?: ComposeColor.Unspecified,
-        fontSize = fontSize?.value?.composeSp ?: base.fontSize,
-        fontWeight = fontWeight?.let { ComposeFontWeight(it.value) } ?: base.fontWeight,
-        fontFamily = fontFamily?.toComposeFontFamily() ?: base.fontFamily,
-        lineHeight = lineHeight?.value?.composeSp ?: base.lineHeight,
-        letterSpacing = letterSpacing?.value?.composeSp ?: base.letterSpacing,
-        textAlign = textAlign?.toComposeTextAlign() ?: base.textAlign,
+        fontSize = fontSize?.value?.composeSp ?: androidx.compose.ui.unit.TextUnit.Unspecified,
+        fontWeight = fontWeight?.let { ComposeFontWeight(it.value) },
+        fontFamily = fontFamily?.toComposeFontFamily(),
+        lineHeight = lineHeight?.value?.composeSp ?: androidx.compose.ui.unit.TextUnit.Unspecified,
+        letterSpacing = letterSpacing?.value?.composeSp ?: androidx.compose.ui.unit.TextUnit.Unspecified,
+        textAlign = textAlign?.toComposeTextAlign() ?: ComposeTextAlign.Unspecified,
     )
-    Text(
+    BasicText(
         text = text,
         modifier = style.toModifier(),
         style = merged,
