@@ -84,17 +84,19 @@ private class StyleVisitor : IrVisitorVoid() {
     @OptIn(UnsafeDuringIrConstructionAPI::class)
     private fun dumpArguments(call: IrConstructorCall, indent: String) {
         val params = call.symbol.owner.parameters
+        val evaluator = Evaluator()
+        var allEvaluable = true
         params.forEachIndexed { idx, param ->
-            // arguments[idx] is the new K2 API; falls back to getValueArgument(idx).
-            // For a regular constructor with no dispatch/extension receivers, idx
-            // maps directly to value parameter index.
             val arg = call.arguments.getOrNull(idx) ?: return@forEachIndexed
-            val described = describe(arg, "$indent  ")
-            // Also show the Java-class name for diagnosis when describe() falls
-            // through to the catch-all branch.
-            val jvmClass = arg::class.qualifiedName?.substringAfterLast('.')
-            dump += "$indent${param.name.asString()} = $described [class=$jvmClass]"
+            val evaluated = evaluator.evaluate(arg)
+            if (evaluated == null) {
+                allEvaluable = false
+                dump += "$indent${param.name.asString()} = ??? (${describe(arg, "$indent  ")})"
+            } else {
+                dump += "$indent${param.name.asString()} = $evaluated"
+            }
         }
+        dump += if (allEvaluable) "$indent[STATIC — extractable]" else "$indent[DYNAMIC — runtime]"
     }
 
     @OptIn(UnsafeDuringIrConstructionAPI::class)
