@@ -183,6 +183,26 @@ internal class Evaluator {
             "dev.unicompose.style.Color.Companion.<get-White>" -> V.Color(0xFFFFFFFF.toInt())
             "dev.unicompose.style.Color.Companion.<get-Black>" -> V.Color(0xFF000000.toInt())
             "dev.unicompose.style.Color.Companion.<get-Transparent>" -> V.Color(0)
+            // Numeric narrowing/widening on a literal receiver. The argb hex
+            // idiom `Color(0xFFRRGGBB.toInt())` is the dominant use of
+            // `Long.toInt()` in style code; without this the entire enclosing
+            // Style falls to the runtime path.
+            "kotlin.Long.toInt" -> {
+                val v = (args.firstOrNull() as? V.Long)?.v ?: return null
+                V.Int(v.toInt())
+            }
+            "kotlin.Int.toLong" -> {
+                val v = (args.firstOrNull() as? V.Int)?.v ?: return null
+                V.Long(v.toLong())
+            }
+            "kotlin.Float.toInt" -> {
+                val v = (args.firstOrNull() as? V.Float)?.v ?: return null
+                V.Int(v.toInt())
+            }
+            "kotlin.Int.toFloat" -> {
+                val v = (args.firstOrNull() as? V.Int)?.v ?: return null
+                V.Float(v.toFloat())
+            }
             // Color is now a sealed interface; `Color(int)` resolves to its
             // companion `operator fun invoke(argb: Int): Color`. Treat it as
             // a literal Color factory.

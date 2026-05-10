@@ -39,3 +39,21 @@ public val SmokeTestTokenRefs: Style = Style(
     backgroundColor = Color.token(TokenRefs.colors.bgSurface),
     gap = dev.unicompose.style.Dp.token(TokenRefs.space.md),
 )
+
+// Smoke test for the StyleX-style nested-object grouping pattern.
+// If the IR plugin extracts these vals the same way it extracts top-level
+// vals, we get logical co-location of related styles for free.
+public object SmokeNestedStyles {
+    public val base: Style = Style(
+        padding = Padding.all(8.dp),
+        fontWeight = FontWeight.Medium,
+    )
+    public val primary: Style = Style(
+        color = Color.White,
+        backgroundColor = Color(0xFF356DF5.toInt()),
+    )
+    public val ghost: Style = Style(
+        color = Color(0xFF356DF5.toInt()),
+        backgroundColor = Color.Transparent,
+    )
+}
