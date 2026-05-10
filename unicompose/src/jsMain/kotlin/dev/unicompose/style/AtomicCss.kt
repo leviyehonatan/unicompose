@@ -41,7 +41,11 @@ internal object AtomicCss {
             //     CMP has no equivalent; resetting here keeps spacing token-driven.
             el.appendChild(document.createTextNode(
                 "*,*::before,*::after{box-sizing:border-box}" +
-                "body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,\"Segoe UI\",Roboto,sans-serif}" +
+                // body font-size 14 px aligns with Compose's BasicText default
+                // (TextStyle.Default's fontSize falls back to ~14 sp). Without this
+                // the DOM body text inherits the browser default 16 px and renders
+                // chunkier than the CMP equivalent for the same Composable.
+                "body{margin:0;font-size:14px;font-family:system-ui,-apple-system,BlinkMacSystemFont,\"Segoe UI\",Roboto,sans-serif}" +
                 "h1,h2,h3,h4,h5,h6,p,figure{margin:0}" +
                 "button{margin:0}" +
                 // Align <input type=checkbox/radio>'s checked accent with the CMP
