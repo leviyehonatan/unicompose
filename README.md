@@ -22,6 +22,41 @@ That same `Greeting` becomes `Text` in Jetpack Compose on Android/iOS, a Skia-re
   - `:unicompose` — UA-equivalent unstyled primitives: `UiBox`, `UiText`, `UiButton`, `UiCheckbox`, `UiTextField`, `UiSwitch`, `UiRadioGroup`, `UiHeading`, `UiLink`, `UiDivider`. No Material3 dependency.
   - `:unicompose-base` — opinionated themed widgets on top: `Card`, `Button` (Primary/Secondary/Ghost), `Heading` (`H1`/`H2`/`H3`), `Badge`, `TextField`, plus `Tokens` + `UnicomposeTheme`.
 
+## What's in v0.1
+
+### Primitives (`:unicompose`) — UA-equivalent, zero opinion
+| Widget | DOM | Skia (Android/iOS/wasmJs canvas) |
+|---|---|---|
+| `UiBox` / `UiRow` / `UiColumn` | `<div>` flex container | Compose `Box`/`Row`/`Column` |
+| `UiText` | `<span>` | foundation `BasicText` |
+| `UiHeading(H1\|H2\|H3)` | `<h1>` / `<h2>` / `<h3>` | foundation `BasicText` w/ default heading style |
+| `UiButton` | `<button>` | `Box` + `clickable` |
+| `UiCheckbox` | `<input type="checkbox">` | 14 dp `Box` w/ Canvas-drawn checkmark |
+| `UiTextField` | `<input type="text">` | `BasicTextField` w/ thin border + placeholder overlay |
+| `UiSwitch` | `<input type="checkbox">` (TODO upgrade) | rounded-pill track + thumb (no animation in v0.1) |
+| `UiRadioGroup` | `<input type="radio">` group | circle border + filled inner circle |
+| `UiLink` | `<a href>` | `BasicText` + `clickable` w/ `LocalUriHandler` |
+| `UiDivider` | `<hr>` | thin `Box` w/ background |
+
+No Material3 dep — the Skia primitives are foundation-only so DOM and CMP render the same shape on both backends.
+
+### Themed widgets (`:unicompose-base`) — opinionated design system
+- **`Card`** — surface container with token-driven background + padding + corner radius
+- **`Button(variant = Primary | Secondary | Ghost)`** — token-driven chrome per variant
+- **`Heading` / `H1` / `H2` / `H3`** — themed wrapper with token-driven color (size/weight from `defaultHeadingStyle`)
+- **`Badge`** — small inline pill, mixed literal+token padding
+- **`TextField`** — labeled wrapper around `UiTextField`
+- **`Tokens`** — 10 colors, 5-step spacing scale, 5-step type scale, 3-step radius scale
+- **`UnicomposeTheme(tokens = ...)`** — provides tokens via `LocalTokens`, sets `--uc-*` CSS variables on `<html>` for the web target
+
+### `Style` properties supported in v0.1
+`padding`, `margin`, `backgroundColor`, `backgroundGradient` (linear, 8 directions ± stops), `color`, `fontSize`, `fontWeight`, `fontFamily`, `lineHeight`, `letterSpacing`, `textAlign`, `borderRadius` (per-corner), `border` (uniform + per-side widths/colors), `boxShadow` (offset + blur + spread + color, hard shadows on CMP via `drawBehind`), `flexDirection`, `alignItems`, `justifyContent`, `gap`, `width` / `height` (Fixed / FillParent / WrapContent / Fraction), `flex` weight, `opacity`.
+
+Every `Color` / `Dp` / `Sp` slot accepts either a literal (`Color.White`, `16.dp`) or a theme reference (`Color.token(TokenRefs.colors.accent)`, `Dp.token(TokenRefs.space.md)`).
+
+### What's NOT in v0.1
+Slider, Tabs, Modal/Popover/Toast, NavHost/NavLink, virtualized lists (`UiLazyColumn`/`UiLazyRow`), Image (network image loading), Icon, pseudo-states (`:hover`/`:disabled`), `transform` / `transition`, blurred shadows with offset on CMP. See [PLAN.md](PLAN.md) for the post-v0.1 list.
+
 ## Try it
 
 The included samples build for every target:
