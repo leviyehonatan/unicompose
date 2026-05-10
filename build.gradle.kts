@@ -14,7 +14,7 @@ plugins {
 // declarations, or signature changes fail the build. Samples are excluded
 // (they're apps, not libraries).
 apiValidation {
-    ignoredProjects.addAll(listOf("kitchen-sink", "todo-app"))
+    ignoredProjects.addAll(listOf("kitchen-sink", "todo-app", "snapshot-android"))
     // Opt in to klib ABI validation so the iOS / web (native + wasm) public
     // surfaces are tracked too, not just the JVM side. Each module gets a
     // sibling `<module>.klib.api` file under api/.
