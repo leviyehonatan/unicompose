@@ -136,8 +136,15 @@ val previewSite by tasks.registering(Copy::class) {
     // base-library widget that's been refactored to top-level vals.
     from(cssExtractorOutputDir) { into("html-extras-app") }
     from(project(":unicompose-base").layout.buildDirectory.dir("generated/css")) { into("html-extras-base") }
+    // Pull the static reset sheet straight out of the compiler-plugin jar's
+    // resources. One source of truth for the reset; ships next to the
+    // generated classes file.
+    from(zipTree(project(":unicompose-css-extractor").tasks.named("jar").map { (it as Jar).archiveFile })) {
+        include("unicompose-reset.css")
+        into("html")
+    }
     into(layout.buildDirectory.dir("dist/preview"))
-    dependsOn(":unicompose-base:compileKotlinJs")
+    dependsOn(":unicompose-base:compileKotlinJs", ":unicompose-css-extractor:jar")
     doLast {
         val htmlDir = layout.buildDirectory.file("dist/preview/html").get().asFile
         val merged = listOf("html-extras-base", "html-extras-app").map { sub ->

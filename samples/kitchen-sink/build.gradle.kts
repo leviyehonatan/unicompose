@@ -165,8 +165,12 @@ val previewSite by tasks.registering(Copy::class) {
     // a single /html/unicompose-generated.css for the runtime <link>.
     from(cssExtractorOutputDir) { into("html-extras-app") }
     from(project(":unicompose-base").layout.buildDirectory.dir("generated/css")) { into("html-extras-base") }
+    from(zipTree(project(":unicompose-css-extractor").tasks.named("jar").map { (it as Jar).archiveFile })) {
+        include("unicompose-reset.css")
+        into("html")
+    }
     into(layout.buildDirectory.dir("dist/preview"))
-    dependsOn(":unicompose-base:compileKotlinJs")
+    dependsOn(":unicompose-base:compileKotlinJs", ":unicompose-css-extractor:jar")
     doLast {
         val htmlDir = layout.buildDirectory.file("dist/preview/html").get().asFile
         val merged = listOf("html-extras-base", "html-extras-app").map { sub ->

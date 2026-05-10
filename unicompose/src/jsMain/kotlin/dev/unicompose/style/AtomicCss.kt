@@ -25,49 +25,30 @@ import org.w3c.dom.HTMLStyleElement
 internal object AtomicCss {
     private val cache = HashMap<String, String>()
     private val styleEl: HTMLStyleElement by lazy {
-        // Pull in build-time-extracted classes from unicompose-css-extractor.
-        // The file lives next to the bundled JS at /unicompose-generated.css.
-        // It's a static asset so the browser can cache it; classes here have
-        // identical hashes to what this runtime path would produce, so calling
-        // classFor(...) on a Style the extractor saw is a no-op (the rule is
-        // already present in the linked sheet).
-        if (document.getElementById("unicompose-generated") == null) {
-            (document.createElement("link") as HTMLLinkElement).also { link ->
-                link.id = "unicompose-generated"
-                link.rel = "stylesheet"
-                link.href = "unicompose-generated.css"
-                document.head?.appendChild(link)
-            }
-        }
+        // Inject the static resets sheet (unicompose-reset.css) and the build-
+        // time-extracted classes sheet (unicompose-generated.css) as <link>
+        // elements next to the JS bundle. Both are real .css assets — the
+        // browser can cache them, render before JS executes, and show them in
+        // DevTools as normal stylesheets.
+        ensureLink("unicompose-reset", "unicompose-reset.css")
+        ensureLink("unicompose-generated", "unicompose-generated.css")
+        // Then create the runtime <style> for any per-Style atomic class that
+        // the build-time extractor couldn't see (dynamic styles). Hashes match
+        // what the extractor would have produced, so calling classFor() on a
+        // Style the extractor saw is a no-op against the linked sheet.
         (document.createElement("style") as HTMLStyleElement).also { el ->
             el.id = "unicompose-styles"
             document.head?.appendChild(el)
-            // Global resets so the DOM render matches the CMP/Skia render baseline.
-            //
-            //  1. box-sizing: border-box — Compose's layout model treats size as
-            //     including padding + border. CSS default is content-box, which
-            //     makes width: 100% mean "content area is 100% of parent" and
-            //     causes overflow when an element should fit-to-parent.
-            //  2. body font-family — without this, headings inherit the UA default
-            //     (Times serif in headless Chromium) while the CMP backend uses
-            //     a sans-serif system stack. Same stack we emit for FontFamily.Default.
-            //  3. h1/h2/h3/p/button margin resets — UAs add vertical margins (e.g.
-            //     <h1> defaults to margin-block: 0.67em ≈ 18 px each side at 28 px).
-            //     CMP has no equivalent; resetting here keeps spacing token-driven.
-            el.appendChild(document.createTextNode(
-                "*,*::before,*::after{box-sizing:border-box}" +
-                // body font-size 14 px aligns with Compose's BasicText default
-                // (TextStyle.Default's fontSize falls back to ~14 sp). Without this
-                // the DOM body text inherits the browser default 16 px and renders
-                // chunkier than the CMP equivalent for the same Composable.
-                "body{margin:0;font-size:14px;font-family:system-ui,-apple-system,BlinkMacSystemFont,\"Segoe UI\",Roboto,sans-serif}" +
-                "h1,h2,h3,h4,h5,h6,p,figure{margin:0}" +
-                "button{margin:0}" +
-                // Align <input type=checkbox/radio>'s checked accent with the CMP
-                // UiCheckbox/UiRadioGroup primitive's #2F7DEC fill so the two
-                // backends render the same blue when checked.
-                "input[type=checkbox],input[type=radio]{accent-color:#2F7DEC}"
-            ))
+        }
+    }
+
+    private fun ensureLink(id: String, href: String) {
+        if (document.getElementById(id) != null) return
+        (document.createElement("link") as HTMLLinkElement).also { link ->
+            link.id = id
+            link.rel = "stylesheet"
+            link.href = href
+            document.head?.appendChild(link)
         }
     }
 

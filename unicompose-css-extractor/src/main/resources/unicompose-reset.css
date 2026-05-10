@@ -1,0 +1,50 @@
+/*
+ * unicompose-reset.css
+ *
+ * Browser-default overrides that make the DOM render baseline match the
+ * CMP/Skia render baseline. Loaded by the runtime before any per-Style class
+ * resolves, so every page that uses unicompose starts from the same CSS
+ * baseline regardless of the user agent.
+ *
+ * Ships as a real .css file (rather than a runtime-injected <style> string)
+ * so the browser can cache it cross-page, render it before JS executes, and
+ * it shows up in DevTools as a normal stylesheet.
+ *
+ * Authored once; both samples link the same file. Do NOT add per-app or
+ * design-system rules here — those belong in unicompose-base widget
+ * defaults or in the consumer's own CSS.
+ */
+
+/* Match Compose's layout model: size includes padding + border (border-box).
+ * CSS defaults to content-box, where width: 100% means "content area is 100%
+ * of parent" and adding padding+border on top causes overflow. */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+/* Body baseline: zero margin, system sans-serif font stack, 14px font-size
+ * to match Compose's BasicText default fallback. Without this the DOM body
+ * inherits the browser's UA font (Times serif on headless Chromium) and
+ * 16px size, both of which differ from how Compose renders unstyled text. */
+body {
+    margin: 0;
+    font-size: 14px;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* UAs add vertical margins to headings/paragraphs/figures (e.g. <h1> defaults
+ * to margin-block: 0.67em ≈ 19px). CMP has no equivalent; resetting here
+ * keeps spacing token-driven. */
+h1, h2, h3, h4, h5, h6, p, figure, button {
+    margin: 0;
+}
+
+/* Align native form-input checked color with the CMP UiCheckbox/UiRadioGroup
+ * primitive (#2F7DEC), so the two backends render the same blue when checked.
+ * `accent-color: auto` (UA default) is OS-dependent and varies. */
+input[type="checkbox"],
+input[type="radio"] {
+    accent-color: #2F7DEC;
+}
