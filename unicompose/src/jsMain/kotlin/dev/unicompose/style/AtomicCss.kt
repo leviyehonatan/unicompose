@@ -43,7 +43,11 @@ internal object AtomicCss {
                 "*,*::before,*::after{box-sizing:border-box}" +
                 "body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,\"Segoe UI\",Roboto,sans-serif}" +
                 "h1,h2,h3,h4,h5,h6,p,figure{margin:0}" +
-                "button{margin:0}"
+                "button{margin:0}" +
+                // Align <input type=checkbox/radio>'s checked accent with the CMP
+                // UiCheckbox/UiRadioGroup primitive's #2F7DEC fill so the two
+                // backends render the same blue when checked.
+                "input[type=checkbox],input[type=radio]{accent-color:#2F7DEC}"
             ))
         }
     }
@@ -79,12 +83,16 @@ internal object AtomicCss {
         "text-align" to "inherit",
     )
 
+    // Mirrors the CMP UiTextField primitive's defaults so DOM and CMP
+    // render the same browser-default-ish text input. Border, radius, and
+    // padding are kept in lock-step with the CMP-side constants in
+    // composeAppMain/UiTextField.kt; if you tune one, tune the other.
     private val inputResetRules: List<Pair<String, String>> = listOf(
         "font" to "inherit",
         "outline" to "none",
-        "border" to "1px solid #d0d4dc",
-        "border-radius" to "6px",
-        "padding" to "8px 10px",
+        "border" to "1px solid #8A8D91",
+        "border-radius" to "4px",
+        "padding" to "6px 8px",
         "background" to "white",
         "color" to "inherit",
     )
