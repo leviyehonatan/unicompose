@@ -5,8 +5,11 @@ import dev.unicompose.ProvideDefaultTextColor
 import dev.unicompose.UiBox
 import dev.unicompose.UiText
 import dev.unicompose.style.BorderRadius
+import dev.unicompose.style.Color
+import dev.unicompose.style.Dp
 import dev.unicompose.style.FontWeight
 import dev.unicompose.style.Padding
+import dev.unicompose.style.Sp
 import dev.unicompose.style.Style
 import dev.unicompose.style.dp
 
@@ -47,34 +50,35 @@ public fun Badge(
     style: Style = Style.Empty,
     content: @Composable () -> Unit,
 ) {
-    val merged = BadgeDefaults.style() + style
+    val merged = (BadgeStyle + style).resolveRefs(currentTokens())
     UiBox(style = merged) {
         ProvideDefaultTextColor(merged.color, content)
     }
 }
 
-/** Default style helpers for [Badge]. */
+/**
+ * Default styling layered under user-provided overrides in [Badge]. Top-level
+ * val so the IR plugin extracts it. Mixes a literal vertical padding (2 dp —
+ * pills are always tightly fit, not theme-driven) with a token horizontal
+ * padding (`space.sm`); the new sealed-interface Dp lets that ride in a
+ * single `Padding.symmetric(...)` without parallel `*Ref` shims.
+ */
+public val BadgeStyle: Style = Style(
+    backgroundColor = Color.token(TokenRefs.colors.bgSubtle),
+    color = Color.token(TokenRefs.colors.textPrimary),
+    // 999dp = full pill — pills are always fully round regardless of theme.
+    borderRadius = BorderRadius.all(999.dp),
+    padding = Padding.symmetric(
+        vertical = 2.dp,
+        horizontal = Dp.token(TokenRefs.space.sm),
+    ),
+    fontSize = Sp.token(TokenRefs.type.xs),
+    fontWeight = FontWeight.Medium,
+)
+
+/** Default style helpers for [Badge]. Backwards-compatible API. */
 public object BadgeDefaults {
-    /**
-     * The default styling layered under user-provided overrides in [Badge],
-     * resolved from the active token set.
-     *
-     * - background: `colors.bgSubtle`
-     * - text color: `colors.textPrimary`
-     * - text size: `type.xs`, weight Medium
-     * - corner radius: 999.dp (full pill — not a token; pills are always full-round)
-     * - padding: 2.dp vertical / `space.sm` horizontal
-     */
+    /** Backwards-compatible accessor — returns the same [BadgeStyle] constant. */
     @Composable
-    public fun style(): Style {
-        val t = currentTokens()
-        return Style(
-            backgroundColor = t.colors.bgSubtle,
-            color = t.colors.textPrimary,
-            borderRadius = BorderRadius.all(999.dp),
-            padding = Padding.symmetric(vertical = 2.dp, horizontal = t.space.sm),
-            fontSize = t.type.xs,
-            fontWeight = FontWeight.Medium,
-        )
-    }
+    public fun style(): Style = BadgeStyle
 }

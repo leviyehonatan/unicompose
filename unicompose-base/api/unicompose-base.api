@@ -7,6 +7,7 @@ public final class dev/unicompose/base/BadgeDefaults {
 public final class dev/unicompose/base/BadgeKt {
 	public static final fun Badge (Ldev/unicompose/style/Style;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;II)V
 	public static final fun Badge (Ljava/lang/String;Ldev/unicompose/style/Style;Landroidx/compose/runtime/Composer;II)V
+	public static final fun getBadgeStyle ()Ldev/unicompose/style/Style;
 }
 
 public final class dev/unicompose/base/ButtonDefaults {

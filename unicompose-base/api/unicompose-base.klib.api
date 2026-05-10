@@ -225,6 +225,8 @@ final object dev.unicompose.base/TokenRefs { // dev.unicompose.base/TokenRefs|nu
     }
 }
 
+final val dev.unicompose.base/BadgeStyle // dev.unicompose.base/BadgeStyle|{}BadgeStyle[0]
+    final fun <get-BadgeStyle>(): dev.unicompose.style/Style // dev.unicompose.base/BadgeStyle.<get-BadgeStyle>|<get-BadgeStyle>(){}[0]
 final val dev.unicompose.base/ButtonGhostStyle // dev.unicompose.base/ButtonGhostStyle|{}ButtonGhostStyle[0]
     final fun <get-ButtonGhostStyle>(): dev.unicompose.style/Style // dev.unicompose.base/ButtonGhostStyle.<get-ButtonGhostStyle>|<get-ButtonGhostStyle>(){}[0]
 final val dev.unicompose.base/ButtonPrimaryStyle // dev.unicompose.base/ButtonPrimaryStyle|{}ButtonPrimaryStyle[0]
