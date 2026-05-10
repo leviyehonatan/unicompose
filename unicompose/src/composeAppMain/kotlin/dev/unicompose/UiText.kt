@@ -14,15 +14,22 @@ import dev.unicompose.style.toModifier
 
 @Composable
 public actual fun UiText(text: String, style: Style) {
+    val inherited = currentInheritedText()
+    val color = style.color ?: inherited.color
+    val fontSize = style.fontSize ?: inherited.fontSize
+    val fontWeight = style.fontWeight ?: inherited.fontWeight
+    val lineHeight = style.lineHeight ?: inherited.lineHeight
+    val letterSpacing = style.letterSpacing ?: inherited.letterSpacing
+    val textAlign = style.textAlign ?: inherited.textAlign
+
     val base = LocalTextStyle.current
-    val inheritedColor = style.color ?: currentDefaultTextColor()
     val merged = base.copy(
-        color = inheritedColor?.toComposeColor() ?: ComposeColor.Unspecified,
-        fontSize = style.fontSize?.value?.composeSp ?: base.fontSize,
-        fontWeight = style.fontWeight?.let { ComposeFontWeight(it.value) } ?: base.fontWeight,
-        lineHeight = style.lineHeight?.value?.composeSp ?: base.lineHeight,
-        letterSpacing = style.letterSpacing?.value?.composeSp ?: base.letterSpacing,
-        textAlign = style.textAlign?.toComposeTextAlign() ?: base.textAlign,
+        color = color?.toComposeColor() ?: ComposeColor.Unspecified,
+        fontSize = fontSize?.value?.composeSp ?: base.fontSize,
+        fontWeight = fontWeight?.let { ComposeFontWeight(it.value) } ?: base.fontWeight,
+        lineHeight = lineHeight?.value?.composeSp ?: base.lineHeight,
+        letterSpacing = letterSpacing?.value?.composeSp ?: base.letterSpacing,
+        textAlign = textAlign?.toComposeTextAlign() ?: base.textAlign,
     )
     Text(
         text = text,
