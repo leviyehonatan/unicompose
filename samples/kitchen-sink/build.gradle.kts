@@ -143,50 +143,7 @@ val previewSite by tasks.registering(Copy::class) {
     // 1.5 MB for the app wasm) but that's acceptable for a dev/preview/test
     // artifact. Production-mode rendering on the web is the *DOM* bundle's job.
     from(layout.buildDirectory.dir("dist/wasmJs/developmentExecutable")) { into("canvas") }
-    // Pull build-time-extracted CSS from this app + every base-library
-    // module that has been refactored to top-level vals. Concatenated into
-    // a single /html/unicompose-generated.css for the runtime <link>.
     into(layout.buildDirectory.dir("dist/preview"))
-    doLast {
-        layout.buildDirectory.file("dist/preview/compare.html").get().asFile.writeText(
-            """
-            <!DOCTYPE html>
-            <html lang="en">
-            <head>
-                <meta charset="UTF-8" />
-                <title>unicompose — DOM vs Canvas comparison</title>
-                <style>
-                    body { margin: 0; font-family: -apple-system, system-ui, sans-serif; }
-                    header { padding: 12px 20px; background: #1B1C1F; color: #ECEDEF; }
-                    h1 { margin: 0; font-size: 16px; font-weight: 600; }
-                    h1 small { font-weight: 400; opacity: 0.7; margin-left: 8px; }
-                    .grid { display: grid; grid-template-columns: 1fr 1fr; height: calc(100vh - 88px); gap: 1px; background: #d0d4dc; }
-                    .pane { display: flex; flex-direction: column; background: white; }
-                    .pane h2 { margin: 0; padding: 8px 16px; font-size: 13px; font-weight: 500; background: #f7f7f8; border-bottom: 1px solid #e6e7eb; }
-                    .pane iframe { flex: 1; border: 0; width: 100%; }
-                </style>
-            </head>
-            <body>
-                <header>
-                    <h1>unicompose — same App() rendered two ways
-                        <small>left: real DOM (production web) · right: Skia canvas (mobile preview)</small>
-                    </h1>
-                </header>
-                <div class="grid">
-                    <div class="pane">
-                        <h2>HTML / DOM (Compose HTML)</h2>
-                        <iframe src="html/index.html"></iframe>
-                    </div>
-                    <div class="pane">
-                        <h2>Canvas / Skia (CMP for Web — what mobile renders)</h2>
-                        <iframe src="canvas/index.html"></iframe>
-                    </div>
-                </div>
-            </body>
-            </html>
-            """.trimIndent()
-        )
-    }
 }
 
 android {

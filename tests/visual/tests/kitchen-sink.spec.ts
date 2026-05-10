@@ -32,12 +32,11 @@ test.describe('kitchen-sink visual regression', () => {
     });
   });
 
-  // The previous side-by-side `compare.html` golden test was removed: it
-  // captures a derived view (the same two bundles wrapped in iframes), so
-  // the per-bundle goldens above already cover the visual regressions.
-  // `compare.html` itself stays — it's produced by the `previewSite` Gradle
-  // task for human / manual review. If we want a committed showcase image
-  // for the README, generate it via a separate non-test capture task so
-  // documentation drift doesn't show up as test failures.
+  // Per-bundle goldens (DOM + Canvas) cover the visible regressions. A
+  // side-by-side comparison view used to live in a generated compare.html
+  // produced by previewSite — removed because (a) the per-bundle goldens
+  // already catch what matters, and (b) inlining HTML in Gradle scripts is
+  // gross. If we want a committed README showcase image, run `previewSite`
+  // and screenshot two browser tabs side by side.
 });
 

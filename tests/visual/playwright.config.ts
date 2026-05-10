@@ -3,8 +3,8 @@ import path from 'path';
 
 // Serve the consolidated preview dir produced by `./gradlew visualPreview`.
 // Layout under build/tests-preview/:
-//   /html, /canvas, /compare.html      — kitchen-sink
-//   /todo-html, /todo-canvas, /todo-compare.html  — todo-app
+//   /html, /canvas              — kitchen-sink
+//   /todo-html, /todo-canvas    — todo-app
 const PREVIEW_DIR = path.resolve(__dirname, '../../build/tests-preview');
 
 export default defineConfig({
@@ -30,7 +30,8 @@ export default defineConfig({
   // node toolchain we already need for Playwright itself.
   webServer: {
     command: `npx http-server "${PREVIEW_DIR}" -p 4173 -s -c-1 -a 127.0.0.1`,
-    url: 'http://127.0.0.1:4173/compare.html',
+    // Wait on a real bundle's index.html — proves the dist is populated.
+    url: 'http://127.0.0.1:4173/html/index.html',
     timeout: 30_000,
     reuseExistingServer: !process.env.CI,
   },
