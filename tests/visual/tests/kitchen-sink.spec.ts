@@ -16,26 +16,17 @@ test.describe('kitchen-sink visual regression', () => {
   });
 
   /**
-   * Canvas bundle — mobile-equivalent preview via CMP-for-Web.
-   *
-   * SKIPPED until the wasmJs bundle init issue is resolved. Symptom: the
-   * webpack-emitted bundle exposes only `{ _initialize, memory }` after
-   * promise resolution — the Kotlin `main()` is never invoked, so
-   * `ComposeViewport` never runs and no canvas is added to the DOM. With the
-   * canonical `CanvasBasedWindow` setup we get one step further (canvas does
-   * appear) but then a `TypeError: ef is not a function` from a wasm→JS
-   * import. Both signal the same underlying class of issue: bundle
-   * initialization in CMP 1.10 + Kotlin 2.2.20 wasmJs setup.
-   *
-   * Tracked in PLAN.md under "Known issues — canvas bundle".
+   * Canvas bundle — mobile-equivalent preview via CMP-for-Web. Loads ~10 MB of
+   * WASM (Skia + the unicompose code), so the timeout is generous and we wait
+   * both for the canvas element to appear AND for Skia to draw the first frame.
    */
-  test.skip('canvas bundle renders golden', async ({ page }) => {
+  test('canvas bundle renders golden', async ({ page }) => {
     await page.goto('/canvas/index.html');
-    await page.waitForFunction(
-      () => document.querySelector('#ComposeTarget canvas') !== null,
-      { timeout: 30_000 },
-    );
-    await page.waitForTimeout(1_000);
+    // Skia bundle has to load ~10 MB of WASM (Skiko + the unicompose code),
+    // initialize Compose, measure the layout, and draw the first frame.
+    // 5 seconds is comfortably above measured cold-start in headless Chromium.
+    await page.waitForSelector('canvas#ComposeTarget', { timeout: 30_000 });
+    await page.waitForTimeout(5_000);
     await expect(page).toHaveScreenshot('kitchen-sink-canvas.png', {
       fullPage: true,
     });

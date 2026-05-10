@@ -13,10 +13,6 @@ kotlin {
     iosArm64()
     iosSimulatorArm64()
 
-    // js(IR) — DOM bundle, real <span>/<div>/<button> via Compose HTML.
-    // wasmJs — Skia canvas bundle, mobile-equivalent rendering via CMP-for-Web.
-    // Both produce executable browser bundles; they coexist for production+preview
-    // and for visual A/B testing (canvas output ≈ what mobile actually renders).
     js(IR) {
         browser {
             commonWebpackConfig {
@@ -128,9 +124,22 @@ val visualTestUpdate by tasks.registering(Exec::class) {
     commandLine = listOf("npx", "playwright", "test", "--update-snapshots")
 }
 val previewSite by tasks.registering(Copy::class) {
-    dependsOn("jsBrowserDistribution", "wasmJsBrowserDistribution")
+    // Wipe stale artifacts from prior builds (Copy doesn't delete by default,
+    // and old hashed-name wasm files would otherwise accumulate).
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    doFirst {
+        delete(layout.buildDirectory.dir("dist/preview"))
+    }
+    dependsOn("jsBrowserDistribution", "wasmJsBrowserDevelopmentExecutableDistribution")
     from(layout.buildDirectory.dir("dist/js/productionExecutable")) { into("html") }
-    from(layout.buildDirectory.dir("dist/wasmJs/productionExecutable")) { into("canvas") }
+    // Use the wasmJs *development* distribution, not the production one.
+    // Compose Multiplatform 1.10's production pipeline runs Binaryen wasm-opt,
+    // which over-aggressively strips init code from the Kotlin/Wasm output
+    // and leaves a bundle that loads but never invokes main(). Dev distribution
+    // skips wasm-opt and renders correctly. Bundle is ~10× larger (19 MB vs
+    // 1.5 MB for the app wasm) but that's acceptable for a dev/preview/test
+    // artifact. Production-mode rendering on the web is the *DOM* bundle's job.
+    from(layout.buildDirectory.dir("dist/wasmJs/developmentExecutable")) { into("canvas") }
     into(layout.buildDirectory.dir("dist/preview"))
     doLast {
         layout.buildDirectory.file("dist/preview/compare.html").get().asFile.writeText(

@@ -1,8 +1,9 @@
+@file:Suppress("DEPRECATION", "DEPRECATION_ERROR")
+
 package dev.unicompose.sample
 
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.window.ComposeViewport
-import kotlinx.browser.document
+import androidx.compose.ui.window.CanvasBasedWindow
 
 /**
  * Entry point for the canvas-rendered web bundle (`kitchen-sink-canvas.js`).
@@ -13,16 +14,19 @@ import kotlinx.browser.document
  * the mobile output, making this bundle a fast emulator-free way to preview
  * mobile rendering in a browser.
  *
- * KNOWN ISSUE — runtime init failure: as of Kotlin 2.2.20 + CMP 1.10 + our
- * dual-target build, the webpack-emitted bundle's promise resolves to
- * `{ _initialize, memory }` and `main()` is never invoked, so this composable
- * never runs. The bundle compiles and links cleanly; the failure is at runtime.
- * See PLAN.md "Known issues — canvas bundle" and tests/visual/ for the skipped
- * Playwright golden.
+ * Uses `CanvasBasedWindow` (deprecated) rather than the suggested replacement
+ * `ComposeViewport`. In CMP 1.10 we bisected an issue where
+ * `ComposeViewport(viewportContainer = document.body)` produces a bundle whose
+ * promise resolves to `{ _initialize, memory }` and never invokes `main()` —
+ * canvas never appears, no errors. The deprecated `CanvasBasedWindow` works
+ * end-to-end with the same setup. The canonical
+ * [JetBrains kotlin-wasm-compose-template](https://github.com/Kotlin/kotlin-wasm-compose-template)
+ * also still uses `CanvasBasedWindow`, so this is a known-good path until CMP
+ * smooths out the `ComposeViewport` migration.
  */
 @OptIn(ExperimentalComposeUiApi::class)
-public fun main() {
-    ComposeViewport(viewportContainer = document.body!!) {
+fun main() {
+    CanvasBasedWindow(canvasElementId = "ComposeTarget") {
         App()
     }
 }

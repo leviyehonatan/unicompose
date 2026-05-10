@@ -53,44 +53,31 @@ Each multi-target module uses Kotlin's `expect`/`actual` with these source sets:
 
 Each unique `Style` is hashed into a deterministic class name and registered into a singleton `<style id="unicompose-styles">` element on first use. Subsequent usages reuse the cached class. Identical observable behavior to a build-time KSP extractor (same DOM, same SEO/perf properties), with substantially less build complexity.
 
-### Known issues — canvas bundle
+### Canvas bundle gotchas (resolved)
 
-The `kitchen-sink-canvas` (`wasmJs`) target **builds and links cleanly** but the
-canvas never actually renders at runtime. Symptoms:
+Two CMP 1.10 wasmJs sharp edges we hit and worked around. Both are tracked here
+because they will save the next person hours of bisection.
 
-- Webpack-built bundle served via `http-server`: bundle's promise resolves to
-  `{ _initialize, memory }`. `main()` never invoked, no canvas in DOM.
-- CMP webpack-dev-server (`./gradlew :samples:kitchen-sink:wasmJsBrowserDevelopmentRun`):
-  **same result** — WebGL initializes (visible warnings), no canvas, no text.
-- `CanvasBasedWindow` + `<canvas id=ComposeTarget>`: canvas element is found,
-  but `TypeError: ef is not a function` from a wasm→JS import.
+**1. `ComposeViewport(viewportContainer = document.body!!)` doesn't bootstrap.**
+The recommended replacement for the deprecated `CanvasBasedWindow` looks right
+on paper but in CMP 1.10 our wasmJs bundle's promise resolves to
+`{ _initialize, memory }` and `main()` never runs — silent failure, no canvas.
+The deprecated `CanvasBasedWindow(canvasElementId = "ComposeTarget")` works
+end-to-end with the same setup. The
+[canonical JetBrains template](https://github.com/Kotlin/kotlin-wasm-compose-template)
+also still uses `CanvasBasedWindow`, which is what tipped us off. Fix: use
+`CanvasBasedWindow` with `@file:Suppress("DEPRECATION", "DEPRECATION_ERROR")`
+until CMP smooths out the migration.
 
-Both serving paths fail identically, so the issue is **not in how we serve the
-bundle** — it's in our build/code. The canvas bundle is dead in this
-configuration even with CMP's own canonical dev server.
-
-Suspected causes (in order of likelihood):
-
-1. Cross-module `composeApp` source-set hierarchy interaction with `wasmJs`
-   target — our `unicompose` and `unicompose-base` modules both extend
-   `composeAppMain` to include `wasmJs`. The canonical
-   [kotlin-wasm-compose-template](https://github.com/Kotlin/kotlin-wasm-compose-template)
-   is a single self-contained module. May need to verify cross-module wasmJs
-   actually works in CMP 1.10.
-2. Material 3 on wasmJs — the canonical template uses Material 2; we use
-   Material 3 throughout. Possibly a wasmJs incompatibility in the version
-   of Material 3 we pull in.
-3. Some component in `App()` triggers a wasm→JS import that's missing in the
-   webpack bundle. Unlikely since the same failure happens with a minimal
-   `Text("Hello")` `main()`, but worth confirming on a clean spike.
-
-Reproduction path for whoever picks this up: clone the canonical
-kotlin-wasm-compose-template, confirm it renders in the dev server, then
-incrementally migrate it toward our setup (add a second module dependency,
-swap Material 2 → Material 3, etc.) until rendering breaks.
-
-The HTML bundle and the side-by-side `compare.html` work fine; the canvas pane
-in the comparison view is currently blank pending this fix.
+**2. Production wasm-opt strips Kotlin/Wasm init code.**
+`wasmJsBrowserDistribution` (production) runs Binaryen `wasm-opt` against the
+emitted wasm. The result loads cleanly but `main()` never runs — same symptom
+as above, different cause. The development distribution
+(`wasmJsBrowserDevelopmentExecutableDistribution`) skips wasm-opt and renders
+correctly. Production is ~1.5 MB app-wasm, dev is ~19 MB. Fix: the `previewSite`
+Gradle task uses the *development* distribution. For dev/preview/visual-test
+infrastructure the size is acceptable; production-mode rendering on the web is
+the *DOM* bundle's job anyway.
 
 ### Mobile preview via CMP-for-Web (canvas bundle)
 
@@ -99,13 +86,13 @@ The kitchen-sink sample produces **two web bundles** from the same `commonMain` 
 | Bundle | Target | Renderer | Size | Use |
 |---|---|---|---|---|
 | `kitchen-sink-html.js` | `js(IR)` | Compose HTML → real `<span>`/`<div>`/`<button>` DOM | ~466 KB | Production web — SEO, accessibility, DOM interop. |
-| `kitchen-sink-canvas.js` | `wasmJs` | Compose Multiplatform for Web → Skia canvas via WASM | ~10 MB total (8.2 MB Skiko + 1.5 MB code) | Dev preview, visual regression test against mobile. **Same Skia renderer that runs on iOS/Android**, so this bundle's output is pixel-equivalent to mobile (modulo system font fallback). |
+| `kitchen-sink-canvas.js` | `wasmJs` | Compose Multiplatform for Web → Skia canvas via WASM | ~28 MB total (8.2 MB Skiko + 19 MB code, dev distribution) | Dev preview, visual regression test against mobile. **Same Skia renderer that runs on iOS/Android**, so this bundle's output is pixel-equivalent to mobile (modulo system font fallback). |
 
 The two targets use *different platform types* (`js` vs `wasmJs`) — Kotlin Multiplatform doesn't support two named JS targets in the same module, but `js` and `wasmJs` are distinct enough that they coexist cleanly. The canvas target joins `composeAppMain` in the source-set hierarchy so its rendering inherits the same CMP actuals that drive Android and iOS.
 
 **Build infrastructure**:
 - `./gradlew :samples:kitchen-sink:jsBrowserDistribution` → DOM bundle in `build/dist/js/productionExecutable/`.
-- `./gradlew :samples:kitchen-sink:wasmJsBrowserDistribution` → canvas bundle in `build/dist/wasmJs/productionExecutable/`.
+- `./gradlew :samples:kitchen-sink:wasmJsBrowserDevelopmentExecutableDistribution` → canvas bundle in `build/dist/wasmJs/developmentExecutable/`. Production distribution (`wasmJsBrowserDistribution`) builds but produces a non-rendering bundle — see "Canvas bundle gotchas" above.
 - `./gradlew :samples:kitchen-sink:previewSite` → both bundles copied into `build/dist/preview/{html,canvas}/` plus `compare.html` for side-by-side viewing. Serve with `python3 -m http.server` from `preview/` and open `compare.html`.
 
 This setup is designed for Playwright A/B comparison testing: both bundles live at predictable subpaths (`/html/`, `/canvas/`), so a Playwright script can render the same App in both, capture screenshots, and diff them. The DOM bundle's render is the production output; the canvas bundle's render is the mobile output. The diff catches visual regressions on both backends from a single test harness.
