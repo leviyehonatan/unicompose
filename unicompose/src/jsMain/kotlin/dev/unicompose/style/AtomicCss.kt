@@ -27,6 +27,13 @@ internal object AtomicCss {
         (document.createElement("style") as HTMLStyleElement).also { el ->
             el.id = "unicompose-styles"
             document.head?.appendChild(el)
+            // Global box-sizing reset. Compose's layout model treats size as
+            // including padding + border (i.e. border-box semantics). CSS default
+            // is content-box, which makes width: 100% mean "content area is 100%
+            // of parent" — adding padding + border on top causes overflow when an
+            // element should fit-to-parent. Setting border-box globally makes
+            // width/height match the CMP fillMaxWidth/fillMaxHeight semantics.
+            el.appendChild(document.createTextNode("*,*::before,*::after{box-sizing:border-box}"))
         }
     }
 
