@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.androidApplication)
+    id("dev.unicompose.css-extractor")
 }
 
 kotlin {
@@ -82,25 +83,9 @@ kotlin {
     }
 }
 
-// Wire the unicompose CSS-extraction compiler plugin into compileKotlinJs and
-// route its output into a project-local build dir. See samples/todo-app/build.gradle.kts
-// for the longer comment on why we use direct classpath injection + freeCompilerArgs
-// instead of plugins { id("dev.unicompose.css-extractor") } today.
-configurations.matching { it.name == "kotlinCompilerPluginClasspathJsMain" }.configureEach {
-    dependencies.add(project.dependencies.create(project(":unicompose-css-extractor")))
-}
-
+// Build-time CSS extraction. See samples/todo-app/build.gradle.kts for context.
 val cssExtractorOutputDir = layout.buildDirectory.dir("generated/css")
-tasks.matching { it.name == "compileKotlinJs" }.configureEach {
-    val outDir = cssExtractorOutputDir.get().asFile
-    outputs.dir(outDir)
-    doFirst { outDir.mkdirs() }
-    (this as org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask<*>)
-        .compilerOptions.freeCompilerArgs.addAll(
-            "-P",
-            "plugin:dev.unicompose.css-extractor:outputDir=${outDir.absolutePath}",
-        )
-}
+val cssExtractorResetDir = layout.buildDirectory.dir("generated/css-reset")
 
 // `./gradlew :samples:kitchen-sink:previewSite` produces a single dist/preview/
 // directory containing both bundles plus a side-by-side compare.html. Serve with
@@ -165,12 +150,9 @@ val previewSite by tasks.registering(Copy::class) {
     // a single /html/unicompose-generated.css for the runtime <link>.
     from(cssExtractorOutputDir) { into("html-extras-app") }
     from(project(":unicompose-base").layout.buildDirectory.dir("generated/css")) { into("html-extras-base") }
-    from(zipTree(project(":unicompose-css-extractor").tasks.named("jar").map { (it as Jar).archiveFile })) {
-        include("unicompose-reset.css")
-        into("html")
-    }
+    from(cssExtractorResetDir) { into("html") }
     into(layout.buildDirectory.dir("dist/preview"))
-    dependsOn(":unicompose-base:compileKotlinJs", ":unicompose-css-extractor:jar")
+    dependsOn(":unicompose-base:compileKotlinJs", "extractUnicomposeReset")
     doLast {
         val htmlDir = layout.buildDirectory.file("dist/preview/html").get().asFile
         val merged = listOf("html-extras-base", "html-extras-app").map { sub ->

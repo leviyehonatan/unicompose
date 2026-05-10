@@ -13,7 +13,15 @@
 plugins {
     alias(libs.plugins.kotlinJvm)
     `java-gradle-plugin`
+    `maven-publish`
 }
+
+// Group + version match what UnicomposeCssExtractorGradlePlugin.getPluginArtifact()
+// declares. With `pluginManagement.includeBuild("unicompose-css-extractor")` in
+// the root settings, Gradle substitutes any consumer dependency on these
+// coordinates with the composite-build's local artifact — no Maven trip.
+group = "dev.unicompose"
+version = "0.1.0-SNAPSHOT"
 
 kotlin {
     jvmToolchain(17)

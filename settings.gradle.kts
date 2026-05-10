@@ -1,6 +1,12 @@
 @file:Suppress("UnstableApiUsage")
 
 pluginManagement {
+    // Pull the unicompose-css-extractor Gradle plugin in as a composite build.
+    // Consumers can then apply it via plugins { id("dev.unicompose.css-extractor") }.
+    // Its own settings.gradle.kts brings the same versions catalog as this
+    // root build, so plugin and library versions stay in lockstep.
+    includeBuild("unicompose-css-extractor")
+
     repositories {
         google {
             mavenContent {
@@ -51,6 +57,13 @@ dependencyResolutionManagement {
 
 rootProject.name = "unicompose-root"
 
+// Compose the css-extractor build into this build for both plugin resolution
+// (via pluginManagement above) AND dependency substitution (this top-level
+// includeBuild). The latter is what makes the Kotlin compiler-plugin classpath
+// substitute the SubpluginArtifact("dev.unicompose:unicompose-css-extractor:...")
+// against the local jar — without it Gradle would try maven central.
+includeBuild("unicompose-css-extractor")
+
 include(
     ":unicompose-style",
     ":unicompose",
@@ -58,5 +71,6 @@ include(
     ":samples:kitchen-sink",
     ":samples:todo-app",
     ":tests:snapshot-android",
-    ":unicompose-css-extractor",
+    // :unicompose-css-extractor is a composite build (see pluginManagement.
+    // includeBuild above), not a subproject of this build.
 )

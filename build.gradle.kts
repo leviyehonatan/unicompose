@@ -15,7 +15,10 @@ plugins {
 // declarations, or signature changes fail the build. Samples are excluded
 // (they're apps, not libraries).
 apiValidation {
-    ignoredProjects.addAll(listOf("kitchen-sink", "todo-app", "snapshot-android", "unicompose-css-extractor"))
+    // unicompose-css-extractor moved to a composite build (see settings.gradle.kts);
+    // it has its own published-API surface managed separately so BCV doesn't see it
+    // from this build.
+    ignoredProjects.addAll(listOf("kitchen-sink", "todo-app", "snapshot-android"))
     // Opt in to klib ABI validation so the iOS / web (native + wasm) public
     // surfaces are tracked too, not just the JVM side. Each module gets a
     // sibling `<module>.klib.api` file under api/.

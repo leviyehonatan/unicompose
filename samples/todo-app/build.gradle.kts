@@ -7,28 +7,17 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.androidApplication)
+    // Build-time CSS extraction for the JS target. Gradle plugin lives in the
+    // composite-build at unicompose-css-extractor/; it wires its compiler
+    // plugin into compileKotlinJs and points it at <project>/build/generated/css.
+    id("dev.unicompose.css-extractor")
 }
 
-// Apply the unicompose CSS-extraction compiler plugin to the JS target only.
-// Direct classpath injection + a CLI option pointing at the build dir for the
-// generated CSS. We'll move to plugins { id("dev.unicompose.css-extractor") }
-// once the companion Gradle plugin can be applied via a published or
-// composite-included artifact.
-configurations.matching { it.name == "kotlinCompilerPluginClasspathJsMain" }.configureEach {
-    dependencies.add(project.dependencies.create(project(":unicompose-css-extractor")))
-}
-
+// Directories the css-extractor produces:
+//  - generated/css/ — the IR plugin writes unicompose-generated.css here
+//  - generated/css-reset/ — the Gradle plugin extracts the static reset here
 val cssExtractorOutputDir = layout.buildDirectory.dir("generated/css")
-tasks.matching { it.name == "compileKotlinJs" }.configureEach {
-    val outDir = cssExtractorOutputDir.get().asFile
-    outputs.dir(outDir)
-    doFirst { outDir.mkdirs() }
-    (this as org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask<*>)
-        .compilerOptions.freeCompilerArgs.addAll(
-            "-P",
-            "plugin:dev.unicompose.css-extractor:outputDir=${outDir.absolutePath}",
-        )
-}
+val cssExtractorResetDir = layout.buildDirectory.dir("generated/css-reset")
 
 kotlin {
     jvmToolchain(17)
@@ -134,25 +123,23 @@ val previewSite by tasks.registering(Copy::class) {
     // unicompose-generated.css; we concatenate them into a single file under
     // /html/ so the runtime <link> picks up rules from this app *and* every
     // base-library widget that's been refactored to top-level vals.
+    // generated.css per module + the once-per-app reset.css.
     from(cssExtractorOutputDir) { into("html-extras-app") }
     from(project(":unicompose-base").layout.buildDirectory.dir("generated/css")) { into("html-extras-base") }
-    // Pull the static reset sheet straight out of the compiler-plugin jar's
-    // resources. One source of truth for the reset; ships next to the
-    // generated classes file.
-    from(zipTree(project(":unicompose-css-extractor").tasks.named("jar").map { (it as Jar).archiveFile })) {
-        include("unicompose-reset.css")
-        into("html")
-    }
+    from(cssExtractorResetDir) { into("html") }
     into(layout.buildDirectory.dir("dist/preview"))
-    dependsOn(":unicompose-base:compileKotlinJs", ":unicompose-css-extractor:jar")
+    dependsOn(":unicompose-base:compileKotlinJs", "extractUnicomposeReset")
     doLast {
         val htmlDir = layout.buildDirectory.file("dist/preview/html").get().asFile
+        // Concatenate per-module unicompose-generated.css into one served file.
         val merged = listOf("html-extras-base", "html-extras-app").map { sub ->
             layout.buildDirectory.file("dist/preview/$sub/unicompose-generated.css").get().asFile
         }.filter { it.exists() }.joinToString("\n") { it.readText() }
         if (merged.isNotEmpty()) {
             File(htmlDir, "unicompose-generated.css").writeText(merged)
         }
+        // unicompose-reset.css is copied directly into /html/ via the from(...)
+        // block above (see cssExtractorResetDir). Nothing to do here.
         // clean up the staging dirs
         listOf("html-extras-app", "html-extras-base").forEach {
             layout.buildDirectory.file("dist/preview/$it").get().asFile.deleteRecursively()

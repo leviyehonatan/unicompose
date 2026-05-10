@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.androidLibrary)
+    id("dev.unicompose.css-extractor")
 }
 
 kotlin {
@@ -70,23 +71,6 @@ android {
     }
 }
 
-// Apply the unicompose CSS-extraction compiler plugin to compileKotlinJs so
-// top-level Style vals defined here (CardStyle, future widget defaults) get
-// extracted to the .css file alongside per-app styles. Each module emits its
-// own unicompose-generated.css; the consumer's previewSite Copy concatenates
-// (or just picks up the most recent — for now the consumer's CSS wins).
-configurations.matching { it.name == "kotlinCompilerPluginClasspathJsMain" }.configureEach {
-    dependencies.add(project.dependencies.create(project(":unicompose-css-extractor")))
-}
-
-val cssExtractorOutputDir = layout.buildDirectory.dir("generated/css")
-tasks.matching { it.name == "compileKotlinJs" }.configureEach {
-    val outDir = cssExtractorOutputDir.get().asFile
-    outputs.dir(outDir)
-    doFirst { outDir.mkdirs() }
-    (this as org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask<*>)
-        .compilerOptions.freeCompilerArgs.addAll(
-            "-P",
-            "plugin:dev.unicompose.css-extractor:outputDir=${outDir.absolutePath}",
-        )
-}
+// CSS-extractor compiler plugin is applied via the Gradle plugin block below.
+// Each module emits its own unicompose-generated.css into <module>/build/
+// generated/css; consumer samples' previewSite Copy task concatenates them.
