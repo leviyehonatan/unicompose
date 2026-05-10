@@ -1,5 +1,6 @@
 package dev.unicompose.todo
 
+import dev.unicompose.base.TokenRefs
 import dev.unicompose.style.Color
 import dev.unicompose.style.FontWeight
 import dev.unicompose.style.Padding
@@ -23,20 +24,18 @@ public val SmokeTestSimple: Style = Style(
     flex = 1f,
 )
 
-// Phase 2 smoke test: Style fields can now reference theme tokens by CSS
-// variable name. The IR plugin should extract this top-level val and the
-// generated CSS should contain `var(...)` for each ref instead of a literal.
-// At runtime, the same hashed class is in the linked sheet; theme switches
-// just change the value of --uc-* properties at the document root.
+// Phase 2 smoke test: Style.color/backgroundColor accept Color.token(...)
+// references that lower to `var(--uc-...)` in the generated CSS. At runtime,
+// theme switches change the values of --uc-* properties at the document root.
 public val SmokeTestTokens: Style = Style(
-    colorRef = "--uc-colors-textPrimary",
-    backgroundColorRef = "--uc-colors-bgSurface",
+    color = Color.token("--uc-colors-textPrimary"),
+    backgroundColor = Color.token("--uc-colors-bgSurface"),
 )
 
 // Same idea but using the TokenRefs constants (compile-time resolvable
 // references to the same names). Should produce IDENTICAL output.
 public val SmokeTestTokenRefs: Style = Style(
-    colorRef = dev.unicompose.base.TokenRefs.colors.textPrimary,
-    backgroundColorRef = dev.unicompose.base.TokenRefs.colors.bgSurface,
-    gapRef = dev.unicompose.base.TokenRefs.space.md,
+    color = Color.token(TokenRefs.colors.textPrimary),
+    backgroundColor = Color.token(TokenRefs.colors.bgSurface),
+    gapRef = TokenRefs.space.md,
 )

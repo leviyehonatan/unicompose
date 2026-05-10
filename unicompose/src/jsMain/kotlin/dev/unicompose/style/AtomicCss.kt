@@ -124,17 +124,13 @@ internal object AtomicCss {
         style.margin?.let { m ->
             out += "margin" to "${m.top.value}px ${m.right.value}px ${m.bottom.value}px ${m.left.value}px"
         }
-        // Token refs win over literals: theme-driven values lower to CSS
-        // var(...) so theme switches don't require re-emitting style rules.
-        if (style.backgroundColorRef != null) {
-            out += "background-color" to "var(${style.backgroundColorRef})"
-        } else style.backgroundColor?.let { out += "background-color" to it.toCss() }
+        // Color values are themable via Color.Ref; toCss() handles both
+        // variants (literal → rgb(...) / rgba(...); ref → var(--name)).
+        style.backgroundColor?.let { out += "background-color" to it.toCss() }
         style.backgroundGradient?.let { g ->
             out += "background-image" to g.toCss()
         }
-        if (style.colorRef != null) {
-            out += "color" to "var(${style.colorRef})"
-        } else style.color?.let { out += "color" to it.toCss() }
+        style.color?.let { out += "color" to it.toCss() }
         if (style.fontSizeRef != null) {
             out += "font-size" to "var(${style.fontSizeRef})"
         } else style.fontSize?.let { out += "font-size" to "${it.value}px" }
@@ -164,9 +160,7 @@ internal object AtomicCss {
             out += "border-radius" to
                 "${r.topLeft.value}px ${r.topRight.value}px ${r.bottomRight.value}px ${r.bottomLeft.value}px"
         }
-        if (style.borderRef != null) {
-            out += "border" to "1px solid var(${style.borderRef})"
-        } else style.border?.let { b ->
+        style.border?.let { b ->
             if (b.isUniform) {
                 val e = b.top!!
                 out += "border" to "${e.width.value}px solid ${e.color.toCss()}"
@@ -238,8 +232,11 @@ internal object AtomicCss {
     }
 }
 
-private fun Color.toCss(): String =
-    if (alpha == 0xFF) "rgb($red,$green,$blue)" else "rgba($red,$green,$blue,${alpha / 255.0})"
+private fun Color.toCss(): String = when (this) {
+    is Color.Literal ->
+        if (alpha == 0xFF) "rgb($red,$green,$blue)" else "rgba($red,$green,$blue,${alpha / 255.0})"
+    is Color.Ref -> "var($cssVarName)"
+}
 
 private fun LinearGradient.toCss(): String {
     val dir = when (direction) {

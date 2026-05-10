@@ -86,17 +86,12 @@ public data class Style(
     val flex: Float? = null,
     val opacity: Float? = null,
     // ── Token references ─────────────────────────────────────────────────────
-    // A `*Ref` field is a CSS-variable name (e.g. "--uc-colors-accent") that
-    // overrides the matching literal field at render time. Web emits
-    // `var(--name)` directly. CMP looks up the value through the resolver
-    // provided by the active theme (see unicompose-base UnicomposeTheme).
+    // Color refs collapsed: use `Color.token("--uc-colors-X")` as the value
+    // for any color field. Dp/Sp follow the same pattern in a follow-up.
     //
-    // The point of `*Ref` is to let top-level Style declarations reference
-    // theme tokens without losing static-extractability — a String constant is
-    // visible to the IR plugin in a way that `currentTokens().colors.accent`
-    // (a runtime Composable read) is not.
-    val colorRef: String? = null,
-    val backgroundColorRef: String? = null,
+    // Below `*Ref` fields handle properties whose typed value isn't currently
+    // ref-able (Dp, Sp). They'll be removed when those types get the same
+    // sealed-interface treatment as Color.
     val gapRef: String? = null,
     val fontSizeRef: String? = null,
     /** Single CSS variable applied uniformly to all four padding sides. */
@@ -106,17 +101,9 @@ public data class Style(
     /**
      * Symmetric padding refs — vertical (top + bottom) and horizontal (left +
      * right). Lowers to the CSS `padding: var(--v) var(--h)` shorthand.
-     * Useful when widget defaults use different token sizes per axis (e.g.
-     * Button.Padding.symmetric(vertical = space.sm, horizontal = space.md)).
      */
     val paddingVerticalRef: String? = null,
     val paddingHorizontalRef: String? = null,
-    /**
-     * Single CSS variable that supplies the border color. When set, emits
-     * `border: 1px solid var(--name)`. Width is fixed at 1 px today; if
-     * tunable widths become a real need we'll widen this to a typed ref.
-     */
-    val borderRef: String? = null,
 ) {
     public companion object {
         /** A [Style] with no properties set. Equivalent to passing no style at all. */
@@ -151,15 +138,12 @@ public data class Style(
         height = other.height ?: height,
         flex = other.flex ?: flex,
         opacity = other.opacity ?: opacity,
-        colorRef = other.colorRef ?: colorRef,
-        backgroundColorRef = other.backgroundColorRef ?: backgroundColorRef,
         gapRef = other.gapRef ?: gapRef,
         fontSizeRef = other.fontSizeRef ?: fontSizeRef,
         paddingAllRef = other.paddingAllRef ?: paddingAllRef,
         borderRadiusAllRef = other.borderRadiusAllRef ?: borderRadiusAllRef,
         paddingVerticalRef = other.paddingVerticalRef ?: paddingVerticalRef,
         paddingHorizontalRef = other.paddingHorizontalRef ?: paddingHorizontalRef,
-        borderRef = other.borderRef ?: borderRef,
     )
 }
 
@@ -433,27 +417,39 @@ public val Int.sp: Sp get() = Sp(this.toFloat())
 public val Float.sp: Sp get() = Sp(this)
 
 /**
- * 32-bit ARGB color, packed as `0xAARRGGBB`.
+ * Themable color value.
  *
- * Construct with the [rgb] / [argb] factory functions, or use one of the named
- * constants on the companion object.
+ * Two variants:
+ *  - [Color.Literal] — concrete 32-bit ARGB packed as `0xAARRGGBB`. Construct
+ *    with the [rgb] / [argb] factories or via the `Color(argb)` shorthand.
+ *  - [Color.Ref] — a reference to a CSS variable name (e.g. `--uc-colors-accent`).
+ *    Lowers to `var(--name)` on the web and resolves to a literal via the active
+ *    theme on CMP. Construct via [Color.token].
  *
- * @property argb Packed channel value. The high byte is alpha; remaining bytes are
- *   red, green, blue, in that order.
+ * Both variants implement this sealed interface, so any Style/Border/Shadow/etc
+ * slot that accepts a Color automatically supports themes — no parallel `*Ref`
+ * fields needed. Pattern-match when reading the value back.
  */
-@JvmInline
-public value class Color(public val argb: Int) {
-    /** Alpha channel, in `[0, 255]`. */
-    public val alpha: Int get() = (argb ushr 24) and 0xFF
+public sealed interface Color {
 
-    /** Red channel, in `[0, 255]`. */
-    public val red: Int get() = (argb ushr 16) and 0xFF
+    /** Concrete RGBA color. */
+    public class Literal(public val argb: Int) : Color {
+        public val alpha: Int get() = (argb ushr 24) and 0xFF
+        public val red: Int get() = (argb ushr 16) and 0xFF
+        public val green: Int get() = (argb ushr 8) and 0xFF
+        public val blue: Int get() = argb and 0xFF
 
-    /** Green channel, in `[0, 255]`. */
-    public val green: Int get() = (argb ushr 8) and 0xFF
+        override fun equals(other: Any?): Boolean = other is Literal && argb == other.argb
+        override fun hashCode(): Int = argb
+        override fun toString(): String = "Color(0x${argb.toUInt().toString(16).padStart(8, '0')})"
+    }
 
-    /** Blue channel, in `[0, 255]`. */
-    public val blue: Int get() = argb and 0xFF
+    /** Reference to a CSS variable / theme token name (e.g. "--uc-colors-accent"). */
+    public class Ref(public val cssVarName: String) : Color {
+        override fun equals(other: Any?): Boolean = other is Ref && cssVarName == other.cssVarName
+        override fun hashCode(): Int = cssVarName.hashCode()
+        override fun toString(): String = "Color.Ref($cssVarName)"
+    }
 
     public companion object {
         /** Opaque black — `#000000`. */
@@ -463,9 +459,28 @@ public value class Color(public val argb: Int) {
         public val White: Color = rgb(255, 255, 255)
 
         /** Fully transparent (zero in every channel). */
-        public val Transparent: Color = Color(0)
+        public val Transparent: Color = Literal(0)
+
+        /**
+         * Backwards-compatible factory: existing `Color(0xFFRRGGBB.toInt())`
+         * call sites continue to compile, returning a [Literal] typed as [Color].
+         */
+        public operator fun invoke(argb: Int): Color = Literal(argb)
+
+        /**
+         * Construct a [Color] that references a CSS custom property by name.
+         * Lowers to `var(--name)` on the web and resolves through the active
+         * theme on CMP. Static-extractable when [cssVarName] is a constant.
+         */
+        public fun token(cssVarName: String): Color = Ref(cssVarName)
     }
 }
+
+/** Returns the packed argb value if [this] is a [Color.Literal], else null. */
+public fun Color.argbOrNull(): Int? = (this as? Color.Literal)?.argb
+
+/** Returns the CSS variable name if [this] is a [Color.Ref], else null. */
+public fun Color.cssVarNameOrNull(): String? = (this as? Color.Ref)?.cssVarName
 
 /**
  * Construct an opaque [Color] from individual `[0, 255]` channels.
@@ -475,7 +490,7 @@ public value class Color(public val argb: Int) {
  * @param b Blue channel.
  */
 public fun rgb(r: Int, g: Int, b: Int): Color =
-    Color((0xFF shl 24) or ((r and 0xFF) shl 16) or ((g and 0xFF) shl 8) or (b and 0xFF))
+    Color.Literal((0xFF shl 24) or ((r and 0xFF) shl 16) or ((g and 0xFF) shl 8) or (b and 0xFF))
 
 /**
  * Construct a [Color] with explicit alpha.
@@ -486,7 +501,7 @@ public fun rgb(r: Int, g: Int, b: Int): Color =
  * @param b Blue channel.
  */
 public fun argb(a: Int, r: Int, g: Int, b: Int): Color =
-    Color(((a and 0xFF) shl 24) or ((r and 0xFF) shl 16) or ((g and 0xFF) shl 8) or (b and 0xFF))
+    Color.Literal(((a and 0xFF) shl 24) or ((r and 0xFF) shl 16) or ((g and 0xFF) shl 8) or (b and 0xFF))
 
 /**
  * Semantic font family.

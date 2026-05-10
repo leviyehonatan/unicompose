@@ -112,21 +112,21 @@ private val ButtonSharedStyle: Style = Style(
 
 /** Filled accent button — primary call-to-action. */
 public val ButtonPrimaryStyle: Style = ButtonSharedStyle + Style(
-    backgroundColorRef = TokenRefs.colors.accent,
-    colorRef = TokenRefs.colors.onAccent,
+    backgroundColor = Color.token(TokenRefs.colors.accent),
+    color = Color.token(TokenRefs.colors.onAccent),
 )
 
 /** Outlined button — lower-emphasis action. */
 public val ButtonSecondaryStyle: Style = ButtonSharedStyle + Style(
     backgroundColor = Color.Transparent,
-    colorRef = TokenRefs.colors.textPrimary,
-    borderRef = TokenRefs.colors.borderSubtle,
+    color = Color.token(TokenRefs.colors.textPrimary),
+    border = Border.all(width = 1.dp, color = Color.token(TokenRefs.colors.borderSubtle)),
 )
 
 /** Borderless accent text — minimal-weight action. */
 public val ButtonGhostStyle: Style = ButtonSharedStyle + Style(
     backgroundColor = Color.Transparent,
-    colorRef = TokenRefs.colors.accent,
+    color = Color.token(TokenRefs.colors.accent),
 )
 
 /** Default style recipes for [Button] variants. Backwards-compatible API. */

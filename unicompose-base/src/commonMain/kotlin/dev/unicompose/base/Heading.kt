@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import dev.unicompose.HeadingLevel
 import dev.unicompose.UiHeading
 import dev.unicompose.UiText
+import dev.unicompose.style.Color
 import dev.unicompose.style.Style
 
 /**
@@ -40,7 +41,7 @@ public fun Heading(
  * level still come from `unicompose`'s `defaultHeadingStyle`.
  */
 public val HeadingStyle: Style = Style(
-    colorRef = TokenRefs.colors.textPrimary,
+    color = Color.token(TokenRefs.colors.textPrimary),
 )
 
 /** HTML-aligned shortcut for `Heading(HeadingLevel.H1, text, style)`. */

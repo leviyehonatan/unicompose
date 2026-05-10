@@ -1,35 +1,41 @@
 package dev.unicompose.base
 
 import dev.unicompose.style.Border
+import dev.unicompose.style.BorderEdge
 import dev.unicompose.style.BorderRadius
 import dev.unicompose.style.Color
 import dev.unicompose.style.Dp
 import dev.unicompose.style.Padding
+import dev.unicompose.style.Shadow
 import dev.unicompose.style.Sp
 import dev.unicompose.style.Style
 import dev.unicompose.style.dp
 
 /**
- * Resolves the `*Ref` fields on a [Style] against the active token set.
+ * Resolves token references against the active token set so the returned
+ * [Style] only contains literal values. Used by themed widgets on every
+ * platform — on the web the resolved Style still works (literal colors
+ * format as `rgb(...)`); on CMP the literal values flow through to the
+ * Compose Modifier chain that has no concept of CSS variables.
  *
- * For each `*Ref` slot whose value matches a [TokenRefs] entry, sets the
- * matching literal field on the returned Style. The refs themselves are
- * preserved (not cleared), so the web AtomicCss path can still emit
- * `var(--name)` while the CMP `toModifier()` path now sees the literal
- * value it needs.
+ * Cheap fast-path: returns `this` unchanged when no refs are present.
  *
- * Cheap fast path when no refs are set: returns `this` unchanged.
- *
- * Why both literal + ref are preserved: on the web a var() reference is
- * preferred (so theme switching doesn't require recomposition), while on
- * CMP only literal values are used. Setting both keeps the same Style
- * instance valid on both backends.
+ * Resolves:
+ *  - [Style.color] / [Style.backgroundColor] when they're [Color.Ref]
+ *  - All four sides' colors on [Style.border]
+ *  - The color on [Style.boxShadow]
+ *  - The remaining `*Ref: String?` fields for Dp/Sp slots that don't yet
+ *    have the sealed-interface treatment (gap, fontSize, padding,
+ *    borderRadius). When those types follow Color into sealed interfaces,
+ *    those fields disappear too and this whole helper shrinks further.
  */
 public fun Style.resolveRefs(tokens: Tokens): Style {
     if (!hasAnyRefs()) return this
     return copy(
-        color = colorRef?.let { resolveColor(it, tokens) } ?: color,
-        backgroundColor = backgroundColorRef?.let { resolveColor(it, tokens) } ?: backgroundColor,
+        color = color?.resolved(tokens),
+        backgroundColor = backgroundColor?.resolved(tokens),
+        border = border?.resolved(tokens),
+        boxShadow = boxShadow?.resolved(tokens),
         gap = gapRef?.let { resolveDp(it, tokens) } ?: gap,
         fontSize = fontSizeRef?.let { resolveSp(it, tokens) } ?: fontSize,
         padding = when {
@@ -44,16 +50,45 @@ public fun Style.resolveRefs(tokens: Tokens): Style {
         borderRadius = borderRadiusAllRef?.let { ref ->
             resolveDp(ref, tokens)?.let { BorderRadius.all(it) }
         } ?: borderRadius,
-        border = borderRef?.let { ref ->
-            resolveColor(ref, tokens)?.let { Border.all(width = 1.dp, color = it) }
-        } ?: border,
     )
 }
 
-private fun Style.hasAnyRefs(): Boolean =
-    colorRef != null || backgroundColorRef != null || gapRef != null ||
-        fontSizeRef != null || paddingAllRef != null || borderRadiusAllRef != null ||
-        paddingVerticalRef != null || paddingHorizontalRef != null || borderRef != null
+// Returns true if any value in the Style refers to a token that needs resolving.
+// Walks the Color slots inside Border and Shadow so we catch nested refs too.
+private fun Style.hasAnyRefs(): Boolean {
+    if (gapRef != null || fontSizeRef != null || paddingAllRef != null ||
+        borderRadiusAllRef != null || paddingVerticalRef != null || paddingHorizontalRef != null
+    ) return true
+    if (color is Color.Ref || backgroundColor is Color.Ref) return true
+    val b = border
+    if (b != null) {
+        if (b.top?.color is Color.Ref) return true
+        if (b.right?.color is Color.Ref) return true
+        if (b.bottom?.color is Color.Ref) return true
+        if (b.left?.color is Color.Ref) return true
+    }
+    if (boxShadow?.color is Color.Ref) return true
+    return false
+}
+
+/** Resolves a [Color.Ref] against [tokens]. Pass-through for [Color.Literal]. */
+private fun Color.resolved(tokens: Tokens): Color = when (this) {
+    is Color.Literal -> this
+    is Color.Ref -> resolveColor(cssVarName, tokens) ?: Color.Transparent
+}
+
+private fun Border.resolved(tokens: Tokens): Border = Border(
+    top = top?.resolved(tokens),
+    right = right?.resolved(tokens),
+    bottom = bottom?.resolved(tokens),
+    left = left?.resolved(tokens),
+)
+
+private fun BorderEdge.resolved(tokens: Tokens): BorderEdge =
+    if (color is Color.Ref) BorderEdge(width = width, color = color.resolved(tokens)) else this
+
+private fun Shadow.resolved(tokens: Tokens): Shadow =
+    if (color is Color.Ref) copy(color = color.resolved(tokens)) else this
 
 private fun resolveColor(name: String, tokens: Tokens): Color? = when (name) {
     TokenRefs.colors.accent -> tokens.colors.accent

@@ -205,4 +205,15 @@ private fun GradientDirection.toComposeOffsets(): Pair<Offset, Offset> {
     }
 }
 
-internal fun Color.toComposeColor(): ComposeColor = ComposeColor(argb)
+/**
+ * Lowers our typed [Color] to Compose's. [Color.Ref] returns
+ * `ComposeColor.Unspecified` because CMP has no `var()` mechanism — refs must
+ * be resolved against the active theme upstream (see unicompose-base
+ * Style.resolveRefs / Color.resolved). If a Ref reaches this function it
+ * means resolution didn't happen, which is a programming error in the call
+ * chain rather than something to silently default.
+ */
+internal fun Color.toComposeColor(): ComposeColor = when (this) {
+    is Color.Literal -> ComposeColor(argb)
+    is Color.Ref -> ComposeColor.Unspecified
+}

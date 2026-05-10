@@ -3,6 +3,7 @@ package dev.unicompose.base
 import androidx.compose.runtime.Composable
 import dev.unicompose.UiBox
 import dev.unicompose.style.BorderRadius
+import dev.unicompose.style.Color
 import dev.unicompose.style.Padding
 import dev.unicompose.style.Style
 
@@ -45,7 +46,7 @@ public fun Card(style: Style = Style.Empty, content: @Composable () -> Unit) {
  * - corner radius: `radii.lg`
  */
 public val CardStyle: Style = Style(
-    backgroundColorRef = TokenRefs.colors.bgSurface,
+    backgroundColor = Color.token(TokenRefs.colors.bgSurface),
     paddingAllRef = TokenRefs.space.md,
     borderRadiusAllRef = TokenRefs.radii.lg,
 )

@@ -66,12 +66,12 @@ internal object CssEmitter {
     private val ParamOrder = listOf(
         "padding", "paddingAllRef", "paddingVerticalRef", "paddingHorizontalRef",
         "margin",
-        "backgroundColor", "backgroundColorRef",
-        "color", "colorRef",
+        "backgroundColor", // Color or ColorRef both flow through ruleFor
+        "color",
         "fontSize", "fontSizeRef", "fontWeight",
         "fontFamily", "lineHeight", "letterSpacing", "textAlign",
         "borderRadius", "borderRadiusAllRef",
-        "border", "borderRef", "boxShadow", "opacity", "width", "height", "flex",
+        "border", "boxShadow", "opacity", "width", "height", "flex",
         "gap", "gapRef",
     )
 
@@ -88,10 +88,16 @@ internal object CssEmitter {
         "margin" -> (v as? Evaluator.V.Padding)?.let {
             "margin" to "${it.top.fmt()}px ${it.right.fmt()}px ${it.bottom.fmt()}px ${it.left.fmt()}px"
         }
-        "backgroundColor" -> (v as? Evaluator.V.Color)?.let { "background-color" to colorCss(it.argb) }
-        "backgroundColorRef" -> (v as? Evaluator.V.Str)?.let { "background-color" to "var(${it.v})" }
-        "color" -> (v as? Evaluator.V.Color)?.let { "color" to colorCss(it.argb) }
-        "colorRef" -> (v as? Evaluator.V.Str)?.let { "color" to "var(${it.v})" }
+        "backgroundColor" -> when (v) {
+            is Evaluator.V.Color -> "background-color" to colorCss(v.argb)
+            is Evaluator.V.ColorRef -> "background-color" to "var(${v.cssVarName})"
+            else -> null
+        }
+        "color" -> when (v) {
+            is Evaluator.V.Color -> "color" to colorCss(v.argb)
+            is Evaluator.V.ColorRef -> "color" to "var(${v.cssVarName})"
+            else -> null
+        }
         "gap" -> (v as? Evaluator.V.Dp)?.let { "gap" to "${it.v.fmt()}px" }
         "gapRef" -> (v as? Evaluator.V.Str)?.let { "gap" to "var(${it.v})" }
         "fontSize" -> (v as? Evaluator.V.Sp)?.let { "font-size" to "${it.v.fmt()}px" }
@@ -105,7 +111,14 @@ internal object CssEmitter {
             "border-radius" to "${it.tl.fmt()}px ${it.tr.fmt()}px ${it.br.fmt()}px ${it.bl.fmt()}px"
         }
         "borderRadiusAllRef" -> (v as? Evaluator.V.Str)?.let { "border-radius" to "var(${it.v})" }
-        "borderRef" -> (v as? Evaluator.V.Str)?.let { "border" to "1px solid var(${it.v})" }
+        "border" -> (v as? Evaluator.V.UniformBorder)?.let {
+            val color = when (val c = it.color) {
+                is Evaluator.V.Color -> colorCss(c.argb)
+                is Evaluator.V.ColorRef -> "var(${c.cssVarName})"
+                else -> return null
+            }
+            "border" to "${it.widthDp.fmt()}px solid $color"
+        }
         "opacity" -> when (v) {
             is Evaluator.V.Float -> "opacity" to v.v.toString()
             is Evaluator.V.Int -> "opacity" to v.v.toString()

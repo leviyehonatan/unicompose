@@ -48,6 +48,11 @@ internal actual fun applyThemeCssVariables(tokens: Tokens) {
     root.setProperty(TokenRefs.radii.lg, "${r.lg.value}px")
 }
 
-/** Match AtomicCss.toCss() format so CSS variable values render identically. */
-private fun Color.toCssString(): String =
-    if (alpha == 0xFF) "rgb($red,$green,$blue)" else "rgba($red,$green,$blue,${alpha / 255.0})"
+/** Match AtomicCss.toCss() format so CSS variable values render identically.
+ *  Token values are always literal — Refs would mean a token resolves to
+ *  another token, which we don't support. */
+private fun Color.toCssString(): String = when (this) {
+    is Color.Literal ->
+        if (alpha == 0xFF) "rgb($red,$green,$blue)" else "rgba($red,$green,$blue,${alpha / 255.0})"
+    is Color.Ref -> "var($cssVarName)"
+}

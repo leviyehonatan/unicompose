@@ -47,6 +47,10 @@ internal class Evaluator {
         data class Dp(val v: kotlin.Float) : V()
         /** Color stored as packed ARGB int (0xAARRGGBB). */
         data class Color(val argb: kotlin.Int) : V()
+        /** A color reference to a CSS custom property. Lowers to `var(--name)`. */
+        data class ColorRef(val cssVarName: String) : V()
+        /** A uniform border (same width + color on all four sides). */
+        data class UniformBorder(val widthDp: kotlin.Float, val color: V) : V()
         /** Box-model padding/margin: top, right, bottom, left in Dp. */
         data class Padding(val top: kotlin.Float, val right: kotlin.Float, val bottom: kotlin.Float, val left: kotlin.Float) : V()
         /** Corner radii: top-left, top-right, bottom-right, bottom-left in Dp. */
@@ -139,6 +143,12 @@ internal class Evaluator {
                 val dp = (args.getOrNull(1) as? V.Dp) ?: return null
                 V.BorderRadius(dp.v, dp.v, dp.v, dp.v)
             }
+            "dev.unicompose.style.Border.Companion.all" -> {
+                val width = (args.getOrNull(1) as? V.Dp)?.v ?: return null
+                val color = args.getOrNull(2) ?: return null
+                if (color !is V.Color && color !is V.ColorRef) return null
+                V.UniformBorder(width, color)
+            }
             "dev.unicompose.style.rgb" -> {
                 val r = (args.getOrNull(0) as? V.Int)?.v ?: return null
                 val g = (args.getOrNull(1) as? V.Int)?.v ?: return null
@@ -155,6 +165,18 @@ internal class Evaluator {
             "dev.unicompose.style.Color.Companion.<get-White>" -> V.Color(0xFFFFFFFF.toInt())
             "dev.unicompose.style.Color.Companion.<get-Black>" -> V.Color(0xFF000000.toInt())
             "dev.unicompose.style.Color.Companion.<get-Transparent>" -> V.Color(0)
+            // Color is now a sealed interface; `Color(int)` resolves to its
+            // companion `operator fun invoke(argb: Int): Color`. Treat it as
+            // a literal Color factory.
+            "dev.unicompose.style.Color.Companion.invoke" -> {
+                val argbInt = (args.getOrNull(1) as? V.Int)?.v ?: return null
+                V.Color(argbInt)
+            }
+            // Color.token("--uc-colors-X") → emits `var(--uc-colors-X)` in CSS.
+            "dev.unicompose.style.Color.Companion.token" -> {
+                val name = (args.getOrNull(1) as? V.Str)?.v ?: return null
+                V.ColorRef(name)
+            }
             else -> null
         }
     }
@@ -164,9 +186,13 @@ internal class Evaluator {
         val classFqn = call.symbol.owner.constructedClass.fqNameWhenAvailable?.asString() ?: return null
         val args = call.arguments.map { evaluate(it) }
         return when (classFqn) {
-            "dev.unicompose.style.Color" -> {
+            "dev.unicompose.style.Color.Literal" -> {
                 val argb = (args.firstOrNull() as? V.Int)?.v ?: return null
                 V.Color(argb)
+            }
+            "dev.unicompose.style.Color.Ref" -> {
+                val name = (args.firstOrNull() as? V.Str)?.v ?: return null
+                V.ColorRef(name)
             }
             else -> null
         }

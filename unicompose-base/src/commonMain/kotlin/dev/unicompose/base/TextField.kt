@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import dev.unicompose.UiColumn
 import dev.unicompose.UiText
 import dev.unicompose.UiTextField
+import dev.unicompose.style.Color
 import dev.unicompose.style.FontWeight
 import dev.unicompose.style.Style
 
@@ -70,7 +71,7 @@ public val TextFieldRowStyle: Style = Style(
 
 /** Default styling for the label rendered above a [TextField]. */
 public val TextFieldLabelStyle: Style = Style(
-    colorRef = TokenRefs.colors.textSecondary,
+    color = Color.token(TokenRefs.colors.textSecondary),
     fontSizeRef = TokenRefs.type.xs,
     fontWeight = FontWeight.Medium,
 )

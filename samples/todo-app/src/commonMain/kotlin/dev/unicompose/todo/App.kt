@@ -21,6 +21,7 @@ import dev.unicompose.base.LightTokens
 import dev.unicompose.base.TokenRefs
 import dev.unicompose.base.UnicomposeTheme
 import dev.unicompose.style.Align
+import dev.unicompose.style.Color
 import dev.unicompose.style.FontWeight
 import dev.unicompose.style.Justify
 import dev.unicompose.style.Size
@@ -59,7 +60,7 @@ public fun App() {
 // ── Top-level Style declarations (statically extractable) ────────────────
 
 private val PageStyle: Style = Style(
-    backgroundColorRef = TokenRefs.colors.bgPage,
+    backgroundColor = Color.token(TokenRefs.colors.bgPage),
     paddingAllRef = TokenRefs.space.lg,
     gapRef = TokenRefs.space.lg,
     width = Size.FillParent,
@@ -80,7 +81,7 @@ private val HeaderTitleColumnStyle: Style = Style(
 
 private val HeaderSubtitleStyle: Style = Style(
     fontSizeRef = TokenRefs.type.sm,
-    colorRef = TokenRefs.colors.textSecondary,
+    color = Color.token(TokenRefs.colors.textSecondary),
 )
 
 private val AddTodoFormRowStyle: Style = Style(
@@ -92,7 +93,7 @@ private val AddTodoFormRowStyle: Style = Style(
 private val FlexFillStyle: Style = Style(flex = 1f)
 
 private val EmptyTodoTextStyle: Style = Style(
-    colorRef = TokenRefs.colors.textSecondary,
+    color = Color.token(TokenRefs.colors.textSecondary),
 )
 
 private val TodoListColumnStyle: Style = Style(
@@ -107,11 +108,11 @@ private val TodoRowStyle: Style = Style(
 )
 
 private val TodoTextDoneStyle: Style = Style(
-    colorRef = TokenRefs.colors.textSecondary,
+    color = Color.token(TokenRefs.colors.textSecondary),
 )
 
 private val TodoTextActiveStyle: Style = Style(
-    colorRef = TokenRefs.colors.textPrimary,
+    color = Color.token(TokenRefs.colors.textPrimary),
 )
 
 private val DeleteIconStyle: Style = Style(
