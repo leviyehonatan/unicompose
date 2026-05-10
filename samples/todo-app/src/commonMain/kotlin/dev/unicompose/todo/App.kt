@@ -65,6 +65,7 @@ private fun Page(state: TodoState, isDark: Boolean, toggleDark: () -> Unit) {
             gap = t.space.lg,
             width = Size.FillParent,
             height = Size.FillParent,
+            alignItems = Align.Stretch,
         ),
     ) {
         Header(isDark = isDark, toggleDark = toggleDark)

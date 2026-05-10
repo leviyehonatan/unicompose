@@ -18,6 +18,7 @@ import dev.unicompose.base.LightTokens
 import dev.unicompose.base.Text
 import dev.unicompose.base.UnicomposeTheme
 import dev.unicompose.base.currentTokens
+import dev.unicompose.style.Align
 import dev.unicompose.style.Border
 import dev.unicompose.style.BorderEdge
 import dev.unicompose.style.FontWeight
@@ -51,6 +52,7 @@ private fun Page(toggleDark: () -> Unit, isDark: Boolean) {
             padding = Padding.all(t.space.lg),
             gap = t.space.md,
             width = Size.FillParent,
+            alignItems = Align.Stretch,
         ),
     ) {
         Header(toggleDark, isDark)
