@@ -16,24 +16,25 @@ public final class dev/unicompose/HeadingLevel : java/lang/Enum {
 public final class dev/unicompose/InheritedText {
 	public static final field $stable I
 	public static final field Companion Ldev/unicompose/InheritedText$Companion;
+	public fun <init> ()V
+	public fun <init> (Ldev/unicompose/style/Color;Ldev/unicompose/style/Sp;Ldev/unicompose/style/FontWeight;Ldev/unicompose/style/FontFamily;Ldev/unicompose/style/Sp;Ldev/unicompose/style/Sp;Ldev/unicompose/style/TextAlign;)V
 	public synthetic fun <init> (Ldev/unicompose/style/Color;Ldev/unicompose/style/Sp;Ldev/unicompose/style/FontWeight;Ldev/unicompose/style/FontFamily;Ldev/unicompose/style/Sp;Ldev/unicompose/style/Sp;Ldev/unicompose/style/TextAlign;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun <init> (Ldev/unicompose/style/Color;Ldev/unicompose/style/Sp;Ldev/unicompose/style/FontWeight;Ldev/unicompose/style/FontFamily;Ldev/unicompose/style/Sp;Ldev/unicompose/style/Sp;Ldev/unicompose/style/TextAlign;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ldev/unicompose/style/Color;
-	public final fun component2-YQo_J0I ()Ldev/unicompose/style/Sp;
+	public final fun component2 ()Ldev/unicompose/style/Sp;
 	public final fun component3 ()Ldev/unicompose/style/FontWeight;
 	public final fun component4 ()Ldev/unicompose/style/FontFamily;
-	public final fun component5-YQo_J0I ()Ldev/unicompose/style/Sp;
-	public final fun component6-YQo_J0I ()Ldev/unicompose/style/Sp;
+	public final fun component5 ()Ldev/unicompose/style/Sp;
+	public final fun component6 ()Ldev/unicompose/style/Sp;
 	public final fun component7 ()Ldev/unicompose/style/TextAlign;
-	public final fun copy-MnMmV28 (Ldev/unicompose/style/Color;Ldev/unicompose/style/Sp;Ldev/unicompose/style/FontWeight;Ldev/unicompose/style/FontFamily;Ldev/unicompose/style/Sp;Ldev/unicompose/style/Sp;Ldev/unicompose/style/TextAlign;)Ldev/unicompose/InheritedText;
-	public static synthetic fun copy-MnMmV28$default (Ldev/unicompose/InheritedText;Ldev/unicompose/style/Color;Ldev/unicompose/style/Sp;Ldev/unicompose/style/FontWeight;Ldev/unicompose/style/FontFamily;Ldev/unicompose/style/Sp;Ldev/unicompose/style/Sp;Ldev/unicompose/style/TextAlign;ILjava/lang/Object;)Ldev/unicompose/InheritedText;
+	public final fun copy (Ldev/unicompose/style/Color;Ldev/unicompose/style/Sp;Ldev/unicompose/style/FontWeight;Ldev/unicompose/style/FontFamily;Ldev/unicompose/style/Sp;Ldev/unicompose/style/Sp;Ldev/unicompose/style/TextAlign;)Ldev/unicompose/InheritedText;
+	public static synthetic fun copy$default (Ldev/unicompose/InheritedText;Ldev/unicompose/style/Color;Ldev/unicompose/style/Sp;Ldev/unicompose/style/FontWeight;Ldev/unicompose/style/FontFamily;Ldev/unicompose/style/Sp;Ldev/unicompose/style/Sp;Ldev/unicompose/style/TextAlign;ILjava/lang/Object;)Ldev/unicompose/InheritedText;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getColor ()Ldev/unicompose/style/Color;
 	public final fun getFontFamily ()Ldev/unicompose/style/FontFamily;
-	public final fun getFontSize-YQo_J0I ()Ldev/unicompose/style/Sp;
+	public final fun getFontSize ()Ldev/unicompose/style/Sp;
 	public final fun getFontWeight ()Ldev/unicompose/style/FontWeight;
-	public final fun getLetterSpacing-YQo_J0I ()Ldev/unicompose/style/Sp;
-	public final fun getLineHeight-YQo_J0I ()Ldev/unicompose/style/Sp;
+	public final fun getLetterSpacing ()Ldev/unicompose/style/Sp;
+	public final fun getLineHeight ()Ldev/unicompose/style/Sp;
 	public final fun getTextAlign ()Ldev/unicompose/style/TextAlign;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -83,11 +84,11 @@ public final class dev/unicompose/UiCheckboxKt {
 
 public final class dev/unicompose/UiDividerDefaultsKt {
 	public static final fun getDefaultDividerColor ()Ldev/unicompose/style/Color;
-	public static final fun getDefaultDividerThickness ()F
+	public static final fun getDefaultDividerThickness ()Ldev/unicompose/style/Dp;
 }
 
 public final class dev/unicompose/UiDividerKt {
-	public static final fun UiDivider-IAEm95M (Ldev/unicompose/style/Color;FZLandroidx/compose/runtime/Composer;II)V
+	public static final fun UiDivider (Ldev/unicompose/style/Color;Ldev/unicompose/style/Dp;ZLandroidx/compose/runtime/Composer;II)V
 }
 
 public final class dev/unicompose/UiHeadingDefaultsKt {
@@ -107,7 +108,7 @@ public final class dev/unicompose/UiRadioGroupKt {
 }
 
 public final class dev/unicompose/UiSpacerKt {
-	public static final fun UiSpacer-W3bd8QU (Ldev/unicompose/style/Dp;Ldev/unicompose/style/Dp;Landroidx/compose/runtime/Composer;II)V
+	public static final fun UiSpacer (Ldev/unicompose/style/Dp;Ldev/unicompose/style/Dp;Landroidx/compose/runtime/Composer;II)V
 }
 
 public final class dev/unicompose/UiSwitchKt {

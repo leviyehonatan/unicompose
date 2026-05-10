@@ -95,36 +95,36 @@ public final class dev/unicompose/base/LocalTokensKt {
 
 public final class dev/unicompose/base/RadiusTokens {
 	public static final field $stable I
-	public synthetic fun <init> (FFFLkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun component1-4QJRU5U ()F
-	public final fun component2-4QJRU5U ()F
-	public final fun component3-4QJRU5U ()F
-	public final fun copy-eA_585g (FFF)Ldev/unicompose/base/RadiusTokens;
-	public static synthetic fun copy-eA_585g$default (Ldev/unicompose/base/RadiusTokens;FFFILjava/lang/Object;)Ldev/unicompose/base/RadiusTokens;
+	public fun <init> (Ldev/unicompose/style/Dp;Ldev/unicompose/style/Dp;Ldev/unicompose/style/Dp;)V
+	public final fun component1 ()Ldev/unicompose/style/Dp;
+	public final fun component2 ()Ldev/unicompose/style/Dp;
+	public final fun component3 ()Ldev/unicompose/style/Dp;
+	public final fun copy (Ldev/unicompose/style/Dp;Ldev/unicompose/style/Dp;Ldev/unicompose/style/Dp;)Ldev/unicompose/base/RadiusTokens;
+	public static synthetic fun copy$default (Ldev/unicompose/base/RadiusTokens;Ldev/unicompose/style/Dp;Ldev/unicompose/style/Dp;Ldev/unicompose/style/Dp;ILjava/lang/Object;)Ldev/unicompose/base/RadiusTokens;
 	public fun equals (Ljava/lang/Object;)Z
-	public final fun getLg-4QJRU5U ()F
-	public final fun getMd-4QJRU5U ()F
-	public final fun getSm-4QJRU5U ()F
+	public final fun getLg ()Ldev/unicompose/style/Dp;
+	public final fun getMd ()Ldev/unicompose/style/Dp;
+	public final fun getSm ()Ldev/unicompose/style/Dp;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
 
 public final class dev/unicompose/base/SpaceTokens {
 	public static final field $stable I
-	public synthetic fun <init> (FFFFFLkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun component1-4QJRU5U ()F
-	public final fun component2-4QJRU5U ()F
-	public final fun component3-4QJRU5U ()F
-	public final fun component4-4QJRU5U ()F
-	public final fun component5-4QJRU5U ()F
-	public final fun copy-wOMEA7E (FFFFF)Ldev/unicompose/base/SpaceTokens;
-	public static synthetic fun copy-wOMEA7E$default (Ldev/unicompose/base/SpaceTokens;FFFFFILjava/lang/Object;)Ldev/unicompose/base/SpaceTokens;
+	public fun <init> (Ldev/unicompose/style/Dp;Ldev/unicompose/style/Dp;Ldev/unicompose/style/Dp;Ldev/unicompose/style/Dp;Ldev/unicompose/style/Dp;)V
+	public final fun component1 ()Ldev/unicompose/style/Dp;
+	public final fun component2 ()Ldev/unicompose/style/Dp;
+	public final fun component3 ()Ldev/unicompose/style/Dp;
+	public final fun component4 ()Ldev/unicompose/style/Dp;
+	public final fun component5 ()Ldev/unicompose/style/Dp;
+	public final fun copy (Ldev/unicompose/style/Dp;Ldev/unicompose/style/Dp;Ldev/unicompose/style/Dp;Ldev/unicompose/style/Dp;Ldev/unicompose/style/Dp;)Ldev/unicompose/base/SpaceTokens;
+	public static synthetic fun copy$default (Ldev/unicompose/base/SpaceTokens;Ldev/unicompose/style/Dp;Ldev/unicompose/style/Dp;Ldev/unicompose/style/Dp;Ldev/unicompose/style/Dp;Ldev/unicompose/style/Dp;ILjava/lang/Object;)Ldev/unicompose/base/SpaceTokens;
 	public fun equals (Ljava/lang/Object;)Z
-	public final fun getLg-4QJRU5U ()F
-	public final fun getMd-4QJRU5U ()F
-	public final fun getSm-4QJRU5U ()F
-	public final fun getXl-4QJRU5U ()F
-	public final fun getXs-4QJRU5U ()F
+	public final fun getLg ()Ldev/unicompose/style/Dp;
+	public final fun getMd ()Ldev/unicompose/style/Dp;
+	public final fun getSm ()Ldev/unicompose/style/Dp;
+	public final fun getXl ()Ldev/unicompose/style/Dp;
+	public final fun getXs ()Ldev/unicompose/style/Dp;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
@@ -212,20 +212,20 @@ public final class dev/unicompose/base/TokensKt {
 
 public final class dev/unicompose/base/TypeTokens {
 	public static final field $stable I
-	public synthetic fun <init> (FFFFFLkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun component1-GqG9Azs ()F
-	public final fun component2-GqG9Azs ()F
-	public final fun component3-GqG9Azs ()F
-	public final fun component4-GqG9Azs ()F
-	public final fun component5-GqG9Azs ()F
-	public final fun copy-IfccnDo (FFFFF)Ldev/unicompose/base/TypeTokens;
-	public static synthetic fun copy-IfccnDo$default (Ldev/unicompose/base/TypeTokens;FFFFFILjava/lang/Object;)Ldev/unicompose/base/TypeTokens;
+	public fun <init> (Ldev/unicompose/style/Sp;Ldev/unicompose/style/Sp;Ldev/unicompose/style/Sp;Ldev/unicompose/style/Sp;Ldev/unicompose/style/Sp;)V
+	public final fun component1 ()Ldev/unicompose/style/Sp;
+	public final fun component2 ()Ldev/unicompose/style/Sp;
+	public final fun component3 ()Ldev/unicompose/style/Sp;
+	public final fun component4 ()Ldev/unicompose/style/Sp;
+	public final fun component5 ()Ldev/unicompose/style/Sp;
+	public final fun copy (Ldev/unicompose/style/Sp;Ldev/unicompose/style/Sp;Ldev/unicompose/style/Sp;Ldev/unicompose/style/Sp;Ldev/unicompose/style/Sp;)Ldev/unicompose/base/TypeTokens;
+	public static synthetic fun copy$default (Ldev/unicompose/base/TypeTokens;Ldev/unicompose/style/Sp;Ldev/unicompose/style/Sp;Ldev/unicompose/style/Sp;Ldev/unicompose/style/Sp;Ldev/unicompose/style/Sp;ILjava/lang/Object;)Ldev/unicompose/base/TypeTokens;
 	public fun equals (Ljava/lang/Object;)Z
-	public final fun getLg-GqG9Azs ()F
-	public final fun getMd-GqG9Azs ()F
-	public final fun getSm-GqG9Azs ()F
-	public final fun getXl-GqG9Azs ()F
-	public final fun getXs-GqG9Azs ()F
+	public final fun getLg ()Ldev/unicompose/style/Sp;
+	public final fun getMd ()Ldev/unicompose/style/Sp;
+	public final fun getSm ()Ldev/unicompose/style/Sp;
+	public final fun getXl ()Ldev/unicompose/style/Sp;
+	public final fun getXs ()Ldev/unicompose/style/Sp;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }

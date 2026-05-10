@@ -22,9 +22,12 @@ import dev.unicompose.base.TokenRefs
 import dev.unicompose.base.UnicomposeTheme
 import dev.unicompose.style.Align
 import dev.unicompose.style.Color
+import dev.unicompose.style.Dp
 import dev.unicompose.style.FontWeight
 import dev.unicompose.style.Justify
+import dev.unicompose.style.Padding
 import dev.unicompose.style.Size
+import dev.unicompose.style.Sp
 import dev.unicompose.style.Style
 
 /**
@@ -61,8 +64,8 @@ public fun App() {
 
 private val PageStyle: Style = Style(
     backgroundColor = Color.token(TokenRefs.colors.bgPage),
-    paddingAllRef = TokenRefs.space.lg,
-    gapRef = TokenRefs.space.lg,
+    padding = Padding.all(Dp.token(TokenRefs.space.lg)),
+    gap = Dp.token(TokenRefs.space.lg),
     width = Size.FillParent,
     height = Size.FillParent,
     alignItems = Align.Stretch,
@@ -72,20 +75,20 @@ private val HeaderRowStyle: Style = Style(
     justifyContent = Justify.SpaceBetween,
     alignItems = Align.Center,
     width = Size.FillParent,
-    gapRef = TokenRefs.space.sm,
+    gap = Dp.token(TokenRefs.space.sm),
 )
 
 private val HeaderTitleColumnStyle: Style = Style(
-    gapRef = TokenRefs.space.xs,
+    gap = Dp.token(TokenRefs.space.xs),
 )
 
 private val HeaderSubtitleStyle: Style = Style(
-    fontSizeRef = TokenRefs.type.sm,
+    fontSize = Sp.token(TokenRefs.type.sm),
     color = Color.token(TokenRefs.colors.textSecondary),
 )
 
 private val AddTodoFormRowStyle: Style = Style(
-    gapRef = TokenRefs.space.sm,
+    gap = Dp.token(TokenRefs.space.sm),
     width = Size.FillParent,
     alignItems = Align.Center,
 )
@@ -98,11 +101,11 @@ private val EmptyTodoTextStyle: Style = Style(
 
 private val TodoListColumnStyle: Style = Style(
     width = Size.FillParent,
-    gapRef = TokenRefs.space.sm,
+    gap = Dp.token(TokenRefs.space.sm),
 )
 
 private val TodoRowStyle: Style = Style(
-    gapRef = TokenRefs.space.sm,
+    gap = Dp.token(TokenRefs.space.sm),
     alignItems = Align.Center,
     width = Size.FillParent,
 )
@@ -116,7 +119,7 @@ private val TodoTextActiveStyle: Style = Style(
 )
 
 private val DeleteIconStyle: Style = Style(
-    fontSizeRef = TokenRefs.type.lg,
+    fontSize = Sp.token(TokenRefs.type.lg),
     fontWeight = FontWeight.Bold,
 )
 
@@ -124,11 +127,11 @@ private val FooterRowStyle: Style = Style(
     justifyContent = Justify.SpaceBetween,
     alignItems = Align.Center,
     width = Size.FillParent,
-    gapRef = TokenRefs.space.sm,
+    gap = Dp.token(TokenRefs.space.sm),
 )
 
 private val FooterBadgeRowStyle: Style = Style(
-    gapRef = TokenRefs.space.sm,
+    gap = Dp.token(TokenRefs.space.sm),
     alignItems = Align.Center,
 )
 

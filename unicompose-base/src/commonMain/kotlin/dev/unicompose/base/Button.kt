@@ -7,7 +7,9 @@ import dev.unicompose.UiText
 import dev.unicompose.style.Border
 import dev.unicompose.style.BorderRadius
 import dev.unicompose.style.Color
+import dev.unicompose.style.Dp
 import dev.unicompose.style.FontWeight
+import dev.unicompose.style.Sp
 import dev.unicompose.style.Padding
 import dev.unicompose.style.Style
 import dev.unicompose.style.dp
@@ -103,10 +105,12 @@ public fun Button(
  * vals layer color/border on top via Style+.
  */
 private val ButtonSharedStyle: Style = Style(
-    paddingVerticalRef = TokenRefs.space.sm,
-    paddingHorizontalRef = TokenRefs.space.md,
-    borderRadiusAllRef = TokenRefs.radii.md,
-    fontSizeRef = TokenRefs.type.sm,
+    padding = Padding.symmetric(
+        vertical = Dp.token(TokenRefs.space.sm),
+        horizontal = Dp.token(TokenRefs.space.md),
+    ),
+    borderRadius = BorderRadius.all(Dp.token(TokenRefs.radii.md)),
+    fontSize = Sp.token(TokenRefs.type.sm),
     fontWeight = FontWeight.Medium,
 )
 

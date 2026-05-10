@@ -112,28 +112,14 @@ internal object AtomicCss {
 
     private fun visualRules(style: Style): List<Pair<String, String>> {
         val out = mutableListOf<Pair<String, String>>()
-        if (style.paddingAllRef != null) {
-            out += "padding" to "var(${style.paddingAllRef})"
-        } else if (style.paddingVerticalRef != null || style.paddingHorizontalRef != null) {
-            val v = style.paddingVerticalRef?.let { "var($it)" } ?: "0"
-            val h = style.paddingHorizontalRef?.let { "var($it)" } ?: "0"
-            out += "padding" to "$v $h"
-        } else style.padding?.let { p ->
-            out += "padding" to "${p.top.value}px ${p.right.value}px ${p.bottom.value}px ${p.left.value}px"
-        }
-        style.margin?.let { m ->
-            out += "margin" to "${m.top.value}px ${m.right.value}px ${m.bottom.value}px ${m.left.value}px"
-        }
+        style.padding?.let { p -> out += "padding" to p.toCss() }
+        style.margin?.let { m -> out += "margin" to m.toCss() }
         // Color values are themable via Color.Ref; toCss() handles both
         // variants (literal → rgb(...) / rgba(...); ref → var(--name)).
         style.backgroundColor?.let { out += "background-color" to it.toCss() }
-        style.backgroundGradient?.let { g ->
-            out += "background-image" to g.toCss()
-        }
+        style.backgroundGradient?.let { g -> out += "background-image" to g.toCss() }
         style.color?.let { out += "color" to it.toCss() }
-        if (style.fontSizeRef != null) {
-            out += "font-size" to "var(${style.fontSizeRef})"
-        } else style.fontSize?.let { out += "font-size" to "${it.value}px" }
+        style.fontSize?.let { out += "font-size" to it.toCss() }
         style.fontWeight?.let { out += "font-weight" to it.value.toString() }
         style.fontFamily?.let {
             out += "font-family" to when (it) {
@@ -143,8 +129,8 @@ internal object AtomicCss {
                 FontFamily.Monospace -> "monospace"
             }
         }
-        style.lineHeight?.let { out += "line-height" to "${it.value}px" }
-        style.letterSpacing?.let { out += "letter-spacing" to "${it.value}px" }
+        style.lineHeight?.let { out += "line-height" to it.toCss() }
+        style.letterSpacing?.let { out += "letter-spacing" to it.toCss() }
         style.textAlign?.let {
             out += "text-align" to when (it) {
                 TextAlign.Start -> "start"
@@ -153,20 +139,14 @@ internal object AtomicCss {
                 TextAlign.Justify -> "justify"
             }
         }
-        if (style.borderRadiusAllRef != null) {
-            out += "border-radius" to "var(${style.borderRadiusAllRef})"
-        } else style.borderRadius?.let { r ->
-            // CSS border-radius shorthand: top-left top-right bottom-right bottom-left
-            out += "border-radius" to
-                "${r.topLeft.value}px ${r.topRight.value}px ${r.bottomRight.value}px ${r.bottomLeft.value}px"
-        }
+        style.borderRadius?.let { out += "border-radius" to it.toCss() }
         style.border?.let { b ->
             if (b.isUniform) {
                 val e = b.top!!
-                out += "border" to "${e.width.value}px solid ${e.color.toCss()}"
+                out += "border" to "${e.width.toCss()} solid ${e.color.toCss()}"
             } else {
                 fun edgeRule(side: String, e: BorderEdge?) {
-                    val rule = if (e != null) "${e.width.value}px solid ${e.color.toCss()}" else "0"
+                    val rule = if (e != null) "${e.width.toCss()} solid ${e.color.toCss()}" else "0"
                     out += "border-$side" to rule
                 }
                 edgeRule("top", b.top)
@@ -176,20 +156,19 @@ internal object AtomicCss {
             }
         }
         style.boxShadow?.let { s ->
-            // CSS box-shadow: offset-x offset-y blur spread color. All four supported on web.
             out += "box-shadow" to
-                "${s.offsetX.value}px ${s.offsetY.value}px ${s.blur.value}px ${s.spread.value}px ${s.color.toCss()}"
+                "${s.offsetX.toCss()} ${s.offsetY.toCss()} ${s.blur.toCss()} ${s.spread.toCss()} ${s.color.toCss()}"
         }
         style.opacity?.let { out += "opacity" to it.toString() }
         when (val w = style.width) {
-            is Size.Fixed -> out += "width" to "${w.dp.value}px"
+            is Size.Fixed -> out += "width" to w.dp.toCss()
             Size.FillParent -> out += "width" to "100%"
             is Size.Fraction -> out += "width" to "${w.value * 100}%"
             Size.WrapContent -> out += "width" to "auto"
             null -> {}
         }
         when (val h = style.height) {
-            is Size.Fixed -> out += "height" to "${h.dp.value}px"
+            is Size.Fixed -> out += "height" to h.dp.toCss()
             Size.FillParent -> out += "height" to "100%"
             is Size.Fraction -> out += "height" to "${h.value * 100}%"
             Size.WrapContent -> out += "height" to "auto"
@@ -216,18 +195,13 @@ internal object AtomicCss {
                 Justify.SpaceEvenly -> "space-evenly"
             }
         }
-        // Explicit default to match Compose Row/Column default (Top/Start, NOT stretch).
-        // Without this we'd inherit CSS's `align-items: stretch` default, which would
-        // make web flex items expand cross-axis while CMP would top-align them.
         out += "align-items" to when (style.alignItems) {
             null, Align.Start -> "flex-start"
             Align.Center -> "center"
             Align.End -> "flex-end"
             Align.Stretch -> "stretch"
         }
-        if (style.gapRef != null) {
-            out += "gap" to "var(${style.gapRef})"
-        } else style.gap?.let { out += "gap" to "${it.value}px" }
+        style.gap?.let { out += "gap" to it.toCss() }
         return out
     }
 }
@@ -236,6 +210,45 @@ private fun Color.toCss(): String = when (this) {
     is Color.Literal ->
         if (alpha == 0xFF) "rgb($red,$green,$blue)" else "rgba($red,$green,$blue,${alpha / 255.0})"
     is Color.Ref -> "var($cssVarName)"
+}
+
+/**
+ * Lower a [Dp] to its CSS px representation. Refs lower to `var(--name)`;
+ * literals to `${value}px`. Keeps [Float.toString]-formatted values so the
+ * IR plugin's CssEmitter produces byte-identical hashes.
+ */
+private fun Dp.toCss(): String = when (this) {
+    is Dp.Literal -> "${value}px"
+    is Dp.Ref -> "var($cssVarName)"
+}
+
+private fun Sp.toCss(): String = when (this) {
+    is Sp.Literal -> "${value}px"
+    is Sp.Ref -> "var($cssVarName)"
+}
+
+/**
+ * Lower a [Padding] to a CSS shorthand. Detects when all four sides are the
+ * same Dp and emits the one-value form (`padding: var(--x)`) so the runtime
+ * output matches what authors would write by hand.
+ */
+private fun Padding.toCss(): String {
+    if (top == right && right == bottom && bottom == left) return top.toCss()
+    if (top == bottom && left == right) return "${top.toCss()} ${left.toCss()}"
+    return "${top.toCss()} ${right.toCss()} ${bottom.toCss()} ${left.toCss()}"
+}
+
+private fun Margin.toCss(): String {
+    if (top == right && right == bottom && bottom == left) return top.toCss()
+    if (top == bottom && left == right) return "${top.toCss()} ${left.toCss()}"
+    return "${top.toCss()} ${right.toCss()} ${bottom.toCss()} ${left.toCss()}"
+}
+
+private fun BorderRadius.toCss(): String {
+    if (topLeft == topRight && topRight == bottomRight && bottomRight == bottomLeft) {
+        return topLeft.toCss()
+    }
+    return "${topLeft.toCss()} ${topRight.toCss()} ${bottomRight.toCss()} ${bottomLeft.toCss()}"
 }
 
 private fun LinearGradient.toCss(): String {

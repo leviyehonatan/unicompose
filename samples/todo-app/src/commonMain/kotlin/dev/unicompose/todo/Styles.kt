@@ -37,5 +37,5 @@ public val SmokeTestTokens: Style = Style(
 public val SmokeTestTokenRefs: Style = Style(
     color = Color.token(TokenRefs.colors.textPrimary),
     backgroundColor = Color.token(TokenRefs.colors.bgSurface),
-    gapRef = TokenRefs.space.md,
+    gap = dev.unicompose.style.Dp.token(TokenRefs.space.md),
 )

@@ -12,4 +12,4 @@ import dev.unicompose.style.argb
 public val DefaultDividerColor: Color = argb(31, 0, 0, 0)
 
 /** Default divider thickness — 1dp. */
-public val DefaultDividerThickness: Dp = Dp(1f)
+public val DefaultDividerThickness: Dp = Dp.Literal(1f)

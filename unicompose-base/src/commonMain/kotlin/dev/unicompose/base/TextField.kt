@@ -5,7 +5,9 @@ import dev.unicompose.UiColumn
 import dev.unicompose.UiText
 import dev.unicompose.UiTextField
 import dev.unicompose.style.Color
+import dev.unicompose.style.Dp
 import dev.unicompose.style.FontWeight
+import dev.unicompose.style.Sp
 import dev.unicompose.style.Style
 
 /**
@@ -66,12 +68,12 @@ public fun TextField(
 
 /** Vertical gap between a TextField's label and its input. */
 public val TextFieldRowStyle: Style = Style(
-    gapRef = TokenRefs.space.xs,
+    gap = Dp.token(TokenRefs.space.xs),
 )
 
 /** Default styling for the label rendered above a [TextField]. */
 public val TextFieldLabelStyle: Style = Style(
     color = Color.token(TokenRefs.colors.textSecondary),
-    fontSizeRef = TokenRefs.type.xs,
+    fontSize = Sp.token(TokenRefs.type.xs),
     fontWeight = FontWeight.Medium,
 )

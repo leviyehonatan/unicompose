@@ -85,25 +85,6 @@ public data class Style(
     val height: Size? = null,
     val flex: Float? = null,
     val opacity: Float? = null,
-    // ── Token references ─────────────────────────────────────────────────────
-    // Color refs collapsed: use `Color.token("--uc-colors-X")` as the value
-    // for any color field. Dp/Sp follow the same pattern in a follow-up.
-    //
-    // Below `*Ref` fields handle properties whose typed value isn't currently
-    // ref-able (Dp, Sp). They'll be removed when those types get the same
-    // sealed-interface treatment as Color.
-    val gapRef: String? = null,
-    val fontSizeRef: String? = null,
-    /** Single CSS variable applied uniformly to all four padding sides. */
-    val paddingAllRef: String? = null,
-    /** Single CSS variable applied uniformly to all four corners. */
-    val borderRadiusAllRef: String? = null,
-    /**
-     * Symmetric padding refs — vertical (top + bottom) and horizontal (left +
-     * right). Lowers to the CSS `padding: var(--v) var(--h)` shorthand.
-     */
-    val paddingVerticalRef: String? = null,
-    val paddingHorizontalRef: String? = null,
 ) {
     public companion object {
         /** A [Style] with no properties set. Equivalent to passing no style at all. */
@@ -138,12 +119,6 @@ public data class Style(
         height = other.height ?: height,
         flex = other.flex ?: flex,
         opacity = other.opacity ?: opacity,
-        gapRef = other.gapRef ?: gapRef,
-        fontSizeRef = other.fontSizeRef ?: fontSizeRef,
-        paddingAllRef = other.paddingAllRef ?: paddingAllRef,
-        borderRadiusAllRef = other.borderRadiusAllRef ?: borderRadiusAllRef,
-        paddingVerticalRef = other.paddingVerticalRef ?: paddingVerticalRef,
-        paddingHorizontalRef = other.paddingHorizontalRef ?: paddingHorizontalRef,
     )
 }
 
@@ -362,8 +337,9 @@ public data class Shadow(
             Shadow(offsetX = offsetX, offsetY = offsetY, blur = 0.dp, spread = spread, color = color)
     }
 
-    /** True when no blur is requested — eligible for the drawBehind fast path. */
-    public val isHard: Boolean get() = blur.value == 0f
+    /** True when no blur is requested — eligible for the drawBehind fast path.
+     *  Treats a Dp.Ref blur as non-hard since we can't statically know its value. */
+    public val isHard: Boolean get() = (blur as? Dp.Literal)?.value == 0f
 }
 
 /**
@@ -385,36 +361,89 @@ public enum class TextAlign {
     Justify,
 }
 
-@JvmInline
-public value class Dp(public val value: Float) {
+/**
+ * Density-independent pixel — a length unit. Two variants:
+ *  - [Dp.Literal] — concrete float value.
+ *  - [Dp.Ref] — a reference to a CSS variable name; lowers to `var(--name)` on
+ *    the web, resolves through the active theme on CMP.
+ *
+ * Construct literals with `16.dp` / `0.5f.dp`. Construct refs with [Dp.token].
+ */
+public sealed interface Dp {
+    /**
+     * The numeric value when this is a [Literal], otherwise `0f`. Refs are
+     * expected to be resolved against the active theme upstream (see
+     * unicompose-base Style.resolveRefs); a Ref reaching code that reads
+     * `value` is a programming error in the call chain.
+     */
+    public val value: Float
+
+    public class Literal(override val value: Float) : Dp {
+        override fun equals(other: Any?): Boolean = other is Literal && value == other.value
+        override fun hashCode(): Int = value.hashCode()
+        override fun toString(): String = "${value}dp"
+    }
+
+    public class Ref(public val cssVarName: String) : Dp {
+        override val value: Float = 0f
+        override fun equals(other: Any?): Boolean = other is Ref && cssVarName == other.cssVarName
+        override fun hashCode(): Int = cssVarName.hashCode()
+        override fun toString(): String = "Dp.Ref($cssVarName)"
+    }
+
     public companion object {
-        /** Zero-length [Dp]. */
-        public val Zero: Dp = Dp(0f)
+        public val Zero: Dp = Literal(0f)
+        public fun token(cssVarName: String): Dp = Ref(cssVarName)
     }
 }
 
 /** Construct a [Dp] from an integer literal — `16.dp`. */
-public val Int.dp: Dp get() = Dp(this.toFloat())
+public val Int.dp: Dp get() = Dp.Literal(this.toFloat())
 
 /** Construct a [Dp] from a floating-point literal — `0.5f.dp`. */
-public val Float.dp: Dp get() = Dp(this)
+public val Float.dp: Dp get() = Dp.Literal(this)
+
+/** Returns the literal value if [this] is a [Dp.Literal], else null. */
+public fun Dp.valueOrNull(): Float? = (this as? Dp.Literal)?.value
 
 /**
- * Scale-independent pixel for typography.
+ * Scale-independent pixel for typography. Same Literal/Ref variants as [Dp].
  *
  * Differs from [Dp] in that it respects the user's system font-scale setting on
  * Android / iOS, and falls back to plain `px` on the web (no equivalent web concept).
  *
- * Construct via the [Int.sp] / [Float.sp] extensions: `14.sp`.
+ * Construct literals with `14.sp` / `13.5f.sp`. Construct refs with [Sp.token].
  */
-@JvmInline
-public value class Sp(public val value: Float)
+public sealed interface Sp {
+    /** Numeric value on [Literal], `0f` on [Ref]. Same caveat as [Dp.value]. */
+    public val value: Float
+
+    public class Literal(override val value: Float) : Sp {
+        override fun equals(other: Any?): Boolean = other is Literal && value == other.value
+        override fun hashCode(): Int = value.hashCode()
+        override fun toString(): String = "${value}sp"
+    }
+
+    public class Ref(public val cssVarName: String) : Sp {
+        override val value: Float = 0f
+        override fun equals(other: Any?): Boolean = other is Ref && cssVarName == other.cssVarName
+        override fun hashCode(): Int = cssVarName.hashCode()
+        override fun toString(): String = "Sp.Ref($cssVarName)"
+    }
+
+    public companion object {
+        public fun token(cssVarName: String): Sp = Ref(cssVarName)
+    }
+}
 
 /** Construct an [Sp] from an integer literal — `14.sp`. */
-public val Int.sp: Sp get() = Sp(this.toFloat())
+public val Int.sp: Sp get() = Sp.Literal(this.toFloat())
 
 /** Construct an [Sp] from a floating-point literal — `13.5f.sp`. */
-public val Float.sp: Sp get() = Sp(this)
+public val Float.sp: Sp get() = Sp.Literal(this)
+
+/** Returns the literal value if [this] is an [Sp.Literal], else null. */
+public fun Sp.valueOrNull(): Float? = (this as? Sp.Literal)?.value
 
 /**
  * Themable color value.

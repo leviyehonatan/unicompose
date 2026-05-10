@@ -5,48 +5,21 @@ package dev.unicompose.extractor
  * CSS `(property, value)` rules + a deterministic class name hash.
  *
  * Mirrors the format produced by `unicompose/src/jsMain/.../style/AtomicCss.kt`'s
- * `visualRules()` and `stableHash()` so build-time-emitted classes resolve to the
- * SAME hash that the runtime path would have produced for the same Style — the
- * runtime path stays as a fallback for non-extractable styles, and identical
- * hashes mean both paths produce the same CSS rule set.
- *
- * Returns null when no known Style fields could be mapped (e.g. only opaque
- * dynamic args were present). Otherwise: a class name like "uc-abc1234" plus
- * the body rules to write into `.<class>{<body>}`.
+ * `visualRules()` / `flexRules()` and `stableHash()` so build-time-emitted
+ * classes resolve to the SAME hash that the runtime path would have produced
+ * for the same Style — the runtime path stays as a fallback for non-extractable
+ * styles, and identical hashes mean both paths produce the same CSS rule set.
  */
 internal object CssEmitter {
 
     data class Emission(val className: String, val cssBody: String)
 
-    /**
-     * Maps an evaluated Style param-name → V to a list of CSS rules. Param names
-     * not in the whitelist are silently skipped (we'd rather emit a partial class
-     * for the known fields than fail the whole call).
-     */
     fun emit(args: Map<String, Evaluator.V>, prefix: String = "uc"): Emission? {
         val rules = mutableListOf<Pair<String, String>>()
-
-        // Pre-pass: when both vertical + horizontal padding refs are set, emit
-        // ONE combined `padding: var(--v) var(--h)` rule instead of two
-        // overlapping `padding:` declarations. Mutates a working set so the
-        // ParamOrder loop below skips the now-handled fields.
-        val handled = mutableSetOf<String>()
-        val v = (args["paddingVerticalRef"] as? Evaluator.V.Str)?.v
-        val h = (args["paddingHorizontalRef"] as? Evaluator.V.Str)?.v
-        if (v != null && h != null) {
-            rules += "padding" to "var($v) var($h)"
-            handled += "paddingVerticalRef"
-            handled += "paddingHorizontalRef"
-        }
-
-        // Process in a stable order so the same Style produces the same hash
-        // regardless of map iteration order.
         for (paramName in ParamOrder) {
-            if (paramName in handled) continue
             val argValue = args[paramName] ?: continue
             ruleFor(paramName, argValue)?.let { rules += it }
         }
-
         if (rules.isEmpty()) return null
         val body = rules.joinToString(";") { "${it.first}:${it.second}" }
         val key = "$prefix|$body"
@@ -57,66 +30,32 @@ internal object CssEmitter {
     /**
      * Stable order matching the order AtomicCss.visualRules() emits — keeps the
      * hash key text identical across the two paths.
-     *
-     * NOTE: ref params (e.g. backgroundColorRef) substitute their literal
-     * counterparts when present. They occupy the literal's position in the
-     * emit order so a Style switching between literal and ref produces a
-     * different hash (correct — different rule).
      */
     private val ParamOrder = listOf(
-        "padding", "paddingAllRef", "paddingVerticalRef", "paddingHorizontalRef",
-        "margin",
-        "backgroundColor", // Color or ColorRef both flow through ruleFor
-        "color",
-        "fontSize", "fontSizeRef", "fontWeight",
-        "fontFamily", "lineHeight", "letterSpacing", "textAlign",
-        "borderRadius", "borderRadiusAllRef",
-        "border", "boxShadow", "opacity", "width", "height", "flex",
-        "gap", "gapRef",
+        "padding", "margin",
+        "backgroundColor", "color",
+        "fontSize", "fontWeight", "fontFamily",
+        "lineHeight", "letterSpacing", "textAlign",
+        "borderRadius", "border", "boxShadow",
+        "opacity", "width", "height", "flex",
+        "gap",
     )
 
     private fun ruleFor(paramName: String, v: Evaluator.V): Pair<String, String>? = when (paramName) {
-        "padding" -> (v as? Evaluator.V.Padding)?.let {
-            "padding" to "${it.top.fmt()}px ${it.right.fmt()}px ${it.bottom.fmt()}px ${it.left.fmt()}px"
-        }
-        "paddingAllRef" -> (v as? Evaluator.V.Str)?.let { "padding" to "var(${it.v})" }
-        // paddingVerticalRef/paddingHorizontalRef are read together; emit only once
-        // when we see paddingVerticalRef. paddingHorizontalRef alone would be paired
-        // with vertical=0 which is rarely intentional, but supported for symmetry.
-        "paddingVerticalRef" -> (v as? Evaluator.V.Str)?.let { "padding" to "var(${it.v}) 0" }
-        "paddingHorizontalRef" -> (v as? Evaluator.V.Str)?.let { "padding" to "0 var(${it.v})" }
-        "margin" -> (v as? Evaluator.V.Padding)?.let {
-            "margin" to "${it.top.fmt()}px ${it.right.fmt()}px ${it.bottom.fmt()}px ${it.left.fmt()}px"
-        }
-        "backgroundColor" -> when (v) {
-            is Evaluator.V.Color -> "background-color" to colorCss(v.argb)
-            is Evaluator.V.ColorRef -> "background-color" to "var(${v.cssVarName})"
-            else -> null
-        }
-        "color" -> when (v) {
-            is Evaluator.V.Color -> "color" to colorCss(v.argb)
-            is Evaluator.V.ColorRef -> "color" to "var(${v.cssVarName})"
-            else -> null
-        }
-        "gap" -> (v as? Evaluator.V.Dp)?.let { "gap" to "${it.v.fmt()}px" }
-        "gapRef" -> (v as? Evaluator.V.Str)?.let { "gap" to "var(${it.v})" }
-        "fontSize" -> (v as? Evaluator.V.Sp)?.let { "font-size" to "${it.v.fmt()}px" }
-        "fontSizeRef" -> (v as? Evaluator.V.Str)?.let { "font-size" to "var(${it.v})" }
+        "padding" -> (v as? Evaluator.V.Padding)?.let { "padding" to paddingCss(it) }
+        "margin" -> (v as? Evaluator.V.Padding)?.let { "margin" to paddingCss(it) }
+        "backgroundColor" -> colorCssOrNull(v)?.let { "background-color" to it }
+        "color" -> colorCssOrNull(v)?.let { "color" to it }
+        "gap" -> dpCssOrNull(v)?.let { "gap" to it }
+        "fontSize" -> spCssOrNull(v)?.let { "font-size" to it }
         "fontWeight" -> (v as? Evaluator.V.EnumEntry)?.let { fontWeightCss(it.name) }
         "fontFamily" -> (v as? Evaluator.V.EnumEntry)?.let { fontFamilyCss(it.name) }
-        "lineHeight" -> (v as? Evaluator.V.Sp)?.let { "line-height" to "${it.v.fmt()}px" }
-        "letterSpacing" -> (v as? Evaluator.V.Sp)?.let { "letter-spacing" to "${it.v.fmt()}px" }
+        "lineHeight" -> spCssOrNull(v)?.let { "line-height" to it }
+        "letterSpacing" -> spCssOrNull(v)?.let { "letter-spacing" to it }
         "textAlign" -> (v as? Evaluator.V.EnumEntry)?.let { textAlignCss(it.name) }
-        "borderRadius" -> (v as? Evaluator.V.BorderRadius)?.let {
-            "border-radius" to "${it.tl.fmt()}px ${it.tr.fmt()}px ${it.br.fmt()}px ${it.bl.fmt()}px"
-        }
-        "borderRadiusAllRef" -> (v as? Evaluator.V.Str)?.let { "border-radius" to "var(${it.v})" }
+        "borderRadius" -> (v as? Evaluator.V.BorderRadius)?.let { "border-radius" to borderRadiusCss(it) }
         "border" -> (v as? Evaluator.V.UniformBorder)?.let {
-            val color = when (val c = it.color) {
-                is Evaluator.V.Color -> colorCss(c.argb)
-                is Evaluator.V.ColorRef -> "var(${c.cssVarName})"
-                else -> return null
-            }
+            val color = colorCssOrNull(it.color) ?: return null
             "border" to "${it.widthDp.fmt()}px solid $color"
         }
         "opacity" -> when (v) {
@@ -132,6 +71,50 @@ internal object CssEmitter {
             else -> null
         }
         else -> null
+    }
+
+    /** Format any Color-shaped V value to a CSS string. */
+    private fun colorCssOrNull(v: Evaluator.V): String? = when (v) {
+        is Evaluator.V.Color -> colorCss(v.argb)
+        is Evaluator.V.ColorRef -> "var(${v.cssVarName})"
+        else -> null
+    }
+
+    /** Format any Dp-shaped V value as a CSS length. */
+    private fun dpCssOrNull(v: Evaluator.V): String? = when (v) {
+        is Evaluator.V.Dp -> "${v.v.fmt()}px"
+        is Evaluator.V.DpRef -> "var(${v.cssVarName})"
+        else -> null
+    }
+
+    /** Format any Sp-shaped V value as a CSS length. */
+    private fun spCssOrNull(v: Evaluator.V): String? = when (v) {
+        is Evaluator.V.Sp -> "${v.v.fmt()}px"
+        is Evaluator.V.SpRef -> "var(${v.cssVarName})"
+        else -> null
+    }
+
+    /**
+     * CSS shorthand for padding/margin: emit fewer values when sides are equal
+     * (matches what AtomicCss's [Padding].toCss() does at runtime).
+     */
+    private fun paddingCss(p: Evaluator.V.Padding): String {
+        val t = dpCssOrNull(p.top) ?: return "0"
+        val r = dpCssOrNull(p.right) ?: return "0"
+        val b = dpCssOrNull(p.bottom) ?: return "0"
+        val l = dpCssOrNull(p.left) ?: return "0"
+        if (t == r && r == b && b == l) return t
+        if (t == b && l == r) return "$t $l"
+        return "$t $r $b $l"
+    }
+
+    private fun borderRadiusCss(br: Evaluator.V.BorderRadius): String {
+        val tl = dpCssOrNull(br.tl) ?: return "0"
+        val tr = dpCssOrNull(br.tr) ?: return "0"
+        val brc = dpCssOrNull(br.br) ?: return "0"
+        val bl = dpCssOrNull(br.bl) ?: return "0"
+        if (tl == tr && tr == brc && brc == bl) return tl
+        return "$tl $tr $brc $bl"
     }
 
     private fun colorCss(argb: Int): String {
@@ -167,24 +150,20 @@ internal object CssEmitter {
         else -> null
     }
 
-    private fun sizeCss(v: Evaluator.V): String? {
-        return when (v) {
-            is Evaluator.V.ObjectRef -> when (v.fqn) {
-                "dev.unicompose.style.Size.FillParent" -> "100%"
-                "dev.unicompose.style.Size.WrapContent" -> "auto"
-                else -> null
-            }
-            is Evaluator.V.Float -> "${v.v}%"
-            is Evaluator.V.Int -> "${v.v}%"
+    private fun sizeCss(v: Evaluator.V): String? = when (v) {
+        is Evaluator.V.ObjectRef -> when (v.fqn) {
+            "dev.unicompose.style.Size.FillParent" -> "100%"
+            "dev.unicompose.style.Size.WrapContent" -> "auto"
             else -> null
         }
+        is Evaluator.V.Float -> "${v.v}%"
+        is Evaluator.V.Int -> "${v.v}%"
+        else -> null
     }
 
     /**
      * Format identically to Kotlin's `${float}` interpolation so the hashed
      * key matches what AtomicCss would produce for the same Style.
-     * 16.0f → "16.0", 0.5f → "0.5". DO NOT optimize this without changing
-     * AtomicCss in lockstep.
      */
     private fun Float.fmt(): String = this.toString()
 

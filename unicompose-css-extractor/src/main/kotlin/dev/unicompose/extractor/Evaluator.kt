@@ -43,18 +43,22 @@ internal class Evaluator {
         data class Str(val v: String) : V()
         /** Logical Sp value with float-equivalent magnitude. */
         data class Sp(val v: kotlin.Float) : V()
+        /** Sp.Ref — emits `var(--name)` in CSS. */
+        data class SpRef(val cssVarName: String) : V()
         /** Logical Dp value with float-equivalent magnitude. */
         data class Dp(val v: kotlin.Float) : V()
+        /** Dp.Ref — emits `var(--name)` in CSS. */
+        data class DpRef(val cssVarName: String) : V()
         /** Color stored as packed ARGB int (0xAARRGGBB). */
         data class Color(val argb: kotlin.Int) : V()
         /** A color reference to a CSS custom property. Lowers to `var(--name)`. */
         data class ColorRef(val cssVarName: String) : V()
         /** A uniform border (same width + color on all four sides). */
         data class UniformBorder(val widthDp: kotlin.Float, val color: V) : V()
-        /** Box-model padding/margin: top, right, bottom, left in Dp. */
-        data class Padding(val top: kotlin.Float, val right: kotlin.Float, val bottom: kotlin.Float, val left: kotlin.Float) : V()
-        /** Corner radii: top-left, top-right, bottom-right, bottom-left in Dp. */
-        data class BorderRadius(val tl: kotlin.Float, val tr: kotlin.Float, val br: kotlin.Float, val bl: kotlin.Float) : V()
+        /** Box-model padding/margin. Each side is a Dp-shaped V (Dp or DpRef). */
+        data class Padding(val top: V, val right: V, val bottom: V, val left: V) : V()
+        /** Corner radii. Each corner is a Dp-shaped V. */
+        data class BorderRadius(val tl: V, val tr: V, val br: V, val bl: V) : V()
         /** A named enum entry (e.g. `FontWeight.Bold`). */
         data class EnumEntry(val enumFqn: String, val name: String) : V()
         /** A named singleton object (e.g. `Size.FillParent`). */
@@ -129,19 +133,33 @@ internal class Evaluator {
                     else -> null
                 }
             }
+            "dev.unicompose.style.Dp.Companion.token" -> {
+                val name = (args.getOrNull(1) as? V.Str)?.v ?: return null
+                V.DpRef(name)
+            }
+            "dev.unicompose.style.Sp.Companion.token" -> {
+                val name = (args.getOrNull(1) as? V.Str)?.v ?: return null
+                V.SpRef(name)
+            }
             "dev.unicompose.style.Padding.Companion.all" -> {
-                // Companion call: args = [companion-receiver, dp]
-                val dp = (args.getOrNull(1) as? V.Dp) ?: return null
-                V.Padding(dp.v, dp.v, dp.v, dp.v)
+                // Companion call: args = [companion-receiver, dp].
+                // dp may be a literal (V.Dp) or a ref (V.DpRef). Either way
+                // is acceptable — store as the V the CssEmitter knows to format.
+                val dp = args.getOrNull(1) ?: return null
+                if (dp !is V.Dp && dp !is V.DpRef) return null
+                V.Padding(dp, dp, dp, dp)
             }
             "dev.unicompose.style.Padding.Companion.symmetric" -> {
-                val vertical = (args.getOrNull(1) as? V.Dp) ?: return null
-                val horizontal = (args.getOrNull(2) as? V.Dp) ?: return null
-                V.Padding(vertical.v, horizontal.v, vertical.v, horizontal.v)
+                val vertical = args.getOrNull(1) ?: return null
+                val horizontal = args.getOrNull(2) ?: return null
+                if (vertical !is V.Dp && vertical !is V.DpRef) return null
+                if (horizontal !is V.Dp && horizontal !is V.DpRef) return null
+                V.Padding(vertical, horizontal, vertical, horizontal)
             }
             "dev.unicompose.style.BorderRadius.Companion.all" -> {
-                val dp = (args.getOrNull(1) as? V.Dp) ?: return null
-                V.BorderRadius(dp.v, dp.v, dp.v, dp.v)
+                val dp = args.getOrNull(1) ?: return null
+                if (dp !is V.Dp && dp !is V.DpRef) return null
+                V.BorderRadius(dp, dp, dp, dp)
             }
             "dev.unicompose.style.Border.Companion.all" -> {
                 val width = (args.getOrNull(1) as? V.Dp)?.v ?: return null
@@ -193,6 +211,26 @@ internal class Evaluator {
             "dev.unicompose.style.Color.Ref" -> {
                 val name = (args.firstOrNull() as? V.Str)?.v ?: return null
                 V.ColorRef(name)
+            }
+            "dev.unicompose.style.Dp.Literal" -> {
+                val v = (args.firstOrNull() as? V.Float)?.v
+                    ?: (args.firstOrNull() as? V.Int)?.v?.toFloat()
+                    ?: return null
+                V.Dp(v)
+            }
+            "dev.unicompose.style.Dp.Ref" -> {
+                val name = (args.firstOrNull() as? V.Str)?.v ?: return null
+                V.DpRef(name)
+            }
+            "dev.unicompose.style.Sp.Literal" -> {
+                val v = (args.firstOrNull() as? V.Float)?.v
+                    ?: (args.firstOrNull() as? V.Int)?.v?.toFloat()
+                    ?: return null
+                V.Sp(v)
+            }
+            "dev.unicompose.style.Sp.Ref" -> {
+                val name = (args.firstOrNull() as? V.Str)?.v ?: return null
+                V.SpRef(name)
             }
             else -> null
         }

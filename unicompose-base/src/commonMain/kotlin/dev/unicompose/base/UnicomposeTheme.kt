@@ -48,7 +48,7 @@ public fun UnicomposeTheme(
     content: @Composable () -> Unit,
 ) {
     val bodyFontSize = tokens.type.md
-    val bodyLineHeight = Sp(bodyFontSize.value * 1.4f)
+    val bodyLineHeight = Sp.Literal(bodyFontSize.value * 1.4f)
     // On the web, lower the active token set to CSS custom properties so any
     // `var(--uc-...)` reference in the linked unicompose-generated.css (or in
     // the runtime <style>) resolves to the right value. No-op on CMP.

@@ -147,6 +147,42 @@ sealed interface dev.unicompose.style/Color { // dev.unicompose.style/Color|null
     }
 }
 
+sealed interface dev.unicompose.style/Dp { // dev.unicompose.style/Dp|null[0]
+    abstract val value // dev.unicompose.style/Dp.value|{}value[0]
+        abstract fun <get-value>(): kotlin/Float // dev.unicompose.style/Dp.value.<get-value>|<get-value>(){}[0]
+
+    final class Literal : dev.unicompose.style/Dp { // dev.unicompose.style/Dp.Literal|null[0]
+        constructor <init>(kotlin/Float) // dev.unicompose.style/Dp.Literal.<init>|<init>(kotlin.Float){}[0]
+
+        final val value // dev.unicompose.style/Dp.Literal.value|{}value[0]
+            final fun <get-value>(): kotlin/Float // dev.unicompose.style/Dp.Literal.value.<get-value>|<get-value>(){}[0]
+
+        final fun equals(kotlin/Any?): kotlin/Boolean // dev.unicompose.style/Dp.Literal.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // dev.unicompose.style/Dp.Literal.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // dev.unicompose.style/Dp.Literal.toString|toString(){}[0]
+    }
+
+    final class Ref : dev.unicompose.style/Dp { // dev.unicompose.style/Dp.Ref|null[0]
+        constructor <init>(kotlin/String) // dev.unicompose.style/Dp.Ref.<init>|<init>(kotlin.String){}[0]
+
+        final val cssVarName // dev.unicompose.style/Dp.Ref.cssVarName|{}cssVarName[0]
+            final fun <get-cssVarName>(): kotlin/String // dev.unicompose.style/Dp.Ref.cssVarName.<get-cssVarName>|<get-cssVarName>(){}[0]
+        final val value // dev.unicompose.style/Dp.Ref.value|{}value[0]
+            final fun <get-value>(): kotlin/Float // dev.unicompose.style/Dp.Ref.value.<get-value>|<get-value>(){}[0]
+
+        final fun equals(kotlin/Any?): kotlin/Boolean // dev.unicompose.style/Dp.Ref.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // dev.unicompose.style/Dp.Ref.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // dev.unicompose.style/Dp.Ref.toString|toString(){}[0]
+    }
+
+    final object Companion { // dev.unicompose.style/Dp.Companion|null[0]
+        final val Zero // dev.unicompose.style/Dp.Companion.Zero|{}Zero[0]
+            final fun <get-Zero>(): dev.unicompose.style/Dp // dev.unicompose.style/Dp.Companion.Zero.<get-Zero>|<get-Zero>(){}[0]
+
+        final fun token(kotlin/String): dev.unicompose.style/Dp // dev.unicompose.style/Dp.Companion.token|token(kotlin.String){}[0]
+    }
+}
+
 sealed interface dev.unicompose.style/Size { // dev.unicompose.style/Size|null[0]
     final class Fixed : dev.unicompose.style/Size { // dev.unicompose.style/Size.Fixed|null[0]
         constructor <init>(dev.unicompose.style/Dp) // dev.unicompose.style/Size.Fixed.<init>|<init>(dev.unicompose.style.Dp){}[0]
@@ -184,6 +220,39 @@ sealed interface dev.unicompose.style/Size { // dev.unicompose.style/Size|null[0
         final fun equals(kotlin/Any?): kotlin/Boolean // dev.unicompose.style/Size.WrapContent.equals|equals(kotlin.Any?){}[0]
         final fun hashCode(): kotlin/Int // dev.unicompose.style/Size.WrapContent.hashCode|hashCode(){}[0]
         final fun toString(): kotlin/String // dev.unicompose.style/Size.WrapContent.toString|toString(){}[0]
+    }
+}
+
+sealed interface dev.unicompose.style/Sp { // dev.unicompose.style/Sp|null[0]
+    abstract val value // dev.unicompose.style/Sp.value|{}value[0]
+        abstract fun <get-value>(): kotlin/Float // dev.unicompose.style/Sp.value.<get-value>|<get-value>(){}[0]
+
+    final class Literal : dev.unicompose.style/Sp { // dev.unicompose.style/Sp.Literal|null[0]
+        constructor <init>(kotlin/Float) // dev.unicompose.style/Sp.Literal.<init>|<init>(kotlin.Float){}[0]
+
+        final val value // dev.unicompose.style/Sp.Literal.value|{}value[0]
+            final fun <get-value>(): kotlin/Float // dev.unicompose.style/Sp.Literal.value.<get-value>|<get-value>(){}[0]
+
+        final fun equals(kotlin/Any?): kotlin/Boolean // dev.unicompose.style/Sp.Literal.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // dev.unicompose.style/Sp.Literal.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // dev.unicompose.style/Sp.Literal.toString|toString(){}[0]
+    }
+
+    final class Ref : dev.unicompose.style/Sp { // dev.unicompose.style/Sp.Ref|null[0]
+        constructor <init>(kotlin/String) // dev.unicompose.style/Sp.Ref.<init>|<init>(kotlin.String){}[0]
+
+        final val cssVarName // dev.unicompose.style/Sp.Ref.cssVarName|{}cssVarName[0]
+            final fun <get-cssVarName>(): kotlin/String // dev.unicompose.style/Sp.Ref.cssVarName.<get-cssVarName>|<get-cssVarName>(){}[0]
+        final val value // dev.unicompose.style/Sp.Ref.value|{}value[0]
+            final fun <get-value>(): kotlin/Float // dev.unicompose.style/Sp.Ref.value.<get-value>|<get-value>(){}[0]
+
+        final fun equals(kotlin/Any?): kotlin/Boolean // dev.unicompose.style/Sp.Ref.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // dev.unicompose.style/Sp.Ref.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // dev.unicompose.style/Sp.Ref.toString|toString(){}[0]
+    }
+
+    final object Companion { // dev.unicompose.style/Sp.Companion|null[0]
+        final fun token(kotlin/String): dev.unicompose.style/Sp // dev.unicompose.style/Sp.Companion.token|token(kotlin.String){}[0]
     }
 }
 
@@ -365,7 +434,7 @@ final class dev.unicompose.style/Shadow { // dev.unicompose.style/Shadow|null[0]
 }
 
 final class dev.unicompose.style/Style { // dev.unicompose.style/Style|null[0]
-    constructor <init>(dev.unicompose.style/Padding? = ..., dev.unicompose.style/Margin? = ..., dev.unicompose.style/Color? = ..., dev.unicompose.style/LinearGradient? = ..., dev.unicompose.style/Color? = ..., dev.unicompose.style/Sp? = ..., dev.unicompose.style/FontWeight? = ..., dev.unicompose.style/FontFamily? = ..., dev.unicompose.style/Sp? = ..., dev.unicompose.style/Sp? = ..., dev.unicompose.style/TextAlign? = ..., dev.unicompose.style/BorderRadius? = ..., dev.unicompose.style/Border? = ..., dev.unicompose.style/Shadow? = ..., dev.unicompose.style/FlexDirection? = ..., dev.unicompose.style/Align? = ..., dev.unicompose.style/Justify? = ..., dev.unicompose.style/Dp? = ..., dev.unicompose.style/Size? = ..., dev.unicompose.style/Size? = ..., kotlin/Float? = ..., kotlin/Float? = ..., kotlin/String? = ..., kotlin/String? = ..., kotlin/String? = ..., kotlin/String? = ..., kotlin/String? = ..., kotlin/String? = ...) // dev.unicompose.style/Style.<init>|<init>(dev.unicompose.style.Padding?;dev.unicompose.style.Margin?;dev.unicompose.style.Color?;dev.unicompose.style.LinearGradient?;dev.unicompose.style.Color?;dev.unicompose.style.Sp?;dev.unicompose.style.FontWeight?;dev.unicompose.style.FontFamily?;dev.unicompose.style.Sp?;dev.unicompose.style.Sp?;dev.unicompose.style.TextAlign?;dev.unicompose.style.BorderRadius?;dev.unicompose.style.Border?;dev.unicompose.style.Shadow?;dev.unicompose.style.FlexDirection?;dev.unicompose.style.Align?;dev.unicompose.style.Justify?;dev.unicompose.style.Dp?;dev.unicompose.style.Size?;dev.unicompose.style.Size?;kotlin.Float?;kotlin.Float?;kotlin.String?;kotlin.String?;kotlin.String?;kotlin.String?;kotlin.String?;kotlin.String?){}[0]
+    constructor <init>(dev.unicompose.style/Padding? = ..., dev.unicompose.style/Margin? = ..., dev.unicompose.style/Color? = ..., dev.unicompose.style/LinearGradient? = ..., dev.unicompose.style/Color? = ..., dev.unicompose.style/Sp? = ..., dev.unicompose.style/FontWeight? = ..., dev.unicompose.style/FontFamily? = ..., dev.unicompose.style/Sp? = ..., dev.unicompose.style/Sp? = ..., dev.unicompose.style/TextAlign? = ..., dev.unicompose.style/BorderRadius? = ..., dev.unicompose.style/Border? = ..., dev.unicompose.style/Shadow? = ..., dev.unicompose.style/FlexDirection? = ..., dev.unicompose.style/Align? = ..., dev.unicompose.style/Justify? = ..., dev.unicompose.style/Dp? = ..., dev.unicompose.style/Size? = ..., dev.unicompose.style/Size? = ..., kotlin/Float? = ..., kotlin/Float? = ...) // dev.unicompose.style/Style.<init>|<init>(dev.unicompose.style.Padding?;dev.unicompose.style.Margin?;dev.unicompose.style.Color?;dev.unicompose.style.LinearGradient?;dev.unicompose.style.Color?;dev.unicompose.style.Sp?;dev.unicompose.style.FontWeight?;dev.unicompose.style.FontFamily?;dev.unicompose.style.Sp?;dev.unicompose.style.Sp?;dev.unicompose.style.TextAlign?;dev.unicompose.style.BorderRadius?;dev.unicompose.style.Border?;dev.unicompose.style.Shadow?;dev.unicompose.style.FlexDirection?;dev.unicompose.style.Align?;dev.unicompose.style.Justify?;dev.unicompose.style.Dp?;dev.unicompose.style.Size?;dev.unicompose.style.Size?;kotlin.Float?;kotlin.Float?){}[0]
 
     final val alignItems // dev.unicompose.style/Style.alignItems|{}alignItems[0]
         final fun <get-alignItems>(): dev.unicompose.style/Align? // dev.unicompose.style/Style.alignItems.<get-alignItems>|<get-alignItems>(){}[0]
@@ -377,8 +446,6 @@ final class dev.unicompose.style/Style { // dev.unicompose.style/Style|null[0]
         final fun <get-border>(): dev.unicompose.style/Border? // dev.unicompose.style/Style.border.<get-border>|<get-border>(){}[0]
     final val borderRadius // dev.unicompose.style/Style.borderRadius|{}borderRadius[0]
         final fun <get-borderRadius>(): dev.unicompose.style/BorderRadius? // dev.unicompose.style/Style.borderRadius.<get-borderRadius>|<get-borderRadius>(){}[0]
-    final val borderRadiusAllRef // dev.unicompose.style/Style.borderRadiusAllRef|{}borderRadiusAllRef[0]
-        final fun <get-borderRadiusAllRef>(): kotlin/String? // dev.unicompose.style/Style.borderRadiusAllRef.<get-borderRadiusAllRef>|<get-borderRadiusAllRef>(){}[0]
     final val boxShadow // dev.unicompose.style/Style.boxShadow|{}boxShadow[0]
         final fun <get-boxShadow>(): dev.unicompose.style/Shadow? // dev.unicompose.style/Style.boxShadow.<get-boxShadow>|<get-boxShadow>(){}[0]
     final val color // dev.unicompose.style/Style.color|{}color[0]
@@ -391,14 +458,10 @@ final class dev.unicompose.style/Style { // dev.unicompose.style/Style|null[0]
         final fun <get-fontFamily>(): dev.unicompose.style/FontFamily? // dev.unicompose.style/Style.fontFamily.<get-fontFamily>|<get-fontFamily>(){}[0]
     final val fontSize // dev.unicompose.style/Style.fontSize|{}fontSize[0]
         final fun <get-fontSize>(): dev.unicompose.style/Sp? // dev.unicompose.style/Style.fontSize.<get-fontSize>|<get-fontSize>(){}[0]
-    final val fontSizeRef // dev.unicompose.style/Style.fontSizeRef|{}fontSizeRef[0]
-        final fun <get-fontSizeRef>(): kotlin/String? // dev.unicompose.style/Style.fontSizeRef.<get-fontSizeRef>|<get-fontSizeRef>(){}[0]
     final val fontWeight // dev.unicompose.style/Style.fontWeight|{}fontWeight[0]
         final fun <get-fontWeight>(): dev.unicompose.style/FontWeight? // dev.unicompose.style/Style.fontWeight.<get-fontWeight>|<get-fontWeight>(){}[0]
     final val gap // dev.unicompose.style/Style.gap|{}gap[0]
         final fun <get-gap>(): dev.unicompose.style/Dp? // dev.unicompose.style/Style.gap.<get-gap>|<get-gap>(){}[0]
-    final val gapRef // dev.unicompose.style/Style.gapRef|{}gapRef[0]
-        final fun <get-gapRef>(): kotlin/String? // dev.unicompose.style/Style.gapRef.<get-gapRef>|<get-gapRef>(){}[0]
     final val height // dev.unicompose.style/Style.height|{}height[0]
         final fun <get-height>(): dev.unicompose.style/Size? // dev.unicompose.style/Style.height.<get-height>|<get-height>(){}[0]
     final val justifyContent // dev.unicompose.style/Style.justifyContent|{}justifyContent[0]
@@ -413,12 +476,6 @@ final class dev.unicompose.style/Style { // dev.unicompose.style/Style|null[0]
         final fun <get-opacity>(): kotlin/Float? // dev.unicompose.style/Style.opacity.<get-opacity>|<get-opacity>(){}[0]
     final val padding // dev.unicompose.style/Style.padding|{}padding[0]
         final fun <get-padding>(): dev.unicompose.style/Padding? // dev.unicompose.style/Style.padding.<get-padding>|<get-padding>(){}[0]
-    final val paddingAllRef // dev.unicompose.style/Style.paddingAllRef|{}paddingAllRef[0]
-        final fun <get-paddingAllRef>(): kotlin/String? // dev.unicompose.style/Style.paddingAllRef.<get-paddingAllRef>|<get-paddingAllRef>(){}[0]
-    final val paddingHorizontalRef // dev.unicompose.style/Style.paddingHorizontalRef|{}paddingHorizontalRef[0]
-        final fun <get-paddingHorizontalRef>(): kotlin/String? // dev.unicompose.style/Style.paddingHorizontalRef.<get-paddingHorizontalRef>|<get-paddingHorizontalRef>(){}[0]
-    final val paddingVerticalRef // dev.unicompose.style/Style.paddingVerticalRef|{}paddingVerticalRef[0]
-        final fun <get-paddingVerticalRef>(): kotlin/String? // dev.unicompose.style/Style.paddingVerticalRef.<get-paddingVerticalRef>|<get-paddingVerticalRef>(){}[0]
     final val textAlign // dev.unicompose.style/Style.textAlign|{}textAlign[0]
         final fun <get-textAlign>(): dev.unicompose.style/TextAlign? // dev.unicompose.style/Style.textAlign.<get-textAlign>|<get-textAlign>(){}[0]
     final val width // dev.unicompose.style/Style.width|{}width[0]
@@ -439,12 +496,6 @@ final class dev.unicompose.style/Style { // dev.unicompose.style/Style|null[0]
     final fun component20(): dev.unicompose.style/Size? // dev.unicompose.style/Style.component20|component20(){}[0]
     final fun component21(): kotlin/Float? // dev.unicompose.style/Style.component21|component21(){}[0]
     final fun component22(): kotlin/Float? // dev.unicompose.style/Style.component22|component22(){}[0]
-    final fun component23(): kotlin/String? // dev.unicompose.style/Style.component23|component23(){}[0]
-    final fun component24(): kotlin/String? // dev.unicompose.style/Style.component24|component24(){}[0]
-    final fun component25(): kotlin/String? // dev.unicompose.style/Style.component25|component25(){}[0]
-    final fun component26(): kotlin/String? // dev.unicompose.style/Style.component26|component26(){}[0]
-    final fun component27(): kotlin/String? // dev.unicompose.style/Style.component27|component27(){}[0]
-    final fun component28(): kotlin/String? // dev.unicompose.style/Style.component28|component28(){}[0]
     final fun component3(): dev.unicompose.style/Color? // dev.unicompose.style/Style.component3|component3(){}[0]
     final fun component4(): dev.unicompose.style/LinearGradient? // dev.unicompose.style/Style.component4|component4(){}[0]
     final fun component5(): dev.unicompose.style/Color? // dev.unicompose.style/Style.component5|component5(){}[0]
@@ -452,7 +503,7 @@ final class dev.unicompose.style/Style { // dev.unicompose.style/Style|null[0]
     final fun component7(): dev.unicompose.style/FontWeight? // dev.unicompose.style/Style.component7|component7(){}[0]
     final fun component8(): dev.unicompose.style/FontFamily? // dev.unicompose.style/Style.component8|component8(){}[0]
     final fun component9(): dev.unicompose.style/Sp? // dev.unicompose.style/Style.component9|component9(){}[0]
-    final fun copy(dev.unicompose.style/Padding? = ..., dev.unicompose.style/Margin? = ..., dev.unicompose.style/Color? = ..., dev.unicompose.style/LinearGradient? = ..., dev.unicompose.style/Color? = ..., dev.unicompose.style/Sp? = ..., dev.unicompose.style/FontWeight? = ..., dev.unicompose.style/FontFamily? = ..., dev.unicompose.style/Sp? = ..., dev.unicompose.style/Sp? = ..., dev.unicompose.style/TextAlign? = ..., dev.unicompose.style/BorderRadius? = ..., dev.unicompose.style/Border? = ..., dev.unicompose.style/Shadow? = ..., dev.unicompose.style/FlexDirection? = ..., dev.unicompose.style/Align? = ..., dev.unicompose.style/Justify? = ..., dev.unicompose.style/Dp? = ..., dev.unicompose.style/Size? = ..., dev.unicompose.style/Size? = ..., kotlin/Float? = ..., kotlin/Float? = ..., kotlin/String? = ..., kotlin/String? = ..., kotlin/String? = ..., kotlin/String? = ..., kotlin/String? = ..., kotlin/String? = ...): dev.unicompose.style/Style // dev.unicompose.style/Style.copy|copy(dev.unicompose.style.Padding?;dev.unicompose.style.Margin?;dev.unicompose.style.Color?;dev.unicompose.style.LinearGradient?;dev.unicompose.style.Color?;dev.unicompose.style.Sp?;dev.unicompose.style.FontWeight?;dev.unicompose.style.FontFamily?;dev.unicompose.style.Sp?;dev.unicompose.style.Sp?;dev.unicompose.style.TextAlign?;dev.unicompose.style.BorderRadius?;dev.unicompose.style.Border?;dev.unicompose.style.Shadow?;dev.unicompose.style.FlexDirection?;dev.unicompose.style.Align?;dev.unicompose.style.Justify?;dev.unicompose.style.Dp?;dev.unicompose.style.Size?;dev.unicompose.style.Size?;kotlin.Float?;kotlin.Float?;kotlin.String?;kotlin.String?;kotlin.String?;kotlin.String?;kotlin.String?;kotlin.String?){}[0]
+    final fun copy(dev.unicompose.style/Padding? = ..., dev.unicompose.style/Margin? = ..., dev.unicompose.style/Color? = ..., dev.unicompose.style/LinearGradient? = ..., dev.unicompose.style/Color? = ..., dev.unicompose.style/Sp? = ..., dev.unicompose.style/FontWeight? = ..., dev.unicompose.style/FontFamily? = ..., dev.unicompose.style/Sp? = ..., dev.unicompose.style/Sp? = ..., dev.unicompose.style/TextAlign? = ..., dev.unicompose.style/BorderRadius? = ..., dev.unicompose.style/Border? = ..., dev.unicompose.style/Shadow? = ..., dev.unicompose.style/FlexDirection? = ..., dev.unicompose.style/Align? = ..., dev.unicompose.style/Justify? = ..., dev.unicompose.style/Dp? = ..., dev.unicompose.style/Size? = ..., dev.unicompose.style/Size? = ..., kotlin/Float? = ..., kotlin/Float? = ...): dev.unicompose.style/Style // dev.unicompose.style/Style.copy|copy(dev.unicompose.style.Padding?;dev.unicompose.style.Margin?;dev.unicompose.style.Color?;dev.unicompose.style.LinearGradient?;dev.unicompose.style.Color?;dev.unicompose.style.Sp?;dev.unicompose.style.FontWeight?;dev.unicompose.style.FontFamily?;dev.unicompose.style.Sp?;dev.unicompose.style.Sp?;dev.unicompose.style.TextAlign?;dev.unicompose.style.BorderRadius?;dev.unicompose.style.Border?;dev.unicompose.style.Shadow?;dev.unicompose.style.FlexDirection?;dev.unicompose.style.Align?;dev.unicompose.style.Justify?;dev.unicompose.style.Dp?;dev.unicompose.style.Size?;dev.unicompose.style.Size?;kotlin.Float?;kotlin.Float?){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // dev.unicompose.style/Style.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // dev.unicompose.style/Style.hashCode|hashCode(){}[0]
     final fun plus(dev.unicompose.style/Style): dev.unicompose.style/Style // dev.unicompose.style/Style.plus|plus(dev.unicompose.style.Style){}[0]
@@ -462,33 +513,6 @@ final class dev.unicompose.style/Style { // dev.unicompose.style/Style|null[0]
         final val Empty // dev.unicompose.style/Style.Companion.Empty|{}Empty[0]
             final fun <get-Empty>(): dev.unicompose.style/Style // dev.unicompose.style/Style.Companion.Empty.<get-Empty>|<get-Empty>(){}[0]
     }
-}
-
-final value class dev.unicompose.style/Dp { // dev.unicompose.style/Dp|null[0]
-    constructor <init>(kotlin/Float) // dev.unicompose.style/Dp.<init>|<init>(kotlin.Float){}[0]
-
-    final val value // dev.unicompose.style/Dp.value|{}value[0]
-        final fun <get-value>(): kotlin/Float // dev.unicompose.style/Dp.value.<get-value>|<get-value>(){}[0]
-
-    final fun equals(kotlin/Any?): kotlin/Boolean // dev.unicompose.style/Dp.equals|equals(kotlin.Any?){}[0]
-    final fun hashCode(): kotlin/Int // dev.unicompose.style/Dp.hashCode|hashCode(){}[0]
-    final fun toString(): kotlin/String // dev.unicompose.style/Dp.toString|toString(){}[0]
-
-    final object Companion { // dev.unicompose.style/Dp.Companion|null[0]
-        final val Zero // dev.unicompose.style/Dp.Companion.Zero|{}Zero[0]
-            final fun <get-Zero>(): dev.unicompose.style/Dp // dev.unicompose.style/Dp.Companion.Zero.<get-Zero>|<get-Zero>(){}[0]
-    }
-}
-
-final value class dev.unicompose.style/Sp { // dev.unicompose.style/Sp|null[0]
-    constructor <init>(kotlin/Float) // dev.unicompose.style/Sp.<init>|<init>(kotlin.Float){}[0]
-
-    final val value // dev.unicompose.style/Sp.value|{}value[0]
-        final fun <get-value>(): kotlin/Float // dev.unicompose.style/Sp.value.<get-value>|<get-value>(){}[0]
-
-    final fun equals(kotlin/Any?): kotlin/Boolean // dev.unicompose.style/Sp.equals|equals(kotlin.Any?){}[0]
-    final fun hashCode(): kotlin/Int // dev.unicompose.style/Sp.hashCode|hashCode(){}[0]
-    final fun toString(): kotlin/String // dev.unicompose.style/Sp.toString|toString(){}[0]
 }
 
 final val dev.unicompose.style/dp // dev.unicompose.style/dp|@kotlin.Float{}dp[0]
@@ -502,5 +526,7 @@ final val dev.unicompose.style/sp // dev.unicompose.style/sp|@kotlin.Int{}sp[0]
 
 final fun (dev.unicompose.style/Color).dev.unicompose.style/argbOrNull(): kotlin/Int? // dev.unicompose.style/argbOrNull|argbOrNull@dev.unicompose.style.Color(){}[0]
 final fun (dev.unicompose.style/Color).dev.unicompose.style/cssVarNameOrNull(): kotlin/String? // dev.unicompose.style/cssVarNameOrNull|cssVarNameOrNull@dev.unicompose.style.Color(){}[0]
+final fun (dev.unicompose.style/Dp).dev.unicompose.style/valueOrNull(): kotlin/Float? // dev.unicompose.style/valueOrNull|valueOrNull@dev.unicompose.style.Dp(){}[0]
+final fun (dev.unicompose.style/Sp).dev.unicompose.style/valueOrNull(): kotlin/Float? // dev.unicompose.style/valueOrNull|valueOrNull@dev.unicompose.style.Sp(){}[0]
 final fun dev.unicompose.style/argb(kotlin/Int, kotlin/Int, kotlin/Int, kotlin/Int): dev.unicompose.style/Color // dev.unicompose.style/argb|argb(kotlin.Int;kotlin.Int;kotlin.Int;kotlin.Int){}[0]
 final fun dev.unicompose.style/rgb(kotlin/Int, kotlin/Int, kotlin/Int): dev.unicompose.style/Color // dev.unicompose.style/rgb|rgb(kotlin.Int;kotlin.Int;kotlin.Int){}[0]
