@@ -61,6 +61,15 @@ public class UnicomposeCssExtractorGradlePlugin : KotlinCompilerPluginSupportPlu
         // The Kotlin Multiplatform plugin registers jsProcessResources lazily
         // when the js() target is configured, so we use plugins.withId + a
         // task-name match that fires whenever it appears.
+        //
+        // Cross-module aggregation of unicompose-generated.css is intentionally
+        // NOT auto-wired: a Gradle variants + attributes implementation needs
+        // deeper integration with the KMP attribute schema than what's worth
+        // it today (a simple `withVariantReselection()` artifactView ends up
+        // matching unrelated JVM jars from Compose deps because Gradle's
+        // attribute-compatibility rules are loose with novel attributes).
+        // Consumers do the cross-module merge in their previewSite Copy task
+        // by enumerating which dep modules they want CSS from.
         target.plugins.withId("org.jetbrains.kotlin.multiplatform") {
             target.tasks.matching { it.name == "jsProcessResources" }.configureEach { task ->
                 if (task is org.gradle.api.tasks.Copy) {
