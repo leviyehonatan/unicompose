@@ -57,4 +57,5 @@ include(
     ":unicompose-base",
     ":samples:kitchen-sink",
     ":samples:todo-app",
+    ":tests:snapshot-android",
 )
