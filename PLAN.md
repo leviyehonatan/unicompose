@@ -226,6 +226,53 @@ The proposed shape is `StyleStates(base, hover = …, disabled = …)`. `:focus`
 - Desktop (JVM) target — cheap to add since it shares the CMP backend.
 - Dokka HTML doc site.
 
+### Bundled font for cross-platform visual parity
+
+**What it would fix.** After all the typography-cascade work, three cosmetic
+differences remain between the canvas and DOM web bundles (and therefore
+between mobile and web in general):
+
+  - Heading weight reads slightly heavier on canvas (Skia bundled font's
+    "Bold" weight ≠ browser system font's "Bold" weight)
+  - Letter spacing minor differences
+  - Body text wraps at slightly different widths (different font advance-width
+    tables)
+
+All three trace to one root: Skia uses a bundled font (likely a Roboto-shaped
+default); the browser uses a system font (San Francisco on macOS, Segoe UI on
+Windows, etc.). `Style.fontFamily = FontFamily.Default` tells each platform
+"use your default UI font" — semantically consistent but the actual font face
+differs because each platform's default differs.
+
+**Why it's currently deferred.** The remaining differences are the legitimate
+mobile-vs-web rendering reality (canvas IS what mobile shows). Bundling a
+font hides that truth in exchange for visual uniformity — a real product
+decision that depends on whether brand consistency matters more than platform
+consistency. Both are defensible.
+
+**What would be needed.**
+  - A new `unicompose-font-<name>` module per supported font (e.g.
+    `unicompose-font-inter`).
+  - Per-backend resource loading:
+    - Web: `@font-face { src: url(...woff2...); }` shipped with the bundle.
+    - Android: font in `res/font/` registered via `FontFamily(Font(R.font.x))`.
+    - iOS: font registered with the system or loaded via Skia.
+    - Canvas web (Skia): load the font into Skiko's typeface cache via
+      `FontMgr.makeFromData(...)`.
+  - A shared API: `Style(fontFamily = InterFontFamily)` — meaning a sealed
+    `FontFamily` superset (Default / SansSerif / Serif / Monospace +
+    `FontFamily.Custom(name)` or per-module concrete objects).
+
+**Cost.** ~150 KB per bundle (woff2-compressed for Inter Regular + Bold +
+Medium subset to Latin glyphs). Adds real engineering across four backend
+loading paths and a versioning question (which font, which weights, which
+subset).
+
+**Recommendation when revisiting.** Start with Inter — clean modern sans-serif,
+permissively licensed, well-supported, available in SIL OFL. Build
+`unicompose-font-inter` as the proof-of-concept module. Once the pattern is
+in place, additional fonts (Roboto, IBM Plex, etc.) become drop-in modules.
+
 ## Explicitly not planned
 
 - `@media` queries — handled by the theming layer instead (different token sets per scheme).
