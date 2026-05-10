@@ -27,13 +27,24 @@ internal object AtomicCss {
         (document.createElement("style") as HTMLStyleElement).also { el ->
             el.id = "unicompose-styles"
             document.head?.appendChild(el)
-            // Global box-sizing reset. Compose's layout model treats size as
-            // including padding + border (i.e. border-box semantics). CSS default
-            // is content-box, which makes width: 100% mean "content area is 100%
-            // of parent" — adding padding + border on top causes overflow when an
-            // element should fit-to-parent. Setting border-box globally makes
-            // width/height match the CMP fillMaxWidth/fillMaxHeight semantics.
-            el.appendChild(document.createTextNode("*,*::before,*::after{box-sizing:border-box}"))
+            // Global resets so the DOM render matches the CMP/Skia render baseline.
+            //
+            //  1. box-sizing: border-box — Compose's layout model treats size as
+            //     including padding + border. CSS default is content-box, which
+            //     makes width: 100% mean "content area is 100% of parent" and
+            //     causes overflow when an element should fit-to-parent.
+            //  2. body font-family — without this, headings inherit the UA default
+            //     (Times serif in headless Chromium) while the CMP backend uses
+            //     a sans-serif system stack. Same stack we emit for FontFamily.Default.
+            //  3. h1/h2/h3/p/button margin resets — UAs add vertical margins (e.g.
+            //     <h1> defaults to margin-block: 0.67em ≈ 18 px each side at 28 px).
+            //     CMP has no equivalent; resetting here keeps spacing token-driven.
+            el.appendChild(document.createTextNode(
+                "*,*::before,*::after{box-sizing:border-box}" +
+                "body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,\"Segoe UI\",Roboto,sans-serif}" +
+                "h1,h2,h3,h4,h5,h6,p,figure{margin:0}" +
+                "button{margin:0}"
+            ))
         }
     }
 
