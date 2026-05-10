@@ -13,11 +13,11 @@ plugins {
     id("dev.unicompose.css-extractor")
 }
 
-// The directory the css-extractor compiler plugin writes
-// `unicompose-generated.css` into. previewSite below pulls it into the dist.
-// (unicompose-reset.css is auto-wired into jsProcessResources by the css-
-// extractor Gradle plugin, so it lands in the JS dist automatically.)
-val cssExtractorOutputDir = layout.buildDirectory.dir("generated/css")
+// The css-extractor Gradle plugin auto-wires both unicompose-generated.css
+// (cross-module aggregated via the unicomposeCssClasspath resolvable
+// configuration) AND unicompose-reset.css into jsProcessResources. They
+// ride into /html/ via the existing dist Copy below — no extra wiring
+// needed.
 
 kotlin {
     jvmToolchain(17)
@@ -123,29 +123,7 @@ val previewSite by tasks.registering(Copy::class) {
     // unicompose-generated.css; we concatenate them into a single file under
     // /html/ so the runtime <link> picks up rules from this app *and* every
     // base-library widget that's been refactored to top-level vals.
-    // Cross-module merge of unicompose-generated.css from this app + the
-    // base library. (Per-module reset.css is already in the JS dist via
-    // the css-extractor Gradle plugin's jsProcessResources hook.)
-    from(cssExtractorOutputDir) { into("html-extras-app") }
-    from(project(":unicompose-base").layout.buildDirectory.dir("generated/css")) { into("html-extras-base") }
     into(layout.buildDirectory.dir("dist/preview"))
-    dependsOn(":unicompose-base:compileKotlinJs")
-    doLast {
-        val htmlDir = layout.buildDirectory.file("dist/preview/html").get().asFile
-        // Concatenate per-module unicompose-generated.css into one served file.
-        val merged = listOf("html-extras-base", "html-extras-app").map { sub ->
-            layout.buildDirectory.file("dist/preview/$sub/unicompose-generated.css").get().asFile
-        }.filter { it.exists() }.joinToString("\n") { it.readText() }
-        if (merged.isNotEmpty()) {
-            File(htmlDir, "unicompose-generated.css").writeText(merged)
-        }
-        // unicompose-reset.css is copied directly into /html/ via the from(...)
-        // block above (see cssExtractorResetDir). Nothing to do here.
-        // clean up the staging dirs
-        listOf("html-extras-app", "html-extras-base").forEach {
-            layout.buildDirectory.file("dist/preview/$it").get().asFile.deleteRecursively()
-        }
-    }
     doLast {
         layout.buildDirectory.file("dist/preview/compare.html").get().asFile.writeText(
             """

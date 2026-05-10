@@ -1,11 +1,24 @@
 package dev.unicompose.extractor
 
 import org.gradle.api.Project
+import org.gradle.api.attributes.Bundling
+import org.gradle.api.attributes.Category
+import org.gradle.api.attributes.LibraryElements
+import org.gradle.api.attributes.Usage
 import org.gradle.api.provider.Provider
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilerPluginSupportPlugin
 import org.jetbrains.kotlin.gradle.plugin.SubpluginArtifact
 import org.jetbrains.kotlin.gradle.plugin.SubpluginOption
+
+/**
+ * Custom value for the standard [Category] attribute. Other variants in the
+ * dep graph (regular library jars, sources, javadoc, etc.) use the standard
+ * `Category.LIBRARY` / `Category.DOCUMENTATION` values, so this value being
+ * unique means our resolvable configuration ONLY matches our own producer
+ * configurations. No need for `withVariantReselection()` or lenient mode.
+ */
+internal const val UNICOMPOSE_CSS_CATEGORY: String = "unicompose-extracted-css"
 
 /**
  * Gradle plugin that wires the unicompose CSS-extraction compiler plugin into
@@ -53,28 +66,86 @@ public class UnicomposeCssExtractorGradlePlugin : KotlinCompilerPluginSupportPlu
             }
         }
 
-        // Auto-wire reset.css into the JS distribution: hook the css-reset dir
-        // into the jsProcessResources Copy task so unicompose-reset.css ends up
-        // bundled next to the JS in the final dist. Consumers don't have to
-        // pull it manually from the plugin jar.
+        // Cross-module CSS aggregation via Gradle "variants and attributes":
+        // each module that applies this plugin both PRODUCES its own
+        // unicompose-generated.css and CONSUMES the same artifact from every
+        // module on its compile graph.
         //
-        // The Kotlin Multiplatform plugin registers jsProcessResources lazily
-        // when the js() target is configured, so we use plugins.withId + a
-        // task-name match that fires whenever it appears.
-        //
-        // Cross-module aggregation of unicompose-generated.css is intentionally
-        // NOT auto-wired: a Gradle variants + attributes implementation needs
-        // deeper integration with the KMP attribute schema than what's worth
-        // it today (a simple `withVariantReselection()` artifactView ends up
-        // matching unrelated JVM jars from Compose deps because Gradle's
-        // attribute-compatibility rules are loose with novel attributes).
-        // Consumers do the cross-module merge in their previewSite Copy task
-        // by enumerating which dep modules they want CSS from.
+        // The trick that makes this clean: tag both producer + consumer with
+        // a custom `Category` value (a standard Gradle attribute). Other
+        // variants in the dep graph carry `Category=library` (regular jars),
+        // `Category=documentation` (sources / javadoc), etc., so the
+        // attribute matcher cleanly filters them out. We don't need
+        // `withVariantReselection()` or `isLenient = true` because the
+        // Category attribute is strict by default — variants without our
+        // category value simply don't match.
+        val cssCategory = target.objects.named(Category::class.java, UNICOMPOSE_CSS_CATEGORY)
+
+        val generatedCssDir = target.layout.buildDirectory.dir("generated/css")
+        val generatedCssFile = generatedCssDir.map { it.file("unicompose-generated.css") }
+
+        // Producer: exposes this module's own unicompose-generated.css.
+        val producerConfig = target.configurations.create("unicomposeCssElements") { config ->
+            config.isCanBeConsumed = true
+            config.isCanBeResolved = false
+            config.attributes.attribute(Category.CATEGORY_ATTRIBUTE, cssCategory)
+        }
+        target.artifacts.add(producerConfig.name, generatedCssFile) { artifact ->
+            artifact.builtBy("compileKotlinJs")
+        }
+
+        // Consumer: extends from the JS+common dep configurations so the dep
+        // graph mirrors what compileKotlinJs sees. Only deps that ALSO apply
+        // our plugin (and therefore expose the CATEGORY=unicompose-extracted-
+        // css variant) contribute artifacts.
+        val consumerConfig = target.configurations.create("unicomposeCssClasspath") { config ->
+            config.isCanBeConsumed = false
+            config.isCanBeResolved = true
+            // Set the Category attribute on the configuration itself so
+            // Gradle's variant resolver knows what we want before traversing
+            // the dep graph.
+            config.attributes.attribute(Category.CATEGORY_ATTRIBUTE, cssCategory)
+            target.afterEvaluate {
+                listOf("jsMainImplementation", "jsMainApi", "commonMainImplementation", "commonMainApi")
+                    .mapNotNull { target.configurations.findByName(it) }
+                    .forEach { config.extendsFrom(it) }
+            }
+        }
+        // Lenient view to silently drop deps that don't expose our variant.
+        val resolvedCssFiles = consumerConfig.incoming.artifactView { view ->
+            view.isLenient = true
+        }.files
+
+        // Auto-wire BOTH the static reset.css AND the cross-module aggregated
+        // generated.css into the JS distribution via jsProcessResources.
+        // Consumers get both files in their dist with zero extra wiring.
         target.plugins.withId("org.jetbrains.kotlin.multiplatform") {
             target.tasks.matching { it.name == "jsProcessResources" }.configureEach { task ->
                 if (task is org.gradle.api.tasks.Copy) {
                     task.from(resetOutputDir)
                     task.dependsOn(extractResetTask)
+
+                    // Aggregate every dep's generated.css + this module's own
+                    // into ONE merged file. The merge runs at task execution
+                    // time so the per-module compileKotlinJs runs first.
+                    val mergedFileProvider = target.layout.buildDirectory
+                        .file("generated/css-merged/unicompose-generated.css")
+                    task.inputs.files(resolvedCssFiles, generatedCssFile)
+                    task.dependsOn("compileKotlinJs")
+                    task.from(mergedFileProvider) { spec ->
+                        spec.duplicatesStrategy = org.gradle.api.file.DuplicatesStrategy.INCLUDE
+                    }
+                    task.doFirst {
+                        val depCss = resolvedCssFiles
+                            .filter { it.exists() }
+                            .joinToString("\n") { it.readText() }
+                        val ownCss = generatedCssFile.get().asFile
+                            .takeIf { it.exists() }?.readText().orEmpty()
+                        val merged = listOf(depCss, ownCss).filter { it.isNotEmpty() }.joinToString("\n")
+                        val out = mergedFileProvider.get().asFile
+                        out.parentFile.mkdirs()
+                        out.writeText(merged)
+                    }
                 }
             }
         }

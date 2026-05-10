@@ -83,8 +83,7 @@ kotlin {
     }
 }
 
-// Build-time CSS extraction. See samples/todo-app/build.gradle.kts for context.
-val cssExtractorOutputDir = layout.buildDirectory.dir("generated/css")
+// CSS extractor auto-wires generated.css + reset.css into jsProcessResources.
 
 // `./gradlew :samples:kitchen-sink:previewSite` produces a single dist/preview/
 // directory containing both bundles plus a side-by-side compare.html. Serve with
@@ -147,22 +146,7 @@ val previewSite by tasks.registering(Copy::class) {
     // Pull build-time-extracted CSS from this app + every base-library
     // module that has been refactored to top-level vals. Concatenated into
     // a single /html/unicompose-generated.css for the runtime <link>.
-    from(cssExtractorOutputDir) { into("html-extras-app") }
-    from(project(":unicompose-base").layout.buildDirectory.dir("generated/css")) { into("html-extras-base") }
     into(layout.buildDirectory.dir("dist/preview"))
-    dependsOn(":unicompose-base:compileKotlinJs")
-    doLast {
-        val htmlDir = layout.buildDirectory.file("dist/preview/html").get().asFile
-        val merged = listOf("html-extras-base", "html-extras-app").map { sub ->
-            layout.buildDirectory.file("dist/preview/$sub/unicompose-generated.css").get().asFile
-        }.filter { it.exists() }.joinToString("\n") { it.readText() }
-        if (merged.isNotEmpty()) {
-            File(htmlDir, "unicompose-generated.css").writeText(merged)
-        }
-        listOf("html-extras-app", "html-extras-base").forEach {
-            layout.buildDirectory.file("dist/preview/$it").get().asFile.deleteRecursively()
-        }
-    }
     doLast {
         layout.buildDirectory.file("dist/preview/compare.html").get().asFile.writeText(
             """
