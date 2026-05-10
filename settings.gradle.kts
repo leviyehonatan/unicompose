@@ -58,4 +58,5 @@ include(
     ":samples:kitchen-sink",
     ":samples:todo-app",
     ":tests:snapshot-android",
+    ":unicompose-css-extractor",
 )

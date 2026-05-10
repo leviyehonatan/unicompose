@@ -9,6 +9,15 @@ plugins {
     alias(libs.plugins.androidApplication)
 }
 
+// Apply the unicompose CSS-extraction compiler plugin to the JS target only.
+// This is a smoke-test wiring; once the Gradle companion plugin is published
+// or the source-substitution flow is wired, consumers will use
+//   plugins { id("dev.unicompose.css-extractor") }
+// instead.
+configurations.matching { it.name == "kotlinCompilerPluginClasspathJsMain" }.configureEach {
+    dependencies.add(project.dependencies.create(project(":unicompose-css-extractor")))
+}
+
 kotlin {
     jvmToolchain(17)
 
