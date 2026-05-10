@@ -43,11 +43,20 @@ internal object CssEmitter {
     /**
      * Stable order matching the order AtomicCss.visualRules() emits — keeps the
      * hash key text identical across the two paths.
+     *
+     * NOTE: ref params (e.g. backgroundColorRef) substitute their literal
+     * counterparts when present. They occupy the literal's position in the
+     * emit order so a Style switching between literal and ref produces a
+     * different hash (correct — different rule).
      */
     private val ParamOrder = listOf(
-        "padding", "margin", "backgroundColor", "color", "fontSize", "fontWeight",
+        "padding", "margin",
+        "backgroundColor", "backgroundColorRef",
+        "color", "colorRef",
+        "fontSize", "fontWeight",
         "fontFamily", "lineHeight", "letterSpacing", "textAlign", "borderRadius",
         "border", "boxShadow", "opacity", "width", "height", "flex",
+        "gap", "gapRef",
     )
 
     private fun ruleFor(paramName: String, v: Evaluator.V): Pair<String, String>? = when (paramName) {
@@ -58,7 +67,11 @@ internal object CssEmitter {
             "margin" to "${it.top.fmt()}px ${it.right.fmt()}px ${it.bottom.fmt()}px ${it.left.fmt()}px"
         }
         "backgroundColor" -> (v as? Evaluator.V.Color)?.let { "background-color" to colorCss(it.argb) }
+        "backgroundColorRef" -> (v as? Evaluator.V.Str)?.let { "background-color" to "var(${it.v})" }
         "color" -> (v as? Evaluator.V.Color)?.let { "color" to colorCss(it.argb) }
+        "colorRef" -> (v as? Evaluator.V.Str)?.let { "color" to "var(${it.v})" }
+        "gap" -> (v as? Evaluator.V.Dp)?.let { "gap" to "${it.v.fmt()}px" }
+        "gapRef" -> (v as? Evaluator.V.Str)?.let { "gap" to "var(${it.v})" }
         "fontSize" -> (v as? Evaluator.V.Sp)?.let { "font-size" to "${it.v.fmt()}px" }
         "fontWeight" -> (v as? Evaluator.V.EnumEntry)?.let { fontWeightCss(it.name) }
         "fontFamily" -> (v as? Evaluator.V.EnumEntry)?.let { fontFamilyCss(it.name) }

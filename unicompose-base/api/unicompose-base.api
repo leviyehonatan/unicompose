@@ -128,6 +128,54 @@ public final class dev/unicompose/base/TextFieldKt {
 	public static final fun TextField (Ljava/lang/String;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Ljava/lang/String;ZLandroidx/compose/runtime/Composer;II)V
 }
 
+public final class dev/unicompose/base/TokenRefs {
+	public static final field $stable I
+	public static final field INSTANCE Ldev/unicompose/base/TokenRefs;
+}
+
+public final class dev/unicompose/base/TokenRefs$colors {
+	public static final field $stable I
+	public static final field INSTANCE Ldev/unicompose/base/TokenRefs$colors;
+	public static final field accent Ljava/lang/String;
+	public static final field bgPage Ljava/lang/String;
+	public static final field bgSubtle Ljava/lang/String;
+	public static final field bgSurface Ljava/lang/String;
+	public static final field borderSubtle Ljava/lang/String;
+	public static final field error Ljava/lang/String;
+	public static final field onAccent Ljava/lang/String;
+	public static final field success Ljava/lang/String;
+	public static final field textPrimary Ljava/lang/String;
+	public static final field textSecondary Ljava/lang/String;
+}
+
+public final class dev/unicompose/base/TokenRefs$radii {
+	public static final field $stable I
+	public static final field INSTANCE Ldev/unicompose/base/TokenRefs$radii;
+	public static final field lg Ljava/lang/String;
+	public static final field md Ljava/lang/String;
+	public static final field sm Ljava/lang/String;
+}
+
+public final class dev/unicompose/base/TokenRefs$space {
+	public static final field $stable I
+	public static final field INSTANCE Ldev/unicompose/base/TokenRefs$space;
+	public static final field lg Ljava/lang/String;
+	public static final field md Ljava/lang/String;
+	public static final field sm Ljava/lang/String;
+	public static final field xl Ljava/lang/String;
+	public static final field xs Ljava/lang/String;
+}
+
+public final class dev/unicompose/base/TokenRefs$type {
+	public static final field $stable I
+	public static final field INSTANCE Ldev/unicompose/base/TokenRefs$type;
+	public static final field lg Ljava/lang/String;
+	public static final field md Ljava/lang/String;
+	public static final field sm Ljava/lang/String;
+	public static final field xl Ljava/lang/String;
+	public static final field xs Ljava/lang/String;
+}
+
 public final class dev/unicompose/base/Tokens {
 	public static final field $stable I
 	public fun <init> (Ldev/unicompose/base/ColorTokens;Ldev/unicompose/base/SpaceTokens;Ldev/unicompose/base/TypeTokens;Ldev/unicompose/base/RadiusTokens;)V

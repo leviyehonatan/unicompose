@@ -137,11 +137,17 @@ internal object AtomicCss {
         style.margin?.let { m ->
             out += "margin" to "${m.top.value}px ${m.right.value}px ${m.bottom.value}px ${m.left.value}px"
         }
-        style.backgroundColor?.let { out += "background-color" to it.toCss() }
+        // Token refs win over literals: theme-driven values lower to CSS
+        // var(...) so theme switches don't require re-emitting style rules.
+        if (style.backgroundColorRef != null) {
+            out += "background-color" to "var(${style.backgroundColorRef})"
+        } else style.backgroundColor?.let { out += "background-color" to it.toCss() }
         style.backgroundGradient?.let { g ->
             out += "background-image" to g.toCss()
         }
-        style.color?.let { out += "color" to it.toCss() }
+        if (style.colorRef != null) {
+            out += "color" to "var(${style.colorRef})"
+        } else style.color?.let { out += "color" to it.toCss() }
         style.fontSize?.let { out += "font-size" to "${it.value}px" }
         style.fontWeight?.let { out += "font-weight" to it.value.toString() }
         style.fontFamily?.let {
@@ -232,7 +238,9 @@ internal object AtomicCss {
             Align.End -> "flex-end"
             Align.Stretch -> "stretch"
         }
-        style.gap?.let { out += "gap" to "${it.value}px" }
+        if (style.gapRef != null) {
+            out += "gap" to "var(${style.gapRef})"
+        } else style.gap?.let { out += "gap" to "${it.value}px" }
         return out
     }
 }

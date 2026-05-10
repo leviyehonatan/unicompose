@@ -2,6 +2,7 @@ package dev.unicompose.base
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.SideEffect
 import dev.unicompose.InheritedText
 import dev.unicompose.ProvideInheritedText
 import dev.unicompose.style.FontFamily
@@ -48,6 +49,10 @@ public fun UnicomposeTheme(
 ) {
     val bodyFontSize = tokens.type.md
     val bodyLineHeight = Sp(bodyFontSize.value * 1.4f)
+    // On the web, lower the active token set to CSS custom properties so any
+    // `var(--uc-...)` reference in the linked unicompose-generated.css (or in
+    // the runtime <style>) resolves to the right value. No-op on CMP.
+    SideEffect { applyThemeCssVariables(tokens) }
     CompositionLocalProvider(LocalTokens provides tokens) {
         ProvideInheritedText(
             text = InheritedText(

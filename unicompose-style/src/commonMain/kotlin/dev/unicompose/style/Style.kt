@@ -85,6 +85,19 @@ public data class Style(
     val height: Size? = null,
     val flex: Float? = null,
     val opacity: Float? = null,
+    // ── Token references ─────────────────────────────────────────────────────
+    // A `*Ref` field is a CSS-variable name (e.g. "--uc-colors-accent") that
+    // overrides the matching literal field at render time. Web emits
+    // `var(--name)` directly. CMP looks up the value through the resolver
+    // provided by the active theme (see unicompose-base UnicomposeTheme).
+    //
+    // The point of `*Ref` is to let top-level Style declarations reference
+    // theme tokens without losing static-extractability — a String constant is
+    // visible to the IR plugin in a way that `currentTokens().colors.accent`
+    // (a runtime Composable read) is not.
+    val colorRef: String? = null,
+    val backgroundColorRef: String? = null,
+    val gapRef: String? = null,
 ) {
     public companion object {
         /** A [Style] with no properties set. Equivalent to passing no style at all. */
@@ -119,6 +132,9 @@ public data class Style(
         height = other.height ?: height,
         flex = other.flex ?: flex,
         opacity = other.opacity ?: opacity,
+        colorRef = other.colorRef ?: colorRef,
+        backgroundColorRef = other.backgroundColorRef ?: backgroundColorRef,
+        gapRef = other.gapRef ?: gapRef,
     )
 }
 
