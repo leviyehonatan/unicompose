@@ -41,18 +41,12 @@ test.describe('kitchen-sink visual regression', () => {
     });
   });
 
-  /**
-   * Side-by-side comparison view — DOM left, (currently empty) canvas right.
-   * The DOM half is the production output; the canvas half will fill in once
-   * the canvas bundle init is fixed. Worth keeping the test to lock the
-   * comparison-page chrome itself.
-   */
-  test('comparison view renders golden', async ({ page }) => {
-    await page.goto('/compare.html');
-    await page.waitForLoadState('networkidle', { timeout: 30_000 });
-    await page.waitForTimeout(1_500);
-    await expect(page).toHaveScreenshot('kitchen-sink-comparison.png', {
-      fullPage: true,
-    });
-  });
+  // The previous side-by-side `compare.html` golden test was removed: it
+  // captures a derived view (the same two bundles wrapped in iframes), so
+  // the per-bundle goldens above already cover the visual regressions.
+  // `compare.html` itself stays — it's produced by the `previewSite` Gradle
+  // task for human / manual review. If we want a committed showcase image
+  // for the README, generate it via a separate non-test capture task so
+  // documentation drift doesn't show up as test failures.
 });
+
