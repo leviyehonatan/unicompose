@@ -35,7 +35,8 @@ The codebase is split into three layers, mirroring how CSS itself is layered (UA
 |---|---|---|
 | `unicompose-style` | primitives | Pure-Kotlin `Style` data class + value types (`Dp`, `Sp`, `Color`, layout enums). No Compose dependency. |
 | `unicompose` | mechanism + UA-stylesheet equivalents | The styling pipeline (atomic CSS, flex bridging, text-color inheritance) plus unstyled primitives (`UiText`, `UiBox`, `UiButton`, etc.). Minimal "looks reasonable on both platforms" defaults — no theme, no design opinions. |
-| `unicompose-base` | design system | Opinionated layer on top: `Tokens`, `UnicomposeTheme`, `Card`, `Badge`. Themed widgets read from the active token set. Optional — consumers can swap with their own design library. |
+| `unicompose-base` | design system | Opinionated layer on top: `Tokens`, `TokenRefs`, `UnicomposeTheme`, `Card`, `Badge`, `Heading`, `H1`/`H2`/`H3`, `Button` (Primary/Secondary/Ghost), `TextField`. Themed widgets read from the active token set. Optional — consumers can swap with their own design library. |
+| `unicompose-css-extractor` | build tool | Composite-build Kotlin compiler IR plugin + Gradle plugin. Walks IR for `Style(...)` calls during `compileKotlinJs`, emits a real `unicompose-generated.css` file, auto-wires into `jsProcessResources` so consumers just apply `id("dev.unicompose.css-extractor")`. |
 
 This mirrors how the web actually works: the browser ships a minimal UA stylesheet and the styling mechanism (CSS); design systems like Material, Bootstrap, and Tailwind UI are layered on top by app authors. **`unicompose` is the styling mechanism + UA stylesheet equivalent. `unicompose-base` is one design system on top — replaceable.**
 
@@ -49,9 +50,15 @@ Each multi-target module uses Kotlin's `expect`/`actual` with these source sets:
 
 `unicompose` exposes a `LocalDefaultTextColor: CompositionLocal<Color?>` that `UiText` reads when `style.color` is null — CSS-like inheritance for the only typographic property that always cascades. Design libraries (and consumers building their own) write to this local at theme-provider time. Inheritance for `fontSize`/`fontWeight`/font family will be added when those properties have clear cross-platform semantics.
 
-### Web styling: runtime atomic CSS
+### Web styling: build-time atomic CSS extraction (StyleX-aligned)
 
-Each unique `Style` is hashed into a deterministic class name and registered into a singleton `<style id="unicompose-styles">` element on first use. Subsequent usages reuse the cached class. Identical observable behavior to a build-time KSP extractor (same DOM, same SEO/perf properties), with substantially less build complexity.
+Each unique `Style` is hashed into a deterministic class name. The Kotlin IR compiler plugin in `:unicompose-css-extractor` walks IR for `Style(...)` constructor calls during `compileKotlinJs`, evaluates literal arguments + token references, and emits hashed atomic CSS classes into `build/generated/css/unicompose-generated.css`. The runtime `AtomicCss` path stays as a graceful fallback for non-extractable dynamic styles — it produces identical hashes so the two paths share rules without duplication.
+
+A static `unicompose-reset.css` (browser-default overrides — `box-sizing`, body font, `<h1>` margins, input accent-color) ships from the css-extractor plugin's resources and rides into the JS dist via `jsProcessResources`.
+
+Cross-module aggregation works through Gradle "variants and attributes": each module that applies the css-extractor plugin exposes a consumable configuration tagged `Category=unicompose-extracted-css`. The same plugin's resolver auto-collects matching artifacts from every dep on the consumer's compile graph, merges them into one served `unicompose-generated.css`. Consumers add nothing beyond `id("dev.unicompose.css-extractor")`.
+
+Theme-token references (`Color.token(TokenRefs.colors.accent)`, `Dp.token(TokenRefs.space.md)`, etc.) lower to CSS `var(--uc-...)` references in the generated file. `UnicomposeTheme` writes the active token values onto `<html>` as CSS custom properties. Theme switches become a handful of `setProperty` calls — no recomposition needed for the styled subtree.
 
 ### Canvas bundle gotchas (resolved)
 
@@ -93,7 +100,7 @@ The two targets use *different platform types* (`js` vs `wasmJs`) — Kotlin Mul
 **Build infrastructure**:
 - `./gradlew :samples:kitchen-sink:jsBrowserDistribution` → DOM bundle in `build/dist/js/productionExecutable/`.
 - `./gradlew :samples:kitchen-sink:wasmJsBrowserDevelopmentExecutableDistribution` → canvas bundle in `build/dist/wasmJs/developmentExecutable/`. Production distribution (`wasmJsBrowserDistribution`) builds but produces a non-rendering bundle — see "Canvas bundle gotchas" above.
-- `./gradlew :samples:kitchen-sink:previewSite` → both bundles copied into `build/dist/preview/{html,canvas}/` plus `compare.html` for side-by-side viewing. Serve with `python3 -m http.server` from `preview/` and open `compare.html`.
+- `./gradlew :samples:kitchen-sink:previewSite` → both bundles copied into `build/dist/preview/{html,canvas}/`. Serve with `python3 -m http.server` from `preview/` and open `/html/index.html` or `/canvas/index.html`.
 
 This setup is designed for Playwright A/B comparison testing: both bundles live at predictable subpaths (`/html/`, `/canvas/`), so a Playwright script can render the same App in both, capture screenshots, and diff them. The DOM bundle's render is the production output; the canvas bundle's render is the mobile output. The diff catches visual regressions on both backends from a single test harness.
 
@@ -118,11 +125,11 @@ A `LocalFlexParent` CompositionLocal (commonMain) plus `LocalRowScope`/`LocalCol
 Tokens are an opinion layer, not a primitive — so they live in `unicompose-base`, not in the underlying mechanism. The model mirrors StyleX's `defineVars` / `createTheme`:
 
 - `Tokens` data class declares the design surface (`accent`, `bgPage`, `bgSurface`, `bgSubtle`, `textPrimary`, `textSecondary`, `borderSubtle`, `error`, `success`, plus spacing/type/radius scales).
-- `UnicomposeTheme(tokens = …)` provider sets the active theme via `LocalTokens` and propagates `tokens.colors.textPrimary` to the underlying `LocalDefaultTextColor`.
+- `TokenRefs` exposes compile-time-resolvable string constants for every slot — `TokenRefs.colors.accent = "--uc-colors-accent"`, etc. Used at Style declaration sites via `Color.token(TokenRefs.colors.accent)`, `Dp.token(...)`, `Sp.token(...)`.
+- `UnicomposeTheme(tokens = …)` provider sets the active theme via `LocalTokens`, propagates `tokens.colors.textPrimary` to `LocalInheritedText`, AND on the web writes every `--uc-*` CSS custom property onto `<html>` via direct DOM mutation.
 - `LightTokens` and `DarkTokens` ship as defaults.
-- Widget defaults (`CardDefaults.style()`, `BadgeDefaults.style()`) are `@Composable` functions that read from `currentTokens()`.
-
-CSS custom-property emission to `:root` is a planned follow-up — once shipped, atomic CSS rules can reference `var(--uc-accent)` and theme switches happen without recomposition. Mechanism doesn't change; the runtime gets faster.
+- Widget defaults are top-level `val`s (`CardStyle`, `ButtonPrimaryStyle`, `HeadingStyle`, `BadgeStyle`, `TextFieldLabelStyle`, etc.) using `Color.token` / `Dp.token` so the IR plugin extracts them statically. The legacy `*Defaults.style()` Composable accessors stay as backwards-compatible shims returning the same constants.
+- On CMP: `Style.resolveRefs(tokens)` walks every typed slot (Color, Dp, Sp, plus nested in Border/Shadow/Padding/etc.) and resolves Refs to Literals against the active theme before the modifier chain sees them.
 
 ### vs StyleX
 
@@ -132,20 +139,22 @@ We're **StyleX-shaped, not StyleX-robust** (~5–10% of StyleX's surface). We ha
 
 ### `unicompose` — primitives (unstyled, mechanism layer)
 
+**No Material3 dependency** in the mechanism layer — all CMP actuals are foundation primitives so DOM and Skia render the same shape on both backends.
+
 | Widget | Status | Web emits | CMP emits |
 |---|---|---|---|
-| `UiText` | shipped | `<span>` | Material3 `Text` |
-| `UiHeading` (H1/H2/H3) | shipped | `<h1>` / `<h2>` / `<h3>` | styled `Text` (UA-stylesheet sizes) |
+| `UiText` | shipped | `<span>` | foundation `BasicText` |
+| `UiHeading` (H1/H2/H3) | shipped | `<h1>` / `<h2>` / `<h3>` | foundation `BasicText` w/ default heading style |
 | `UiBox` | shipped | `<div display:flex>` | `Row` or `Column` |
 | `UiRow` / `UiColumn` | shipped (commonMain wrappers) | — | — |
 | `UiSpacer` | shipped (commonMain wrapper) | — | — |
 | `UiDivider` | shipped | `<hr>` | thin `Box` |
 | `UiButton` | shipped | `<button>` (browser defaults reset) | clickable `Box` |
-| `UiCheckbox` | shipped | `<input type=checkbox>` | Material3 `Checkbox` |
-| `UiTextField` | shipped | `<input type=text>` | `OutlinedTextField` |
-| `UiLink` | shipped | `<a href>` | clickable styled `Text` (uses `LocalUriHandler`) |
-| `UiSwitch` | shipped | `<input type=checkbox role=switch>` | Material3 `Switch` |
-| `UiRadioGroup` | shipped | `<div role=radiogroup>` of `<input type=radio>` | `Column` of Material3 `RadioButton` rows |
+| `UiCheckbox` | shipped | `<input type=checkbox>` | 14 dp `Box` w/ Canvas-drawn checkmark |
+| `UiTextField` | shipped | `<input type=text>` | `BasicTextField` w/ thin-border `Box` + `BasicText` placeholder overlay |
+| `UiLink` | shipped | `<a href>` | clickable styled `BasicText` (uses `LocalUriHandler`) |
+| `UiSwitch` | shipped | `<input type=checkbox role=switch>` | rounded-pill track `Box` + circle thumb (no animation in v0.1) |
+| `UiRadioGroup` | shipped | `<div role=radiogroup>` of `<input type=radio>` | `Column` of `Box`-based circle borders w/ filled inner circle |
 | `UiImage` | post-v0.1 | `<img>` | needs Coil3 — defer |
 | `UiIcon` | post-v0.1 | inline SVG | needs vector source — defer |
 | `UiLazyColumn` / `UiLazyRow` | post-v0.1 | DOM windowing via IntersectionObserver | `LazyColumn` / `LazyRow` |
@@ -182,6 +191,7 @@ We're **StyleX-shaped, not StyleX-robust** (~5–10% of StyleX's surface). We ha
 | `transform` (translate / scale / rotate) | TODO | post-v0.1 |
 | `transition` (duration + easing on a property set) | TODO | post-v0.1 — needs care since CMP uses `animate*AsState`, not declarative transitions |
 | linear gradients (`backgroundGradient: LinearGradient?`) | shipped | `Brush.linearGradient` via `Modifier.background` on CMP; `background-image: linear-gradient(...)` on web. 8 directions; optional explicit color stops. Stays on the fast path — no custom drawing needed. |
+| theme-token refs on every typed slot | shipped | `Color`, `Dp`, `Sp` are sealed interfaces with `Literal` + `Ref(cssVarName)` variants. `Color.token(TokenRefs.colors.accent)` / `Dp.token(...)` / `Sp.token(...)` slot into the same fields as literals. Refs lower to `var(--name)` on web; CMP resolves through the active theme via `Style.resolveRefs`. Border, Shadow, LinearGradient automatically support themes because they hold Color/Dp internally. |
 | `:hover` / `:disabled` variants | TODO | post-v0.1 — see "Pseudo-states" below |
 | `@media` queries | not planned | no clean Compose analog; use the theming layer instead |
 | keyframes / animations | not planned | use CMP's `animate*AsState` directly |
@@ -212,6 +222,10 @@ The proposed shape is `StyleStates(base, hover = …, disabled = …)`. `:focus`
     - **Android (Compose/Skia)** — Paparazzi suite at `tests/snapshot-android/`. Two scenes (widget gallery + todo-list) × two themes (light + dark) = 4 goldens. Runs on the JVM via LayoutLib (no emulator). `verifyPaparazziDebug` is the CI gate; `recordPaparazziDebug` regenerates.
     - Native iOS goldens (XCUITest / swift-snapshot-testing) deferred to post-v0.1 — blocked on the Xcode-project scaffold and only adds value once iOS-only integration code exists. The Playwright canvas + Paparazzi pair already covers both render backends.
 - [x] **API stability check** — Kotlinx Binary Compatibility Validator (0.18.0) wired in. Each published module has a committed `<module>.api` (JVM/Android signatures) and `<module>.klib.api` (iOS / JS / wasmJs ABI). `./gradlew apiCheck` (auto-wired into `check`) diffs against the committed manifests and fails on any unannounced public-API change. Samples are excluded.
+- [x] **No Material3 dependency in the mechanism layer** — all CMP actuals (UiCheckbox, UiTextField, UiSwitch, UiRadioGroup, UiText, UiLink) rewritten as foundation primitives. Removed `implementation(compose.material3)` from `:unicompose` entirely. DOM and Skia now render the same shape on both backends; no more purple `colorScheme.primary` checkmarks bleeding through on Android/iOS/wasmJs canvas.
+- [x] **Build-time CSS extraction (StyleX-aligned)** — new `:unicompose-css-extractor` composite-build module. Kotlin compiler IR plugin walks IR for `Style(...)` constructor calls during `compileKotlinJs`, evaluates literal/ref args via a constant Evaluator, and emits hashed atomic CSS classes (matching `AtomicCss`'s runtime format byte-for-byte) to `build/generated/css/unicompose-generated.css`. Companion Gradle plugin auto-wires reset.css + the IR-extractor output + cross-module aggregated CSS (via Gradle "variants and attributes" with `Category=unicompose-extracted-css`) into `jsProcessResources`. Consumers apply the plugin via `id("dev.unicompose.css-extractor")` and get everything in their JS dist for free.
+- [x] **TokenRef pattern** — `Color`, `Dp`, `Sp` are sealed interfaces with `Literal` + `Ref(cssVarName)` variants and `.token(name)` factories. Eliminates ~9 parallel `*Ref` Style fields that an earlier iteration introduced; refs slot into the existing typed slots (`color`, `padding`, `border`, `boxShadow`, etc.). `UnicomposeTheme` on the web writes `--uc-*` CSS custom properties onto `<html>`, so theme switching is a handful of `setProperty` calls instead of recomposition. `Style.resolveRefs(tokens)` resolves refs to literals on CMP before the modifier chain sees them.
+- [x] **Widget defaults migrated to top-level vals** — `CardStyle`, `ButtonPrimaryStyle`/`Secondary`/`Ghost` (built on `ButtonSharedStyle`), `HeadingStyle`, `BadgeStyle`, `TextFieldLabelStyle`, `TextFieldRowStyle`. All use `Color.token(...)` / `Dp.token(...)` / `Sp.token(...)` so the IR plugin extracts them. Backwards-compatible `*Defaults.style()` Composables remain. Coverage in samples: 9/9 sites in unicompose-base, 18/18 sites in samples/todo-app commonMain.
 
 ## Post-v0.1
 
@@ -226,9 +240,10 @@ The proposed shape is `StyleStates(base, hover = …, disabled = …)`. `:focus`
 - `UiModal`/`UiPopover`/`UiToast` — overlay rendering.
 - `UiNavHost`/`UiNavLink` — wraps Compose Navigation 3 and the History API. **Load-bearing** for the "no bifurcation with Kobweb" story — see the README's framework-pairing notes.
 - `UiModifier` escape hatch — typed wrapper for platform-specific extensions.
-- KSP build-time CSS extraction (only if cold-start becomes a real bottleneck).
 - Desktop (JVM) target — cheap to add since it shares the CMP backend.
 - Dokka HTML doc site.
+- **Publish to Maven** — replaces the current composite-build dev workflow with proper artifact resolution. Consumers would just add `pluginManagement.repositories { gradlePluginPortal() }` and apply `id("dev.unicompose.css-extractor")`. The composite-build setup is fine for in-repo dev but doesn't scale to external consumers.
+- **iOS Xcode project scaffold** — currently `:samples:kitchen-sink:iosSimulatorArm64Test` etc. compile, but there's no Xcode project to actually launch on a simulator/device. Needs a minimal `iosApp/` SwiftUI host that calls `MainViewControllerKt.MainViewController()`. Blocks native iOS snapshot tests too.
 
 ### Bundled font for cross-platform visual parity
 
@@ -288,10 +303,14 @@ in place, additional fonts (Roboto, IBM Plex, etc.) become drop-in modules.
 ## Verification
 
 ```bash
-./gradlew assemble        # builds everything: Android APK, iOS frameworks, web JS bundle
-./gradlew :samples:kitchen-sink:installDebug                # Android
-./gradlew :samples:kitchen-sink:jsBrowserDevelopmentRun     # localhost:8080, real DOM
-# iOS: open samples/kitchen-sink/iosApp in Xcode (TODO: scaffold the Xcode project)
+./gradlew assemble                                          # builds everything: Android APK, iOS frameworks, web JS+wasmJs bundles
+./gradlew :samples:todo-app:installDebug                    # Android
+./gradlew :samples:todo-app:jsBrowserDevelopmentRun         # localhost:8080, real DOM (with build-time CSS)
+./gradlew visualPreview && cd build/tests-preview && python3 -m http.server 8000
+                                                            # http://localhost:8000/todo-html/  + /todo-canvas/
+./gradlew check                                             # apiCheck + Paparazzi + unit tests
+cd tests/visual && npx playwright test                      # web goldens (DOM + Skia canvas, both samples)
+# iOS: TODO scaffold iosApp/ Xcode project (post-v0.1)
 ```
 
-The web bundle's view-source must show real HTML elements (`<div class="ucf-…">`, `<span class="uc-…">`) and a single `<style id="unicompose-styles">` block — not a `<canvas>`.
+The web bundle's view-source must show real HTML elements (`<div class="ucf-…">`, `<span class="uc-…">`), a `<link rel="stylesheet" href="unicompose-generated.css">` for the build-time-extracted classes, and a `<link rel="stylesheet" href="unicompose-reset.css">` for the static reset — not a `<canvas>`.
