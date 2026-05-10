@@ -23,10 +23,17 @@ import androidx.compose.ui.unit.dp as composeDp
 /**
  * Reduce a [Style] to a Compose `Modifier` chain.
  *
- * Order is fixed and intentional — see plan, "How identity is enforced":
- * size → shadow → padding → background → border → clip(borderRadius) → opacity.
- * The fixed order neutralizes Compose `Modifier`'s order sensitivity so that two
- * equal [Style] values always produce visually equal output.
+ * Order is fixed and intentional and follows CSS box-model semantics:
+ *
+ *   size → shadow → background → border → clip(borderRadius) → padding → opacity
+ *
+ * Why this order matters: in Compose, drawing modifiers (`background`, `border`,
+ * `drawBehind`) paint at the *current* size in the chain, and `padding` shrinks
+ * that size for everything after it. To match CSS — where background fills the
+ * whole element and content is inset by padding — `background` and `border` must
+ * appear *before* `padding`. Earlier we had padding first, which caused per-side
+ * borders to draw inside the padded area (clipping content) and backgrounds to
+ * paint only the inner box.
  *
  * Properties not handled here (margin, flex weight, alignment) are applied by
  * widget-specific code that knows the surrounding layout context.
@@ -51,7 +58,7 @@ public fun Style.toModifier(): Modifier {
 
     val shape: Shape = borderRadius?.toShape() ?: RoundedCornerShape(0.composeDp)
 
-    // Shadow before padding so it draws around the element's bounds, not inside.
+    // Shadow first — paints behind everything else at the element's outer bounds.
     // Hard path: drawBehind with full offset+spread fidelity.
     // Blurred path: Modifier.shadow elevation approximation; offset/spread ignored.
     boxShadow?.let { s ->
@@ -87,15 +94,8 @@ public fun Style.toModifier(): Modifier {
         }
     }
 
-    padding?.let { p ->
-        m = m.padding(
-            start = p.left.value.composeDp,
-            top = p.top.value.composeDp,
-            end = p.right.value.composeDp,
-            bottom = p.bottom.value.composeDp,
-        )
-    }
-
+    // Background fills the element's outer bounds (CSS-like: backgrounds extend
+    // under padding).
     backgroundColor?.let { c ->
         m = m.background(c.toComposeColor(), shape)
     }
@@ -104,6 +104,7 @@ public fun Style.toModifier(): Modifier {
         m = m.background(brush = g.toComposeBrush(), shape = shape)
     }
 
+    // Border draws at the element's outer bounds, before any padding inset.
     border?.let { b ->
         m = if (b.isUniform) {
             // Fast path: built-in Modifier.border follows the rounded shape correctly.
@@ -140,8 +141,20 @@ public fun Style.toModifier(): Modifier {
         }
     }
 
+    // Clip with the rounded shape after background+border so content respects
+    // the corner radius even when it wouldn't otherwise overflow.
     if (borderRadius != null) {
         m = m.clip(shape)
+    }
+
+    // Padding goes last (apart from opacity) — only the content inside is inset.
+    padding?.let { p ->
+        m = m.padding(
+            start = p.left.value.composeDp,
+            top = p.top.value.composeDp,
+            end = p.right.value.composeDp,
+            bottom = p.bottom.value.composeDp,
+        )
     }
 
     opacity?.let { o ->
