@@ -103,6 +103,14 @@ public data class Style(
     val paddingAllRef: String? = null,
     /** Single CSS variable applied uniformly to all four corners. */
     val borderRadiusAllRef: String? = null,
+    /**
+     * Symmetric padding refs — vertical (top + bottom) and horizontal (left +
+     * right). Lowers to the CSS `padding: var(--v) var(--h)` shorthand.
+     * Useful when widget defaults use different token sizes per axis (e.g.
+     * Button.Padding.symmetric(vertical = space.sm, horizontal = space.md)).
+     */
+    val paddingVerticalRef: String? = null,
+    val paddingHorizontalRef: String? = null,
 ) {
     public companion object {
         /** A [Style] with no properties set. Equivalent to passing no style at all. */
@@ -143,6 +151,8 @@ public data class Style(
         fontSizeRef = other.fontSizeRef ?: fontSizeRef,
         paddingAllRef = other.paddingAllRef ?: paddingAllRef,
         borderRadiusAllRef = other.borderRadiusAllRef ?: borderRadiusAllRef,
+        paddingVerticalRef = other.paddingVerticalRef ?: paddingVerticalRef,
+        paddingHorizontalRef = other.paddingHorizontalRef ?: paddingHorizontalRef,
     )
 }
 

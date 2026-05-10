@@ -18,6 +18,9 @@ public final class dev/unicompose/base/ButtonDefaults {
 public final class dev/unicompose/base/ButtonKt {
 	public static final fun Button (Lkotlin/jvm/functions/Function0;Ldev/unicompose/base/ButtonVariant;ZLdev/unicompose/style/Style;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;II)V
 	public static final fun Button (Lkotlin/jvm/functions/Function0;Ljava/lang/String;Ldev/unicompose/base/ButtonVariant;ZLdev/unicompose/style/Style;Landroidx/compose/runtime/Composer;II)V
+	public static final fun getButtonGhostStyle ()Ldev/unicompose/style/Style;
+	public static final fun getButtonPrimaryStyle ()Ldev/unicompose/style/Style;
+	public static final fun getButtonSecondaryStyle ()Ldev/unicompose/style/Style;
 }
 
 public final class dev/unicompose/base/ButtonVariant : java/lang/Enum {
@@ -37,6 +40,7 @@ public final class dev/unicompose/base/CardDefaults {
 
 public final class dev/unicompose/base/CardKt {
 	public static final fun Card (Ldev/unicompose/style/Style;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;II)V
+	public static final fun getCardStyle ()Ldev/unicompose/style/Style;
 }
 
 public final class dev/unicompose/base/ColorTokens {
@@ -81,6 +85,7 @@ public final class dev/unicompose/base/HeadingKt {
 	public static final fun H3 (Ljava/lang/String;Ldev/unicompose/style/Style;Landroidx/compose/runtime/Composer;II)V
 	public static final fun Heading (Ldev/unicompose/HeadingLevel;Ljava/lang/String;Ldev/unicompose/style/Style;Landroidx/compose/runtime/Composer;II)V
 	public static final fun Text (Ljava/lang/String;Ldev/unicompose/style/Style;Landroidx/compose/runtime/Composer;II)V
+	public static final fun getHeadingStyle ()Ldev/unicompose/style/Style;
 }
 
 public final class dev/unicompose/base/LocalTokensKt {
@@ -124,8 +129,14 @@ public final class dev/unicompose/base/SpaceTokens {
 	public fun toString ()Ljava/lang/String;
 }
 
+public final class dev/unicompose/base/StyleResolverKt {
+	public static final fun resolveRefs (Ldev/unicompose/style/Style;Ldev/unicompose/base/Tokens;)Ldev/unicompose/style/Style;
+}
+
 public final class dev/unicompose/base/TextFieldKt {
 	public static final fun TextField (Ljava/lang/String;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Ljava/lang/String;ZLandroidx/compose/runtime/Composer;II)V
+	public static final fun getTextFieldLabelStyle ()Ldev/unicompose/style/Style;
+	public static final fun getTextFieldRowStyle ()Ldev/unicompose/style/Style;
 }
 
 public final class dev/unicompose/base/TokenRefs {

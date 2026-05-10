@@ -26,11 +26,25 @@ internal object CssEmitter {
     fun emit(args: Map<String, Evaluator.V>, prefix: String = "uc"): Emission? {
         val rules = mutableListOf<Pair<String, String>>()
 
+        // Pre-pass: when both vertical + horizontal padding refs are set, emit
+        // ONE combined `padding: var(--v) var(--h)` rule instead of two
+        // overlapping `padding:` declarations. Mutates a working set so the
+        // ParamOrder loop below skips the now-handled fields.
+        val handled = mutableSetOf<String>()
+        val v = (args["paddingVerticalRef"] as? Evaluator.V.Str)?.v
+        val h = (args["paddingHorizontalRef"] as? Evaluator.V.Str)?.v
+        if (v != null && h != null) {
+            rules += "padding" to "var($v) var($h)"
+            handled += "paddingVerticalRef"
+            handled += "paddingHorizontalRef"
+        }
+
         // Process in a stable order so the same Style produces the same hash
         // regardless of map iteration order.
         for (paramName in ParamOrder) {
-            val v = args[paramName] ?: continue
-            ruleFor(paramName, v)?.let { rules += it }
+            if (paramName in handled) continue
+            val argValue = args[paramName] ?: continue
+            ruleFor(paramName, argValue)?.let { rules += it }
         }
 
         if (rules.isEmpty()) return null
@@ -50,7 +64,8 @@ internal object CssEmitter {
      * different hash (correct — different rule).
      */
     private val ParamOrder = listOf(
-        "padding", "paddingAllRef", "margin",
+        "padding", "paddingAllRef", "paddingVerticalRef", "paddingHorizontalRef",
+        "margin",
         "backgroundColor", "backgroundColorRef",
         "color", "colorRef",
         "fontSize", "fontSizeRef", "fontWeight",
@@ -65,6 +80,11 @@ internal object CssEmitter {
             "padding" to "${it.top.fmt()}px ${it.right.fmt()}px ${it.bottom.fmt()}px ${it.left.fmt()}px"
         }
         "paddingAllRef" -> (v as? Evaluator.V.Str)?.let { "padding" to "var(${it.v})" }
+        // paddingVerticalRef/paddingHorizontalRef are read together; emit only once
+        // when we see paddingVerticalRef. paddingHorizontalRef alone would be paired
+        // with vertical=0 which is rarely intentional, but supported for symmetry.
+        "paddingVerticalRef" -> (v as? Evaluator.V.Str)?.let { "padding" to "var(${it.v}) 0" }
+        "paddingHorizontalRef" -> (v as? Evaluator.V.Str)?.let { "padding" to "0 var(${it.v})" }
         "margin" -> (v as? Evaluator.V.Padding)?.let {
             "margin" to "${it.top.fmt()}px ${it.right.fmt()}px ${it.bottom.fmt()}px ${it.left.fmt()}px"
         }

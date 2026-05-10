@@ -114,6 +114,10 @@ internal object AtomicCss {
         val out = mutableListOf<Pair<String, String>>()
         if (style.paddingAllRef != null) {
             out += "padding" to "var(${style.paddingAllRef})"
+        } else if (style.paddingVerticalRef != null || style.paddingHorizontalRef != null) {
+            val v = style.paddingVerticalRef?.let { "var($it)" } ?: "0"
+            val h = style.paddingHorizontalRef?.let { "var($it)" } ?: "0"
+            out += "padding" to "$v $h"
         } else style.padding?.let { p ->
             out += "padding" to "${p.top.value}px ${p.right.value}px ${p.bottom.value}px ${p.left.value}px"
         }

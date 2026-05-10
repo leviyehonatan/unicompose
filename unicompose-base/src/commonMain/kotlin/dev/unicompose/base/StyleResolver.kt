@@ -6,6 +6,7 @@ import dev.unicompose.style.Dp
 import dev.unicompose.style.Padding
 import dev.unicompose.style.Sp
 import dev.unicompose.style.Style
+import dev.unicompose.style.dp
 
 /**
  * Resolves the `*Ref` fields on a [Style] against the active token set.
@@ -30,9 +31,15 @@ public fun Style.resolveRefs(tokens: Tokens): Style {
         backgroundColor = backgroundColorRef?.let { resolveColor(it, tokens) } ?: backgroundColor,
         gap = gapRef?.let { resolveDp(it, tokens) } ?: gap,
         fontSize = fontSizeRef?.let { resolveSp(it, tokens) } ?: fontSize,
-        padding = paddingAllRef?.let { ref ->
-            resolveDp(ref, tokens)?.let { Padding.all(it) }
-        } ?: padding,
+        padding = when {
+            paddingAllRef != null -> resolveDp(paddingAllRef!!, tokens)?.let { Padding.all(it) } ?: padding
+            paddingVerticalRef != null || paddingHorizontalRef != null -> {
+                val v = paddingVerticalRef?.let { resolveDp(it, tokens) } ?: 0.dp
+                val h = paddingHorizontalRef?.let { resolveDp(it, tokens) } ?: 0.dp
+                Padding.symmetric(vertical = v, horizontal = h)
+            }
+            else -> padding
+        },
         borderRadius = borderRadiusAllRef?.let { ref ->
             resolveDp(ref, tokens)?.let { BorderRadius.all(it) }
         } ?: borderRadius,

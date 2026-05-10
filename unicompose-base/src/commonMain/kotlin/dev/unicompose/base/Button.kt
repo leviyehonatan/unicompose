@@ -86,41 +86,56 @@ public fun Button(
     style: Style = Style.Empty,
     content: @Composable () -> Unit,
 ) {
-    val resolved = ButtonDefaults.style(variant) + style
+    val baseStyle = when (variant) {
+        ButtonVariant.Primary -> ButtonPrimaryStyle
+        ButtonVariant.Secondary -> ButtonSecondaryStyle
+        ButtonVariant.Ghost -> ButtonGhostStyle
+    }
+    val resolved = (baseStyle + style).resolveRefs(currentTokens())
     UiButton(onClick = onClick, style = resolved, enabled = enabled) {
         ProvideDefaultTextColor(resolved.color, content)
     }
 }
 
-/** Default style recipes for [Button] variants. */
+/**
+ * Shared chrome shared by every [Button] variant — padding, corner radius,
+ * label typography. Top-level val so the IR plugin extracts it. Per-variant
+ * vals layer color/border on top via Style+.
+ */
+private val ButtonSharedStyle: Style = Style(
+    paddingVerticalRef = TokenRefs.space.sm,
+    paddingHorizontalRef = TokenRefs.space.md,
+    borderRadiusAllRef = TokenRefs.radii.md,
+    fontSizeRef = TokenRefs.type.sm,
+    fontWeight = FontWeight.Medium,
+)
+
+/** Filled accent button — primary call-to-action. */
+public val ButtonPrimaryStyle: Style = ButtonSharedStyle + Style(
+    backgroundColorRef = TokenRefs.colors.accent,
+    colorRef = TokenRefs.colors.onAccent,
+)
+
+/** Outlined button — lower-emphasis action. Border literal stays runtime
+ *  (Border has per-side widths/colors that don't fit the simple ref shape;
+ *  resolveRefs() on CMP fills it in). */
+public val ButtonSecondaryStyle: Style = ButtonSharedStyle + Style(
+    backgroundColor = Color.Transparent,
+    colorRef = TokenRefs.colors.textPrimary,
+)
+
+/** Borderless accent text — minimal-weight action. */
+public val ButtonGhostStyle: Style = ButtonSharedStyle + Style(
+    backgroundColor = Color.Transparent,
+    colorRef = TokenRefs.colors.accent,
+)
+
+/** Default style recipes for [Button] variants. Backwards-compatible API. */
 public object ButtonDefaults {
-    /**
-     * Returns the token-resolved style for a given [variant]. Includes color,
-     * background/border, padding, corner radius, and label typography.
-     */
     @Composable
-    public fun style(variant: ButtonVariant): Style {
-        val t = currentTokens()
-        val shared = Style(
-            padding = Padding.symmetric(vertical = t.space.sm, horizontal = t.space.md),
-            borderRadius = BorderRadius.all(t.radii.md),
-            fontSize = t.type.sm,
-            fontWeight = FontWeight.Medium,
-        )
-        return when (variant) {
-            ButtonVariant.Primary -> shared + Style(
-                backgroundColor = t.colors.accent,
-                color = t.colors.onAccent,
-            )
-            ButtonVariant.Secondary -> shared + Style(
-                backgroundColor = Color.Transparent,
-                color = t.colors.textPrimary,
-                border = Border.all(width = 1.dp, color = t.colors.borderSubtle),
-            )
-            ButtonVariant.Ghost -> shared + Style(
-                backgroundColor = Color.Transparent,
-                color = t.colors.accent,
-            )
-        }
+    public fun style(variant: ButtonVariant): Style = when (variant) {
+        ButtonVariant.Primary -> ButtonPrimaryStyle
+        ButtonVariant.Secondary -> ButtonSecondaryStyle
+        ButtonVariant.Ghost -> ButtonGhostStyle
     }
 }
