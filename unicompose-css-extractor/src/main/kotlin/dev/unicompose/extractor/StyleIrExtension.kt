@@ -32,7 +32,7 @@ private const val STYLE_FQN = "dev.unicompose.style.Style"
  * breakdown of its arguments to /tmp/unicompose-css-extractor-debug.log so
  * we can see what IR shapes we need to handle as we wire up real extraction.
  */
-internal class StyleIrExtension : IrGenerationExtension {
+internal class StyleIrExtension(private val outputDir: String? = null) : IrGenerationExtension {
     override fun generate(moduleFragment: IrModuleFragment, pluginContext: IrPluginContext) {
         val visitor = StyleVisitor()
         moduleFragment.files.forEach { file ->
@@ -47,9 +47,15 @@ internal class StyleIrExtension : IrGenerationExtension {
                     "${emissions.size}/$totalSites Style() call sites extracted statically",
             )
         }
-        if (emissions.isNotEmpty()) {
+        // Always write the CSS file (even if empty) so the runtime <link href=
+        // "unicompose-generated.css"> doesn't 404. An empty file is just a
+        // header comment; the runtime AtomicCss handles all dynamic styles via
+        // its <style> tag as before.
+        if (totalSites > 0) {
             runCatching {
-                val cssOut = java.io.File("/tmp/unicompose-generated.css")
+                val targetDir = java.io.File(outputDir ?: "/tmp")
+                targetDir.mkdirs()
+                val cssOut = java.io.File(targetDir, "unicompose-generated.css")
                 // Dedupe by class name so identical Styles produce one rule.
                 val unique = emissions.associateBy { it.className }
                 val css = buildString {

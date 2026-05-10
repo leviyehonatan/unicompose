@@ -1,6 +1,7 @@
 package dev.unicompose.style
 
 import kotlinx.browser.document
+import org.w3c.dom.HTMLLinkElement
 import org.w3c.dom.HTMLStyleElement
 
 /**
@@ -24,6 +25,20 @@ import org.w3c.dom.HTMLStyleElement
 internal object AtomicCss {
     private val cache = HashMap<String, String>()
     private val styleEl: HTMLStyleElement by lazy {
+        // Pull in build-time-extracted classes from unicompose-css-extractor.
+        // The file lives next to the bundled JS at /unicompose-generated.css.
+        // It's a static asset so the browser can cache it; classes here have
+        // identical hashes to what this runtime path would produce, so calling
+        // classFor(...) on a Style the extractor saw is a no-op (the rule is
+        // already present in the linked sheet).
+        if (document.getElementById("unicompose-generated") == null) {
+            (document.createElement("link") as HTMLLinkElement).also { link ->
+                link.id = "unicompose-generated"
+                link.rel = "stylesheet"
+                link.href = "unicompose-generated.css"
+                document.head?.appendChild(link)
+            }
+        }
         (document.createElement("style") as HTMLStyleElement).also { el ->
             el.id = "unicompose-styles"
             document.head?.appendChild(el)

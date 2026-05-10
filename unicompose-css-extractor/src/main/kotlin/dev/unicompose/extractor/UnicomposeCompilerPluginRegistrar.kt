@@ -21,6 +21,7 @@ public class UnicomposeCompilerPluginRegistrar : CompilerPluginRegistrar() {
     override val supportsK2: Boolean = true
 
     override fun ExtensionStorage.registerExtensions(configuration: CompilerConfiguration) {
-        IrGenerationExtension.registerExtension(StyleIrExtension())
+        val outputDir = configuration.get(UnicomposeCommandLineProcessor.KEY_OUTPUT_DIR)
+        IrGenerationExtension.registerExtension(StyleIrExtension(outputDir))
     }
 }

@@ -82,6 +82,26 @@ kotlin {
     }
 }
 
+// Wire the unicompose CSS-extraction compiler plugin into compileKotlinJs and
+// route its output into a project-local build dir. See samples/todo-app/build.gradle.kts
+// for the longer comment on why we use direct classpath injection + freeCompilerArgs
+// instead of plugins { id("dev.unicompose.css-extractor") } today.
+configurations.matching { it.name == "kotlinCompilerPluginClasspathJsMain" }.configureEach {
+    dependencies.add(project.dependencies.create(project(":unicompose-css-extractor")))
+}
+
+val cssExtractorOutputDir = layout.buildDirectory.dir("generated/css")
+tasks.matching { it.name == "compileKotlinJs" }.configureEach {
+    val outDir = cssExtractorOutputDir.get().asFile
+    outputs.dir(outDir)
+    doFirst { outDir.mkdirs() }
+    (this as org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask<*>)
+        .compilerOptions.freeCompilerArgs.addAll(
+            "-P",
+            "plugin:dev.unicompose.css-extractor:outputDir=${outDir.absolutePath}",
+        )
+}
+
 // `./gradlew :samples:kitchen-sink:previewSite` produces a single dist/preview/
 // directory containing both bundles plus a side-by-side compare.html. Serve with
 // `python3 -m http.server` from build/dist/preview/ to view both at once or to
@@ -140,6 +160,7 @@ val previewSite by tasks.registering(Copy::class) {
     // 1.5 MB for the app wasm) but that's acceptable for a dev/preview/test
     // artifact. Production-mode rendering on the web is the *DOM* bundle's job.
     from(layout.buildDirectory.dir("dist/wasmJs/developmentExecutable")) { into("canvas") }
+    from(cssExtractorOutputDir) { into("html") }
     into(layout.buildDirectory.dir("dist/preview"))
     doLast {
         layout.buildDirectory.file("dist/preview/compare.html").get().asFile.writeText(

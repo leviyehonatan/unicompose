@@ -10,12 +10,24 @@ plugins {
 }
 
 // Apply the unicompose CSS-extraction compiler plugin to the JS target only.
-// This is a smoke-test wiring; once the Gradle companion plugin is published
-// or the source-substitution flow is wired, consumers will use
-//   plugins { id("dev.unicompose.css-extractor") }
-// instead.
+// Direct classpath injection + a CLI option pointing at the build dir for the
+// generated CSS. We'll move to plugins { id("dev.unicompose.css-extractor") }
+// once the companion Gradle plugin can be applied via a published or
+// composite-included artifact.
 configurations.matching { it.name == "kotlinCompilerPluginClasspathJsMain" }.configureEach {
     dependencies.add(project.dependencies.create(project(":unicompose-css-extractor")))
+}
+
+val cssExtractorOutputDir = layout.buildDirectory.dir("generated/css")
+tasks.matching { it.name == "compileKotlinJs" }.configureEach {
+    val outDir = cssExtractorOutputDir.get().asFile
+    outputs.dir(outDir)
+    doFirst { outDir.mkdirs() }
+    (this as org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask<*>)
+        .compilerOptions.freeCompilerArgs.addAll(
+            "-P",
+            "plugin:dev.unicompose.css-extractor:outputDir=${outDir.absolutePath}",
+        )
 }
 
 kotlin {
@@ -118,6 +130,10 @@ val previewSite by tasks.registering(Copy::class) {
     dependsOn("jsBrowserDistribution", "wasmJsBrowserDevelopmentExecutableDistribution")
     from(layout.buildDirectory.dir("dist/js/productionExecutable")) { into("html") }
     from(layout.buildDirectory.dir("dist/wasmJs/developmentExecutable")) { into("canvas") }
+    // Pull in the build-time-extracted CSS file so the served HTML can <link>
+    // against /html/unicompose-generated.css. The compileKotlinJs configuration
+    // above ensures it exists before this Copy runs.
+    from(cssExtractorOutputDir) { into("html") }
     into(layout.buildDirectory.dir("dist/preview"))
     doLast {
         layout.buildDirectory.file("dist/preview/compare.html").get().asFile.writeText(
