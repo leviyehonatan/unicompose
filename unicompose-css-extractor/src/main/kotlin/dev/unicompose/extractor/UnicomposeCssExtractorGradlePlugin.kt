@@ -38,17 +38,34 @@ public class UnicomposeCssExtractorGradlePlugin : KotlinCompilerPluginSupportPlu
         // output dir, because compileKotlinJs declares the IR-output dir as a
         // task output and Gradle wipes it before each run, which would erase
         // the reset.css if it shared the directory.
-        val outputDir = target.layout.buildDirectory.dir("generated/css-reset")
-        target.tasks.register("extractUnicomposeReset") { task ->
-            task.outputs.file(outputDir.map { it.file("unicompose-reset.css") })
+        val resetOutputDir = target.layout.buildDirectory.dir("generated/css-reset")
+        val extractResetTask = target.tasks.register("extractUnicomposeReset") { task ->
+            task.outputs.file(resetOutputDir.map { it.file("unicompose-reset.css") })
             task.doLast {
-                val out = outputDir.get().asFile.also { it.mkdirs() }
+                val out = resetOutputDir.get().asFile.also { it.mkdirs() }
                 val resourceStream = UnicomposeCssExtractorGradlePlugin::class.java
                     .classLoader
                     .getResourceAsStream("unicompose-reset.css")
                     ?: error("unicompose-reset.css not found on css-extractor plugin classpath")
                 resourceStream.use { input ->
                     java.io.File(out, "unicompose-reset.css").outputStream().use { input.copyTo(it) }
+                }
+            }
+        }
+
+        // Auto-wire reset.css into the JS distribution: hook the css-reset dir
+        // into the jsProcessResources Copy task so unicompose-reset.css ends up
+        // bundled next to the JS in the final dist. Consumers don't have to
+        // pull it manually from the plugin jar.
+        //
+        // The Kotlin Multiplatform plugin registers jsProcessResources lazily
+        // when the js() target is configured, so we use plugins.withId + a
+        // task-name match that fires whenever it appears.
+        target.plugins.withId("org.jetbrains.kotlin.multiplatform") {
+            target.tasks.matching { it.name == "jsProcessResources" }.configureEach { task ->
+                if (task is org.gradle.api.tasks.Copy) {
+                    task.from(resetOutputDir)
+                    task.dependsOn(extractResetTask)
                 }
             }
         }
