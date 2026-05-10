@@ -33,6 +33,10 @@ import kotlin.jvm.JvmInline
  * @property color Foreground color used for text by default.
  * @property fontSize Text size in scale-independent pixels.
  * @property fontWeight Text weight — see [FontWeight] for supported values.
+ * @property fontFamily Font family — see [FontFamily] for supported values.
+ *   Note: exact font appearance differs per backend (web DOM uses browser system
+ *   fonts; CMP / canvas web uses Skia's bundled fonts). The enum chooses a
+ *   semantic family; the platform picks the actual face.
  * @property lineHeight Line height for text content. Treated as an absolute size
  *   (Sp on CMP, px on web), not a CSS unitless multiplier.
  * @property letterSpacing Tracking applied between glyphs in text content.
@@ -66,6 +70,7 @@ public data class Style(
     val color: Color? = null,
     val fontSize: Sp? = null,
     val fontWeight: FontWeight? = null,
+    val fontFamily: FontFamily? = null,
     val lineHeight: Sp? = null,
     val letterSpacing: Sp? = null,
     val textAlign: TextAlign? = null,
@@ -99,6 +104,7 @@ public data class Style(
         color = other.color ?: color,
         fontSize = other.fontSize ?: fontSize,
         fontWeight = other.fontWeight ?: fontWeight,
+        fontFamily = other.fontFamily ?: fontFamily,
         lineHeight = other.lineHeight ?: lineHeight,
         letterSpacing = other.letterSpacing ?: letterSpacing,
         textAlign = other.textAlign ?: textAlign,
@@ -440,6 +446,35 @@ public fun rgb(r: Int, g: Int, b: Int): Color =
  */
 public fun argb(a: Int, r: Int, g: Int, b: Int): Color =
     Color(((a and 0xFF) shl 24) or ((r and 0xFF) shl 16) or ((g and 0xFF) shl 8) or (b and 0xFF))
+
+/**
+ * Semantic font family.
+ *
+ * Each backend resolves the family to whatever the platform considers its
+ * default of that kind:
+ *  - Web (DOM): CSS generic family — `sans-serif`, `serif`, `monospace`.
+ *    [Default] emits `system-ui` for the platform's UI font (San Francisco
+ *    on macOS/iOS, Segoe UI on Windows, Roboto on Android, etc.).
+ *  - Compose Multiplatform (Android, iOS, canvas web): Compose's
+ *    `FontFamily.Default` / `SansSerif` / `Serif` / `Monospace`. On Android
+ *    and iOS this picks up the system font; on canvas web it uses Skia's
+ *    bundled font of that kind, which may not match the system font in the
+ *    same browser.
+ *
+ * Exact font face therefore differs by backend; the family choice is
+ * semantic. v0.1 doesn't support custom font resources — bundling a font
+ * cross-platform is its own milestone.
+ */
+public enum class FontFamily {
+    /** Platform UI font (browser `system-ui`; Compose `FontFamily.Default`). */
+    Default,
+    /** Generic sans-serif. */
+    SansSerif,
+    /** Generic serif. */
+    Serif,
+    /** Generic monospace. */
+    Monospace,
+}
 
 /**
  * Type-weight for text rendering.

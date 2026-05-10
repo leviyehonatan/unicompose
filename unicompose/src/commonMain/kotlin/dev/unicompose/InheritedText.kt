@@ -6,6 +6,7 @@ import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.compositionLocalOf
 import dev.unicompose.style.Color
+import dev.unicompose.style.FontFamily
 import dev.unicompose.style.FontWeight
 import dev.unicompose.style.Sp
 import dev.unicompose.style.TextAlign
@@ -33,6 +34,7 @@ public data class InheritedText(
     val color: Color? = null,
     val fontSize: Sp? = null,
     val fontWeight: FontWeight? = null,
+    val fontFamily: FontFamily? = null,
     val lineHeight: Sp? = null,
     val letterSpacing: Sp? = null,
     val textAlign: TextAlign? = null,
@@ -86,6 +88,7 @@ public fun ProvideInheritedText(
         color = text.color ?: parent.color,
         fontSize = text.fontSize ?: parent.fontSize,
         fontWeight = text.fontWeight ?: parent.fontWeight,
+        fontFamily = text.fontFamily ?: parent.fontFamily,
         lineHeight = text.lineHeight ?: parent.lineHeight,
         letterSpacing = text.letterSpacing ?: parent.letterSpacing,
         textAlign = text.textAlign ?: parent.textAlign,

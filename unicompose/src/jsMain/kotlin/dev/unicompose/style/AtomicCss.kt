@@ -99,6 +99,14 @@ internal object AtomicCss {
         style.color?.let { out += "color" to it.toCss() }
         style.fontSize?.let { out += "font-size" to "${it.value}px" }
         style.fontWeight?.let { out += "font-weight" to it.value.toString() }
+        style.fontFamily?.let {
+            out += "font-family" to when (it) {
+                FontFamily.Default -> "system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, sans-serif"
+                FontFamily.SansSerif -> "sans-serif"
+                FontFamily.Serif -> "serif"
+                FontFamily.Monospace -> "monospace"
+            }
+        }
         style.lineHeight?.let { out += "line-height" to "${it.value}px" }
         style.letterSpacing?.let { out += "letter-spacing" to "${it.value}px" }
         style.textAlign?.let {

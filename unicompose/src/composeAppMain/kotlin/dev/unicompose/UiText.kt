@@ -4,9 +4,11 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color as ComposeColor
+import androidx.compose.ui.text.font.FontFamily as ComposeFontFamily
 import androidx.compose.ui.text.font.FontWeight as ComposeFontWeight
 import androidx.compose.ui.text.style.TextAlign as ComposeTextAlign
 import androidx.compose.ui.unit.sp as composeSp
+import dev.unicompose.style.FontFamily
 import dev.unicompose.style.Style
 import dev.unicompose.style.TextAlign
 import dev.unicompose.style.toComposeColor
@@ -18,6 +20,7 @@ public actual fun UiText(text: String, style: Style) {
     val color = style.color ?: inherited.color
     val fontSize = style.fontSize ?: inherited.fontSize
     val fontWeight = style.fontWeight ?: inherited.fontWeight
+    val fontFamily = style.fontFamily ?: inherited.fontFamily
     val lineHeight = style.lineHeight ?: inherited.lineHeight
     val letterSpacing = style.letterSpacing ?: inherited.letterSpacing
     val textAlign = style.textAlign ?: inherited.textAlign
@@ -27,6 +30,7 @@ public actual fun UiText(text: String, style: Style) {
         color = color?.toComposeColor() ?: ComposeColor.Unspecified,
         fontSize = fontSize?.value?.composeSp ?: base.fontSize,
         fontWeight = fontWeight?.let { ComposeFontWeight(it.value) } ?: base.fontWeight,
+        fontFamily = fontFamily?.toComposeFontFamily() ?: base.fontFamily,
         lineHeight = lineHeight?.value?.composeSp ?: base.lineHeight,
         letterSpacing = letterSpacing?.value?.composeSp ?: base.letterSpacing,
         textAlign = textAlign?.toComposeTextAlign() ?: base.textAlign,
@@ -43,4 +47,11 @@ private fun TextAlign.toComposeTextAlign(): ComposeTextAlign = when (this) {
     TextAlign.Center -> ComposeTextAlign.Center
     TextAlign.End -> ComposeTextAlign.End
     TextAlign.Justify -> ComposeTextAlign.Justify
+}
+
+private fun FontFamily.toComposeFontFamily(): ComposeFontFamily = when (this) {
+    FontFamily.Default -> ComposeFontFamily.Default
+    FontFamily.SansSerif -> ComposeFontFamily.SansSerif
+    FontFamily.Serif -> ComposeFontFamily.Serif
+    FontFamily.Monospace -> ComposeFontFamily.Monospace
 }

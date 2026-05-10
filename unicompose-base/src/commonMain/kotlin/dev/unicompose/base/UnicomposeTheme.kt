@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import dev.unicompose.InheritedText
 import dev.unicompose.ProvideInheritedText
+import dev.unicompose.style.FontFamily
 import dev.unicompose.style.Sp
 
 /**
@@ -52,6 +53,7 @@ public fun UnicomposeTheme(
             text = InheritedText(
                 color = tokens.colors.textPrimary,
                 fontSize = bodyFontSize,
+                fontFamily = FontFamily.Default,
                 lineHeight = bodyLineHeight,
             ),
             content = content,
