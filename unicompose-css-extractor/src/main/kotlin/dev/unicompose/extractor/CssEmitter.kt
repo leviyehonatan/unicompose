@@ -71,7 +71,7 @@ internal object CssEmitter {
         "fontSize", "fontSizeRef", "fontWeight",
         "fontFamily", "lineHeight", "letterSpacing", "textAlign",
         "borderRadius", "borderRadiusAllRef",
-        "border", "boxShadow", "opacity", "width", "height", "flex",
+        "border", "borderRef", "boxShadow", "opacity", "width", "height", "flex",
         "gap", "gapRef",
     )
 
@@ -105,6 +105,7 @@ internal object CssEmitter {
             "border-radius" to "${it.tl.fmt()}px ${it.tr.fmt()}px ${it.br.fmt()}px ${it.bl.fmt()}px"
         }
         "borderRadiusAllRef" -> (v as? Evaluator.V.Str)?.let { "border-radius" to "var(${it.v})" }
+        "borderRef" -> (v as? Evaluator.V.Str)?.let { "border" to "1px solid var(${it.v})" }
         "opacity" -> when (v) {
             is Evaluator.V.Float -> "opacity" to v.v.toString()
             is Evaluator.V.Int -> "opacity" to v.v.toString()

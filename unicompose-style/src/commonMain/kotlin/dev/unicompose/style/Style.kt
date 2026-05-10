@@ -111,6 +111,12 @@ public data class Style(
      */
     val paddingVerticalRef: String? = null,
     val paddingHorizontalRef: String? = null,
+    /**
+     * Single CSS variable that supplies the border color. When set, emits
+     * `border: 1px solid var(--name)`. Width is fixed at 1 px today; if
+     * tunable widths become a real need we'll widen this to a typed ref.
+     */
+    val borderRef: String? = null,
 ) {
     public companion object {
         /** A [Style] with no properties set. Equivalent to passing no style at all. */
@@ -153,6 +159,7 @@ public data class Style(
         borderRadiusAllRef = other.borderRadiusAllRef ?: borderRadiusAllRef,
         paddingVerticalRef = other.paddingVerticalRef ?: paddingVerticalRef,
         paddingHorizontalRef = other.paddingHorizontalRef ?: paddingHorizontalRef,
+        borderRef = other.borderRef ?: borderRef,
     )
 }
 

@@ -116,12 +116,11 @@ public val ButtonPrimaryStyle: Style = ButtonSharedStyle + Style(
     colorRef = TokenRefs.colors.onAccent,
 )
 
-/** Outlined button — lower-emphasis action. Border literal stays runtime
- *  (Border has per-side widths/colors that don't fit the simple ref shape;
- *  resolveRefs() on CMP fills it in). */
+/** Outlined button — lower-emphasis action. */
 public val ButtonSecondaryStyle: Style = ButtonSharedStyle + Style(
     backgroundColor = Color.Transparent,
     colorRef = TokenRefs.colors.textPrimary,
+    borderRef = TokenRefs.colors.borderSubtle,
 )
 
 /** Borderless accent text — minimal-weight action. */

@@ -1,5 +1,6 @@
 package dev.unicompose.base
 
+import dev.unicompose.style.Border
 import dev.unicompose.style.BorderRadius
 import dev.unicompose.style.Color
 import dev.unicompose.style.Dp
@@ -43,12 +44,16 @@ public fun Style.resolveRefs(tokens: Tokens): Style {
         borderRadius = borderRadiusAllRef?.let { ref ->
             resolveDp(ref, tokens)?.let { BorderRadius.all(it) }
         } ?: borderRadius,
+        border = borderRef?.let { ref ->
+            resolveColor(ref, tokens)?.let { Border.all(width = 1.dp, color = it) }
+        } ?: border,
     )
 }
 
 private fun Style.hasAnyRefs(): Boolean =
     colorRef != null || backgroundColorRef != null || gapRef != null ||
-        fontSizeRef != null || paddingAllRef != null || borderRadiusAllRef != null
+        fontSizeRef != null || paddingAllRef != null || borderRadiusAllRef != null ||
+        paddingVerticalRef != null || paddingHorizontalRef != null || borderRef != null
 
 private fun resolveColor(name: String, tokens: Tokens): Color? = when (name) {
     TokenRefs.colors.accent -> tokens.colors.accent

@@ -164,7 +164,9 @@ internal object AtomicCss {
             out += "border-radius" to
                 "${r.topLeft.value}px ${r.topRight.value}px ${r.bottomRight.value}px ${r.bottomLeft.value}px"
         }
-        style.border?.let { b ->
+        if (style.borderRef != null) {
+            out += "border" to "1px solid var(${style.borderRef})"
+        } else style.border?.let { b ->
             if (b.isUniform) {
                 val e = b.top!!
                 out += "border" to "${e.width.value}px solid ${e.color.toCss()}"
