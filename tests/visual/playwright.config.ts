@@ -1,12 +1,11 @@
 import { defineConfig } from '@playwright/test';
 import path from 'path';
 
-// Serve the bundles produced by `./gradlew :samples:kitchen-sink:previewSite`.
-// preview/ contains: html/ (DOM bundle), canvas/ (CMP-for-Web bundle), compare.html.
-const PREVIEW_DIR = path.resolve(
-  __dirname,
-  '../../samples/kitchen-sink/build/dist/preview',
-);
+// Serve the consolidated preview dir produced by `./gradlew visualPreview`.
+// Layout under build/tests-preview/:
+//   /html, /canvas, /compare.html      — kitchen-sink
+//   /todo-html, /todo-canvas, /todo-compare.html  — todo-app
+const PREVIEW_DIR = path.resolve(__dirname, '../../build/tests-preview');
 
 export default defineConfig({
   testDir: './tests',

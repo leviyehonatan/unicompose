@@ -56,4 +56,5 @@ include(
     ":unicompose",
     ":unicompose-base",
     ":samples:kitchen-sink",
+    ":samples:todo-app",
 )
