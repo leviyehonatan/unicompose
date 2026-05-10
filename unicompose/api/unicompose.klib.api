@@ -1,0 +1,103 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, iosX64, js, wasmJs]
+// Alias: ios => [iosArm64, iosSimulatorArm64, iosX64]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <unicompose-root:unicompose>
+final enum class dev.unicompose/HeadingLevel : kotlin/Enum<dev.unicompose/HeadingLevel> { // dev.unicompose/HeadingLevel|null[0]
+    enum entry H1 // dev.unicompose/HeadingLevel.H1|null[0]
+    enum entry H2 // dev.unicompose/HeadingLevel.H2|null[0]
+    enum entry H3 // dev.unicompose/HeadingLevel.H3|null[0]
+
+    final val entries // dev.unicompose/HeadingLevel.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<dev.unicompose/HeadingLevel> // dev.unicompose/HeadingLevel.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): dev.unicompose/HeadingLevel // dev.unicompose/HeadingLevel.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<dev.unicompose/HeadingLevel> // dev.unicompose/HeadingLevel.values|values#static(){}[0]
+}
+
+final class <#A: kotlin/Any?> dev.unicompose/RadioOption { // dev.unicompose/RadioOption|null[0]
+    constructor <init>(#A, kotlin/String) // dev.unicompose/RadioOption.<init>|<init>(1:0;kotlin.String){}[0]
+
+    final val label // dev.unicompose/RadioOption.label|{}label[0]
+        final fun <get-label>(): kotlin/String // dev.unicompose/RadioOption.label.<get-label>|<get-label>(){}[0]
+    final val value // dev.unicompose/RadioOption.value|{}value[0]
+        final fun <get-value>(): #A // dev.unicompose/RadioOption.value.<get-value>|<get-value>(){}[0]
+
+    final fun component1(): #A // dev.unicompose/RadioOption.component1|component1(){}[0]
+    final fun component2(): kotlin/String // dev.unicompose/RadioOption.component2|component2(){}[0]
+    final fun copy(#A = ..., kotlin/String = ...): dev.unicompose/RadioOption<#A> // dev.unicompose/RadioOption.copy|copy(1:0;kotlin.String){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // dev.unicompose/RadioOption.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // dev.unicompose/RadioOption.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // dev.unicompose/RadioOption.toString|toString(){}[0]
+}
+
+final class dev.unicompose/InheritedText { // dev.unicompose/InheritedText|null[0]
+    constructor <init>(dev.unicompose.style/Color? = ..., dev.unicompose.style/Sp? = ..., dev.unicompose.style/FontWeight? = ..., dev.unicompose.style/FontFamily? = ..., dev.unicompose.style/Sp? = ..., dev.unicompose.style/Sp? = ..., dev.unicompose.style/TextAlign? = ...) // dev.unicompose/InheritedText.<init>|<init>(dev.unicompose.style.Color?;dev.unicompose.style.Sp?;dev.unicompose.style.FontWeight?;dev.unicompose.style.FontFamily?;dev.unicompose.style.Sp?;dev.unicompose.style.Sp?;dev.unicompose.style.TextAlign?){}[0]
+
+    final val color // dev.unicompose/InheritedText.color|{}color[0]
+        final fun <get-color>(): dev.unicompose.style/Color? // dev.unicompose/InheritedText.color.<get-color>|<get-color>(){}[0]
+    final val fontFamily // dev.unicompose/InheritedText.fontFamily|{}fontFamily[0]
+        final fun <get-fontFamily>(): dev.unicompose.style/FontFamily? // dev.unicompose/InheritedText.fontFamily.<get-fontFamily>|<get-fontFamily>(){}[0]
+    final val fontSize // dev.unicompose/InheritedText.fontSize|{}fontSize[0]
+        final fun <get-fontSize>(): dev.unicompose.style/Sp? // dev.unicompose/InheritedText.fontSize.<get-fontSize>|<get-fontSize>(){}[0]
+    final val fontWeight // dev.unicompose/InheritedText.fontWeight|{}fontWeight[0]
+        final fun <get-fontWeight>(): dev.unicompose.style/FontWeight? // dev.unicompose/InheritedText.fontWeight.<get-fontWeight>|<get-fontWeight>(){}[0]
+    final val letterSpacing // dev.unicompose/InheritedText.letterSpacing|{}letterSpacing[0]
+        final fun <get-letterSpacing>(): dev.unicompose.style/Sp? // dev.unicompose/InheritedText.letterSpacing.<get-letterSpacing>|<get-letterSpacing>(){}[0]
+    final val lineHeight // dev.unicompose/InheritedText.lineHeight|{}lineHeight[0]
+        final fun <get-lineHeight>(): dev.unicompose.style/Sp? // dev.unicompose/InheritedText.lineHeight.<get-lineHeight>|<get-lineHeight>(){}[0]
+    final val textAlign // dev.unicompose/InheritedText.textAlign|{}textAlign[0]
+        final fun <get-textAlign>(): dev.unicompose.style/TextAlign? // dev.unicompose/InheritedText.textAlign.<get-textAlign>|<get-textAlign>(){}[0]
+
+    final fun component1(): dev.unicompose.style/Color? // dev.unicompose/InheritedText.component1|component1(){}[0]
+    final fun component2(): dev.unicompose.style/Sp? // dev.unicompose/InheritedText.component2|component2(){}[0]
+    final fun component3(): dev.unicompose.style/FontWeight? // dev.unicompose/InheritedText.component3|component3(){}[0]
+    final fun component4(): dev.unicompose.style/FontFamily? // dev.unicompose/InheritedText.component4|component4(){}[0]
+    final fun component5(): dev.unicompose.style/Sp? // dev.unicompose/InheritedText.component5|component5(){}[0]
+    final fun component6(): dev.unicompose.style/Sp? // dev.unicompose/InheritedText.component6|component6(){}[0]
+    final fun component7(): dev.unicompose.style/TextAlign? // dev.unicompose/InheritedText.component7|component7(){}[0]
+    final fun copy(dev.unicompose.style/Color? = ..., dev.unicompose.style/Sp? = ..., dev.unicompose.style/FontWeight? = ..., dev.unicompose.style/FontFamily? = ..., dev.unicompose.style/Sp? = ..., dev.unicompose.style/Sp? = ..., dev.unicompose.style/TextAlign? = ...): dev.unicompose/InheritedText // dev.unicompose/InheritedText.copy|copy(dev.unicompose.style.Color?;dev.unicompose.style.Sp?;dev.unicompose.style.FontWeight?;dev.unicompose.style.FontFamily?;dev.unicompose.style.Sp?;dev.unicompose.style.Sp?;dev.unicompose.style.TextAlign?){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // dev.unicompose/InheritedText.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // dev.unicompose/InheritedText.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // dev.unicompose/InheritedText.toString|toString(){}[0]
+
+    final object Companion { // dev.unicompose/InheritedText.Companion|null[0]
+        final val Empty // dev.unicompose/InheritedText.Companion.Empty|{}Empty[0]
+            final fun <get-Empty>(): dev.unicompose/InheritedText // dev.unicompose/InheritedText.Companion.Empty.<get-Empty>|<get-Empty>(){}[0]
+    }
+}
+
+final val dev.unicompose/DefaultDividerColor // dev.unicompose/DefaultDividerColor|{}DefaultDividerColor[0]
+    final fun <get-DefaultDividerColor>(): dev.unicompose.style/Color // dev.unicompose/DefaultDividerColor.<get-DefaultDividerColor>|<get-DefaultDividerColor>(){}[0]
+final val dev.unicompose/DefaultDividerThickness // dev.unicompose/DefaultDividerThickness|{}DefaultDividerThickness[0]
+    final fun <get-DefaultDividerThickness>(): dev.unicompose.style/Dp // dev.unicompose/DefaultDividerThickness.<get-DefaultDividerThickness>|<get-DefaultDividerThickness>(){}[0]
+final val dev.unicompose/dev_unicompose_InheritedText$stableprop // dev.unicompose/dev_unicompose_InheritedText$stableprop|#static{}dev_unicompose_InheritedText$stableprop[0]
+final val dev.unicompose/dev_unicompose_RadioOption$stableprop // dev.unicompose/dev_unicompose_RadioOption$stableprop|#static{}dev_unicompose_RadioOption$stableprop[0]
+
+final fun <#A: kotlin/Any?> dev.unicompose/UiRadioGroup(#A, kotlin.collections/List<dev.unicompose/RadioOption<#A>>, kotlin/Function1<#A, kotlin/Unit>, kotlin/Boolean, dev.unicompose.style/Style?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // dev.unicompose/UiRadioGroup|UiRadioGroup(0:0;kotlin.collections.List<dev.unicompose.RadioOption<0:0>>;kotlin.Function1<0:0,kotlin.Unit>;kotlin.Boolean;dev.unicompose.style.Style?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){0§<kotlin.Any?>}[0]
+final fun dev.unicompose/ProvideDefaultTextColor(dev.unicompose.style/Color?, kotlin/Function2<androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int) // dev.unicompose/ProvideDefaultTextColor|ProvideDefaultTextColor(dev.unicompose.style.Color?;kotlin.Function2<androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int){}[0]
+final fun dev.unicompose/ProvideInheritedText(dev.unicompose/InheritedText, kotlin/Function2<androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int) // dev.unicompose/ProvideInheritedText|ProvideInheritedText(dev.unicompose.InheritedText;kotlin.Function2<androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int){}[0]
+final fun dev.unicompose/UiBox(dev.unicompose.style/Style?, kotlin/Function2<androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // dev.unicompose/UiBox|UiBox(dev.unicompose.style.Style?;kotlin.Function2<androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
+final fun dev.unicompose/UiButton(kotlin/Function0<kotlin/Unit>, dev.unicompose.style/Style?, kotlin/Boolean, kotlin/Function2<androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // dev.unicompose/UiButton|UiButton(kotlin.Function0<kotlin.Unit>;dev.unicompose.style.Style?;kotlin.Boolean;kotlin.Function2<androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
+final fun dev.unicompose/UiCheckbox(kotlin/Boolean, kotlin/Function1<kotlin/Boolean, kotlin/Unit>, kotlin/Boolean, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // dev.unicompose/UiCheckbox|UiCheckbox(kotlin.Boolean;kotlin.Function1<kotlin.Boolean,kotlin.Unit>;kotlin.Boolean;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
+final fun dev.unicompose/UiColumn(dev.unicompose.style/Style?, kotlin/Function2<androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // dev.unicompose/UiColumn|UiColumn(dev.unicompose.style.Style?;kotlin.Function2<androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
+final fun dev.unicompose/UiDivider(dev.unicompose.style/Color, dev.unicompose.style/Dp, kotlin/Boolean, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // dev.unicompose/UiDivider|UiDivider(dev.unicompose.style.Color;dev.unicompose.style.Dp;kotlin.Boolean;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
+final fun dev.unicompose/UiHeading(dev.unicompose/HeadingLevel, kotlin/String, dev.unicompose.style/Style?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // dev.unicompose/UiHeading|UiHeading(dev.unicompose.HeadingLevel;kotlin.String;dev.unicompose.style.Style?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
+final fun dev.unicompose/UiLink(kotlin/String, kotlin/String, dev.unicompose.style/Style?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // dev.unicompose/UiLink|UiLink(kotlin.String;kotlin.String;dev.unicompose.style.Style?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
+final fun dev.unicompose/UiRow(dev.unicompose.style/Style?, kotlin/Function2<androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // dev.unicompose/UiRow|UiRow(dev.unicompose.style.Style?;kotlin.Function2<androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
+final fun dev.unicompose/UiSpacer(dev.unicompose.style/Dp?, dev.unicompose.style/Dp?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // dev.unicompose/UiSpacer|UiSpacer(dev.unicompose.style.Dp?;dev.unicompose.style.Dp?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
+final fun dev.unicompose/UiSwitch(kotlin/Boolean, kotlin/Function1<kotlin/Boolean, kotlin/Unit>, kotlin/Boolean, dev.unicompose.style/Style?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // dev.unicompose/UiSwitch|UiSwitch(kotlin.Boolean;kotlin.Function1<kotlin.Boolean,kotlin.Unit>;kotlin.Boolean;dev.unicompose.style.Style?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
+final fun dev.unicompose/UiText(kotlin/String, dev.unicompose.style/Style?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // dev.unicompose/UiText|UiText(kotlin.String;dev.unicompose.style.Style?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
+final fun dev.unicompose/UiTextField(kotlin/String, kotlin/Function1<kotlin/String, kotlin/Unit>, kotlin/String?, kotlin/Boolean, dev.unicompose.style/Style?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // dev.unicompose/UiTextField|UiTextField(kotlin.String;kotlin.Function1<kotlin.String,kotlin.Unit>;kotlin.String?;kotlin.Boolean;dev.unicompose.style.Style?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
+final fun dev.unicompose/currentDefaultTextColor(androidx.compose.runtime/Composer?, kotlin/Int): dev.unicompose.style/Color? // dev.unicompose/currentDefaultTextColor|currentDefaultTextColor(androidx.compose.runtime.Composer?;kotlin.Int){}[0]
+final fun dev.unicompose/currentInheritedText(androidx.compose.runtime/Composer?, kotlin/Int): dev.unicompose/InheritedText // dev.unicompose/currentInheritedText|currentInheritedText(androidx.compose.runtime.Composer?;kotlin.Int){}[0]
+final fun dev.unicompose/defaultHeadingStyle(dev.unicompose/HeadingLevel): dev.unicompose.style/Style // dev.unicompose/defaultHeadingStyle|defaultHeadingStyle(dev.unicompose.HeadingLevel){}[0]
+final fun dev.unicompose/dev_unicompose_InheritedText$stableprop_getter(): kotlin/Int // dev.unicompose/dev_unicompose_InheritedText$stableprop_getter|dev_unicompose_InheritedText$stableprop_getter(){}[0]
+final fun dev.unicompose/dev_unicompose_RadioOption$stableprop_getter(): kotlin/Int // dev.unicompose/dev_unicompose_RadioOption$stableprop_getter|dev_unicompose_RadioOption$stableprop_getter(){}[0]
+
+// Targets: [ios, wasmJs]
+final fun (dev.unicompose.style/Style).dev.unicompose.style/toModifier(): androidx.compose.ui/Modifier // dev.unicompose.style/toModifier|toModifier@dev.unicompose.style.Style(){}[0]

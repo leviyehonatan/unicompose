@@ -1,0 +1,396 @@
+public final class dev/unicompose/style/Align : java/lang/Enum {
+	public static final field Center Ldev/unicompose/style/Align;
+	public static final field End Ldev/unicompose/style/Align;
+	public static final field Start Ldev/unicompose/style/Align;
+	public static final field Stretch Ldev/unicompose/style/Align;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Ldev/unicompose/style/Align;
+	public static fun values ()[Ldev/unicompose/style/Align;
+}
+
+public final class dev/unicompose/style/Border {
+	public static final field Companion Ldev/unicompose/style/Border$Companion;
+	public fun <init> ()V
+	public fun <init> (Ldev/unicompose/style/BorderEdge;Ldev/unicompose/style/BorderEdge;Ldev/unicompose/style/BorderEdge;Ldev/unicompose/style/BorderEdge;)V
+	public synthetic fun <init> (Ldev/unicompose/style/BorderEdge;Ldev/unicompose/style/BorderEdge;Ldev/unicompose/style/BorderEdge;Ldev/unicompose/style/BorderEdge;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ldev/unicompose/style/BorderEdge;
+	public final fun component2 ()Ldev/unicompose/style/BorderEdge;
+	public final fun component3 ()Ldev/unicompose/style/BorderEdge;
+	public final fun component4 ()Ldev/unicompose/style/BorderEdge;
+	public final fun copy (Ldev/unicompose/style/BorderEdge;Ldev/unicompose/style/BorderEdge;Ldev/unicompose/style/BorderEdge;Ldev/unicompose/style/BorderEdge;)Ldev/unicompose/style/Border;
+	public static synthetic fun copy$default (Ldev/unicompose/style/Border;Ldev/unicompose/style/BorderEdge;Ldev/unicompose/style/BorderEdge;Ldev/unicompose/style/BorderEdge;Ldev/unicompose/style/BorderEdge;ILjava/lang/Object;)Ldev/unicompose/style/Border;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getBottom ()Ldev/unicompose/style/BorderEdge;
+	public final fun getLeft ()Ldev/unicompose/style/BorderEdge;
+	public final fun getRight ()Ldev/unicompose/style/BorderEdge;
+	public final fun getTop ()Ldev/unicompose/style/BorderEdge;
+	public fun hashCode ()I
+	public final fun isUniform ()Z
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/unicompose/style/Border$Companion {
+	public final fun all-M7-MpGg (FI)Ldev/unicompose/style/Border;
+	public final fun symmetric (Ldev/unicompose/style/BorderEdge;Ldev/unicompose/style/BorderEdge;)Ldev/unicompose/style/Border;
+	public static synthetic fun symmetric$default (Ldev/unicompose/style/Border$Companion;Ldev/unicompose/style/BorderEdge;Ldev/unicompose/style/BorderEdge;ILjava/lang/Object;)Ldev/unicompose/style/Border;
+}
+
+public final class dev/unicompose/style/BorderEdge {
+	public synthetic fun <init> (FILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-4QJRU5U ()F
+	public final fun component2-O7AhkUU ()I
+	public final fun copy-M7-MpGg (FI)Ldev/unicompose/style/BorderEdge;
+	public static synthetic fun copy-M7-MpGg$default (Ldev/unicompose/style/BorderEdge;FIILjava/lang/Object;)Ldev/unicompose/style/BorderEdge;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getColor-O7AhkUU ()I
+	public final fun getWidth-4QJRU5U ()F
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/unicompose/style/BorderRadius {
+	public static final field Companion Ldev/unicompose/style/BorderRadius$Companion;
+	public synthetic fun <init> (FFFFLkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-4QJRU5U ()F
+	public final fun component2-4QJRU5U ()F
+	public final fun component3-4QJRU5U ()F
+	public final fun component4-4QJRU5U ()F
+	public final fun copy--HwIAL0 (FFFF)Ldev/unicompose/style/BorderRadius;
+	public static synthetic fun copy--HwIAL0$default (Ldev/unicompose/style/BorderRadius;FFFFILjava/lang/Object;)Ldev/unicompose/style/BorderRadius;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getBottomLeft-4QJRU5U ()F
+	public final fun getBottomRight-4QJRU5U ()F
+	public final fun getTopLeft-4QJRU5U ()F
+	public final fun getTopRight-4QJRU5U ()F
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/unicompose/style/BorderRadius$Companion {
+	public final fun all-3QviGF0 (F)Ldev/unicompose/style/BorderRadius;
+	public final fun topBottom-LMWlOAs (FF)Ldev/unicompose/style/BorderRadius;
+}
+
+public final class dev/unicompose/style/Color {
+	public static final field Companion Ldev/unicompose/style/Color$Companion;
+	public static final synthetic fun box-impl (I)Ldev/unicompose/style/Color;
+	public static fun constructor-impl (I)I
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (ILjava/lang/Object;)Z
+	public static final fun equals-impl0 (II)Z
+	public static final fun getAlpha-impl (I)I
+	public final fun getArgb ()I
+	public static final fun getBlue-impl (I)I
+	public static final fun getGreen-impl (I)I
+	public static final fun getRed-impl (I)I
+	public fun hashCode ()I
+	public static fun hashCode-impl (I)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (I)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()I
+}
+
+public final class dev/unicompose/style/Color$Companion {
+	public final fun getBlack-O7AhkUU ()I
+	public final fun getTransparent-O7AhkUU ()I
+	public final fun getWhite-O7AhkUU ()I
+}
+
+public final class dev/unicompose/style/Dp {
+	public static final field Companion Ldev/unicompose/style/Dp$Companion;
+	public static final synthetic fun box-impl (F)Ldev/unicompose/style/Dp;
+	public static fun constructor-impl (F)F
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (FLjava/lang/Object;)Z
+	public static final fun equals-impl0 (FF)Z
+	public final fun getValue ()F
+	public fun hashCode ()I
+	public static fun hashCode-impl (F)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (F)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()F
+}
+
+public final class dev/unicompose/style/Dp$Companion {
+	public final fun getZero-4QJRU5U ()F
+}
+
+public final class dev/unicompose/style/FlexDirection : java/lang/Enum {
+	public static final field Column Ldev/unicompose/style/FlexDirection;
+	public static final field Row Ldev/unicompose/style/FlexDirection;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Ldev/unicompose/style/FlexDirection;
+	public static fun values ()[Ldev/unicompose/style/FlexDirection;
+}
+
+public final class dev/unicompose/style/FontFamily : java/lang/Enum {
+	public static final field Default Ldev/unicompose/style/FontFamily;
+	public static final field Monospace Ldev/unicompose/style/FontFamily;
+	public static final field SansSerif Ldev/unicompose/style/FontFamily;
+	public static final field Serif Ldev/unicompose/style/FontFamily;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Ldev/unicompose/style/FontFamily;
+	public static fun values ()[Ldev/unicompose/style/FontFamily;
+}
+
+public final class dev/unicompose/style/FontWeight : java/lang/Enum {
+	public static final field Bold Ldev/unicompose/style/FontWeight;
+	public static final field Medium Ldev/unicompose/style/FontWeight;
+	public static final field Normal Ldev/unicompose/style/FontWeight;
+	public static final field SemiBold Ldev/unicompose/style/FontWeight;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public final fun getValue ()I
+	public static fun valueOf (Ljava/lang/String;)Ldev/unicompose/style/FontWeight;
+	public static fun values ()[Ldev/unicompose/style/FontWeight;
+}
+
+public final class dev/unicompose/style/GradientDirection : java/lang/Enum {
+	public static final field ToBottom Ldev/unicompose/style/GradientDirection;
+	public static final field ToBottomLeft Ldev/unicompose/style/GradientDirection;
+	public static final field ToBottomRight Ldev/unicompose/style/GradientDirection;
+	public static final field ToLeft Ldev/unicompose/style/GradientDirection;
+	public static final field ToRight Ldev/unicompose/style/GradientDirection;
+	public static final field ToTop Ldev/unicompose/style/GradientDirection;
+	public static final field ToTopLeft Ldev/unicompose/style/GradientDirection;
+	public static final field ToTopRight Ldev/unicompose/style/GradientDirection;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Ldev/unicompose/style/GradientDirection;
+	public static fun values ()[Ldev/unicompose/style/GradientDirection;
+}
+
+public final class dev/unicompose/style/Justify : java/lang/Enum {
+	public static final field Center Ldev/unicompose/style/Justify;
+	public static final field End Ldev/unicompose/style/Justify;
+	public static final field SpaceAround Ldev/unicompose/style/Justify;
+	public static final field SpaceBetween Ldev/unicompose/style/Justify;
+	public static final field SpaceEvenly Ldev/unicompose/style/Justify;
+	public static final field Start Ldev/unicompose/style/Justify;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Ldev/unicompose/style/Justify;
+	public static fun values ()[Ldev/unicompose/style/Justify;
+}
+
+public final class dev/unicompose/style/LinearGradient {
+	public fun <init> (Ldev/unicompose/style/GradientDirection;Ljava/util/List;Ljava/util/List;)V
+	public synthetic fun <init> (Ldev/unicompose/style/GradientDirection;Ljava/util/List;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ldev/unicompose/style/GradientDirection;
+	public final fun component2 ()Ljava/util/List;
+	public final fun component3 ()Ljava/util/List;
+	public final fun copy (Ldev/unicompose/style/GradientDirection;Ljava/util/List;Ljava/util/List;)Ldev/unicompose/style/LinearGradient;
+	public static synthetic fun copy$default (Ldev/unicompose/style/LinearGradient;Ldev/unicompose/style/GradientDirection;Ljava/util/List;Ljava/util/List;ILjava/lang/Object;)Ldev/unicompose/style/LinearGradient;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getColors ()Ljava/util/List;
+	public final fun getDirection ()Ldev/unicompose/style/GradientDirection;
+	public final fun getStops ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/unicompose/style/Margin {
+	public static final field Companion Ldev/unicompose/style/Margin$Companion;
+	public synthetic fun <init> (FFFFLkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-4QJRU5U ()F
+	public final fun component2-4QJRU5U ()F
+	public final fun component3-4QJRU5U ()F
+	public final fun component4-4QJRU5U ()F
+	public final fun copy--HwIAL0 (FFFF)Ldev/unicompose/style/Margin;
+	public static synthetic fun copy--HwIAL0$default (Ldev/unicompose/style/Margin;FFFFILjava/lang/Object;)Ldev/unicompose/style/Margin;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getBottom-4QJRU5U ()F
+	public final fun getLeft-4QJRU5U ()F
+	public final fun getRight-4QJRU5U ()F
+	public final fun getTop-4QJRU5U ()F
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/unicompose/style/Margin$Companion {
+	public final fun all-3QviGF0 (F)Ldev/unicompose/style/Margin;
+	public final fun symmetric-LMWlOAs (FF)Ldev/unicompose/style/Margin;
+	public static synthetic fun symmetric-LMWlOAs$default (Ldev/unicompose/style/Margin$Companion;FFILjava/lang/Object;)Ldev/unicompose/style/Margin;
+}
+
+public final class dev/unicompose/style/Padding {
+	public static final field Companion Ldev/unicompose/style/Padding$Companion;
+	public synthetic fun <init> (FFFFLkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-4QJRU5U ()F
+	public final fun component2-4QJRU5U ()F
+	public final fun component3-4QJRU5U ()F
+	public final fun component4-4QJRU5U ()F
+	public final fun copy--HwIAL0 (FFFF)Ldev/unicompose/style/Padding;
+	public static synthetic fun copy--HwIAL0$default (Ldev/unicompose/style/Padding;FFFFILjava/lang/Object;)Ldev/unicompose/style/Padding;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getBottom-4QJRU5U ()F
+	public final fun getLeft-4QJRU5U ()F
+	public final fun getRight-4QJRU5U ()F
+	public final fun getTop-4QJRU5U ()F
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/unicompose/style/Padding$Companion {
+	public final fun all-3QviGF0 (F)Ldev/unicompose/style/Padding;
+	public final fun symmetric-LMWlOAs (FF)Ldev/unicompose/style/Padding;
+	public static synthetic fun symmetric-LMWlOAs$default (Ldev/unicompose/style/Padding$Companion;FFILjava/lang/Object;)Ldev/unicompose/style/Padding;
+}
+
+public final class dev/unicompose/style/Shadow {
+	public static final field Companion Ldev/unicompose/style/Shadow$Companion;
+	public synthetic fun <init> (FFFFIILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (FFFFILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-4QJRU5U ()F
+	public final fun component2-4QJRU5U ()F
+	public final fun component3-4QJRU5U ()F
+	public final fun component4-4QJRU5U ()F
+	public final fun component5-O7AhkUU ()I
+	public final fun copy-keN7jYg (FFFFI)Ldev/unicompose/style/Shadow;
+	public static synthetic fun copy-keN7jYg$default (Ldev/unicompose/style/Shadow;FFFFIILjava/lang/Object;)Ldev/unicompose/style/Shadow;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getBlur-4QJRU5U ()F
+	public final fun getColor-O7AhkUU ()I
+	public final fun getOffsetX-4QJRU5U ()F
+	public final fun getOffsetY-4QJRU5U ()F
+	public final fun getSpread-4QJRU5U ()F
+	public fun hashCode ()I
+	public final fun isHard ()Z
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/unicompose/style/Shadow$Companion {
+	public final fun drop-8w44uMk (FFIF)Ldev/unicompose/style/Shadow;
+	public static synthetic fun drop-8w44uMk$default (Ldev/unicompose/style/Shadow$Companion;FFIFILjava/lang/Object;)Ldev/unicompose/style/Shadow;
+	public final fun elevation-M7-MpGg (FI)Ldev/unicompose/style/Shadow;
+}
+
+public abstract interface class dev/unicompose/style/Size {
+}
+
+public final class dev/unicompose/style/Size$FillParent : dev/unicompose/style/Size {
+	public static final field INSTANCE Ldev/unicompose/style/Size$FillParent;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/unicompose/style/Size$Fixed : dev/unicompose/style/Size {
+	public synthetic fun <init> (FLkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-4QJRU5U ()F
+	public final fun copy-3QviGF0 (F)Ldev/unicompose/style/Size$Fixed;
+	public static synthetic fun copy-3QviGF0$default (Ldev/unicompose/style/Size$Fixed;FILjava/lang/Object;)Ldev/unicompose/style/Size$Fixed;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDp-4QJRU5U ()F
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/unicompose/style/Size$Fraction : dev/unicompose/style/Size {
+	public fun <init> (F)V
+	public final fun component1 ()F
+	public final fun copy (F)Ldev/unicompose/style/Size$Fraction;
+	public static synthetic fun copy$default (Ldev/unicompose/style/Size$Fraction;FILjava/lang/Object;)Ldev/unicompose/style/Size$Fraction;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getValue ()F
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/unicompose/style/Size$WrapContent : dev/unicompose/style/Size {
+	public static final field INSTANCE Ldev/unicompose/style/Size$WrapContent;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/unicompose/style/Sp {
+	public static final synthetic fun box-impl (F)Ldev/unicompose/style/Sp;
+	public static fun constructor-impl (F)F
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (FLjava/lang/Object;)Z
+	public static final fun equals-impl0 (FF)Z
+	public final fun getValue ()F
+	public fun hashCode ()I
+	public static fun hashCode-impl (F)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (F)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()F
+}
+
+public final class dev/unicompose/style/Style {
+	public static final field Companion Ldev/unicompose/style/Style$Companion;
+	public synthetic fun <init> (Ldev/unicompose/style/Padding;Ldev/unicompose/style/Margin;Ldev/unicompose/style/Color;Ldev/unicompose/style/LinearGradient;Ldev/unicompose/style/Color;Ldev/unicompose/style/Sp;Ldev/unicompose/style/FontWeight;Ldev/unicompose/style/FontFamily;Ldev/unicompose/style/Sp;Ldev/unicompose/style/Sp;Ldev/unicompose/style/TextAlign;Ldev/unicompose/style/BorderRadius;Ldev/unicompose/style/Border;Ldev/unicompose/style/Shadow;Ldev/unicompose/style/FlexDirection;Ldev/unicompose/style/Align;Ldev/unicompose/style/Justify;Ldev/unicompose/style/Dp;Ldev/unicompose/style/Size;Ldev/unicompose/style/Size;Ljava/lang/Float;Ljava/lang/Float;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ldev/unicompose/style/Padding;Ldev/unicompose/style/Margin;Ldev/unicompose/style/Color;Ldev/unicompose/style/LinearGradient;Ldev/unicompose/style/Color;Ldev/unicompose/style/Sp;Ldev/unicompose/style/FontWeight;Ldev/unicompose/style/FontFamily;Ldev/unicompose/style/Sp;Ldev/unicompose/style/Sp;Ldev/unicompose/style/TextAlign;Ldev/unicompose/style/BorderRadius;Ldev/unicompose/style/Border;Ldev/unicompose/style/Shadow;Ldev/unicompose/style/FlexDirection;Ldev/unicompose/style/Align;Ldev/unicompose/style/Justify;Ldev/unicompose/style/Dp;Ldev/unicompose/style/Size;Ldev/unicompose/style/Size;Ljava/lang/Float;Ljava/lang/Float;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ldev/unicompose/style/Padding;
+	public final fun component10-YQo_J0I ()Ldev/unicompose/style/Sp;
+	public final fun component11 ()Ldev/unicompose/style/TextAlign;
+	public final fun component12 ()Ldev/unicompose/style/BorderRadius;
+	public final fun component13 ()Ldev/unicompose/style/Border;
+	public final fun component14 ()Ldev/unicompose/style/Shadow;
+	public final fun component15 ()Ldev/unicompose/style/FlexDirection;
+	public final fun component16 ()Ldev/unicompose/style/Align;
+	public final fun component17 ()Ldev/unicompose/style/Justify;
+	public final fun component18-TP6A5tU ()Ldev/unicompose/style/Dp;
+	public final fun component19 ()Ldev/unicompose/style/Size;
+	public final fun component2 ()Ldev/unicompose/style/Margin;
+	public final fun component20 ()Ldev/unicompose/style/Size;
+	public final fun component21 ()Ljava/lang/Float;
+	public final fun component22 ()Ljava/lang/Float;
+	public final fun component3-6jNO3gc ()Ldev/unicompose/style/Color;
+	public final fun component4 ()Ldev/unicompose/style/LinearGradient;
+	public final fun component5-6jNO3gc ()Ldev/unicompose/style/Color;
+	public final fun component6-YQo_J0I ()Ldev/unicompose/style/Sp;
+	public final fun component7 ()Ldev/unicompose/style/FontWeight;
+	public final fun component8 ()Ldev/unicompose/style/FontFamily;
+	public final fun component9-YQo_J0I ()Ldev/unicompose/style/Sp;
+	public final fun copy-LKLQwPc (Ldev/unicompose/style/Padding;Ldev/unicompose/style/Margin;Ldev/unicompose/style/Color;Ldev/unicompose/style/LinearGradient;Ldev/unicompose/style/Color;Ldev/unicompose/style/Sp;Ldev/unicompose/style/FontWeight;Ldev/unicompose/style/FontFamily;Ldev/unicompose/style/Sp;Ldev/unicompose/style/Sp;Ldev/unicompose/style/TextAlign;Ldev/unicompose/style/BorderRadius;Ldev/unicompose/style/Border;Ldev/unicompose/style/Shadow;Ldev/unicompose/style/FlexDirection;Ldev/unicompose/style/Align;Ldev/unicompose/style/Justify;Ldev/unicompose/style/Dp;Ldev/unicompose/style/Size;Ldev/unicompose/style/Size;Ljava/lang/Float;Ljava/lang/Float;)Ldev/unicompose/style/Style;
+	public static synthetic fun copy-LKLQwPc$default (Ldev/unicompose/style/Style;Ldev/unicompose/style/Padding;Ldev/unicompose/style/Margin;Ldev/unicompose/style/Color;Ldev/unicompose/style/LinearGradient;Ldev/unicompose/style/Color;Ldev/unicompose/style/Sp;Ldev/unicompose/style/FontWeight;Ldev/unicompose/style/FontFamily;Ldev/unicompose/style/Sp;Ldev/unicompose/style/Sp;Ldev/unicompose/style/TextAlign;Ldev/unicompose/style/BorderRadius;Ldev/unicompose/style/Border;Ldev/unicompose/style/Shadow;Ldev/unicompose/style/FlexDirection;Ldev/unicompose/style/Align;Ldev/unicompose/style/Justify;Ldev/unicompose/style/Dp;Ldev/unicompose/style/Size;Ldev/unicompose/style/Size;Ljava/lang/Float;Ljava/lang/Float;ILjava/lang/Object;)Ldev/unicompose/style/Style;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAlignItems ()Ldev/unicompose/style/Align;
+	public final fun getBackgroundColor-6jNO3gc ()Ldev/unicompose/style/Color;
+	public final fun getBackgroundGradient ()Ldev/unicompose/style/LinearGradient;
+	public final fun getBorder ()Ldev/unicompose/style/Border;
+	public final fun getBorderRadius ()Ldev/unicompose/style/BorderRadius;
+	public final fun getBoxShadow ()Ldev/unicompose/style/Shadow;
+	public final fun getColor-6jNO3gc ()Ldev/unicompose/style/Color;
+	public final fun getFlex ()Ljava/lang/Float;
+	public final fun getFlexDirection ()Ldev/unicompose/style/FlexDirection;
+	public final fun getFontFamily ()Ldev/unicompose/style/FontFamily;
+	public final fun getFontSize-YQo_J0I ()Ldev/unicompose/style/Sp;
+	public final fun getFontWeight ()Ldev/unicompose/style/FontWeight;
+	public final fun getGap-TP6A5tU ()Ldev/unicompose/style/Dp;
+	public final fun getHeight ()Ldev/unicompose/style/Size;
+	public final fun getJustifyContent ()Ldev/unicompose/style/Justify;
+	public final fun getLetterSpacing-YQo_J0I ()Ldev/unicompose/style/Sp;
+	public final fun getLineHeight-YQo_J0I ()Ldev/unicompose/style/Sp;
+	public final fun getMargin ()Ldev/unicompose/style/Margin;
+	public final fun getOpacity ()Ljava/lang/Float;
+	public final fun getPadding ()Ldev/unicompose/style/Padding;
+	public final fun getTextAlign ()Ldev/unicompose/style/TextAlign;
+	public final fun getWidth ()Ldev/unicompose/style/Size;
+	public fun hashCode ()I
+	public final fun plus (Ldev/unicompose/style/Style;)Ldev/unicompose/style/Style;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/unicompose/style/Style$Companion {
+	public final fun getEmpty ()Ldev/unicompose/style/Style;
+}
+
+public final class dev/unicompose/style/StyleKt {
+	public static final fun argb (IIII)I
+	public static final fun getDp (F)F
+	public static final fun getDp (I)F
+	public static final fun getSp (F)F
+	public static final fun getSp (I)F
+	public static final fun rgb (III)I
+}
+
+public final class dev/unicompose/style/TextAlign : java/lang/Enum {
+	public static final field Center Ldev/unicompose/style/TextAlign;
+	public static final field End Ldev/unicompose/style/TextAlign;
+	public static final field Justify Ldev/unicompose/style/TextAlign;
+	public static final field Start Ldev/unicompose/style/TextAlign;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Ldev/unicompose/style/TextAlign;
+	public static fun values ()[Ldev/unicompose/style/TextAlign;
+}
+

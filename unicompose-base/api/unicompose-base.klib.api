@@ -1,0 +1,205 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, iosX64, js, wasmJs]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <unicompose-root:unicompose-base>
+final enum class dev.unicompose.base/ButtonVariant : kotlin/Enum<dev.unicompose.base/ButtonVariant> { // dev.unicompose.base/ButtonVariant|null[0]
+    enum entry Ghost // dev.unicompose.base/ButtonVariant.Ghost|null[0]
+    enum entry Primary // dev.unicompose.base/ButtonVariant.Primary|null[0]
+    enum entry Secondary // dev.unicompose.base/ButtonVariant.Secondary|null[0]
+
+    final val entries // dev.unicompose.base/ButtonVariant.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<dev.unicompose.base/ButtonVariant> // dev.unicompose.base/ButtonVariant.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): dev.unicompose.base/ButtonVariant // dev.unicompose.base/ButtonVariant.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<dev.unicompose.base/ButtonVariant> // dev.unicompose.base/ButtonVariant.values|values#static(){}[0]
+}
+
+final class dev.unicompose.base/ColorTokens { // dev.unicompose.base/ColorTokens|null[0]
+    constructor <init>(dev.unicompose.style/Color, dev.unicompose.style/Color, dev.unicompose.style/Color, dev.unicompose.style/Color, dev.unicompose.style/Color, dev.unicompose.style/Color, dev.unicompose.style/Color, dev.unicompose.style/Color, dev.unicompose.style/Color, dev.unicompose.style/Color) // dev.unicompose.base/ColorTokens.<init>|<init>(dev.unicompose.style.Color;dev.unicompose.style.Color;dev.unicompose.style.Color;dev.unicompose.style.Color;dev.unicompose.style.Color;dev.unicompose.style.Color;dev.unicompose.style.Color;dev.unicompose.style.Color;dev.unicompose.style.Color;dev.unicompose.style.Color){}[0]
+
+    final val accent // dev.unicompose.base/ColorTokens.accent|{}accent[0]
+        final fun <get-accent>(): dev.unicompose.style/Color // dev.unicompose.base/ColorTokens.accent.<get-accent>|<get-accent>(){}[0]
+    final val bgPage // dev.unicompose.base/ColorTokens.bgPage|{}bgPage[0]
+        final fun <get-bgPage>(): dev.unicompose.style/Color // dev.unicompose.base/ColorTokens.bgPage.<get-bgPage>|<get-bgPage>(){}[0]
+    final val bgSubtle // dev.unicompose.base/ColorTokens.bgSubtle|{}bgSubtle[0]
+        final fun <get-bgSubtle>(): dev.unicompose.style/Color // dev.unicompose.base/ColorTokens.bgSubtle.<get-bgSubtle>|<get-bgSubtle>(){}[0]
+    final val bgSurface // dev.unicompose.base/ColorTokens.bgSurface|{}bgSurface[0]
+        final fun <get-bgSurface>(): dev.unicompose.style/Color // dev.unicompose.base/ColorTokens.bgSurface.<get-bgSurface>|<get-bgSurface>(){}[0]
+    final val borderSubtle // dev.unicompose.base/ColorTokens.borderSubtle|{}borderSubtle[0]
+        final fun <get-borderSubtle>(): dev.unicompose.style/Color // dev.unicompose.base/ColorTokens.borderSubtle.<get-borderSubtle>|<get-borderSubtle>(){}[0]
+    final val error // dev.unicompose.base/ColorTokens.error|{}error[0]
+        final fun <get-error>(): dev.unicompose.style/Color // dev.unicompose.base/ColorTokens.error.<get-error>|<get-error>(){}[0]
+    final val onAccent // dev.unicompose.base/ColorTokens.onAccent|{}onAccent[0]
+        final fun <get-onAccent>(): dev.unicompose.style/Color // dev.unicompose.base/ColorTokens.onAccent.<get-onAccent>|<get-onAccent>(){}[0]
+    final val success // dev.unicompose.base/ColorTokens.success|{}success[0]
+        final fun <get-success>(): dev.unicompose.style/Color // dev.unicompose.base/ColorTokens.success.<get-success>|<get-success>(){}[0]
+    final val textPrimary // dev.unicompose.base/ColorTokens.textPrimary|{}textPrimary[0]
+        final fun <get-textPrimary>(): dev.unicompose.style/Color // dev.unicompose.base/ColorTokens.textPrimary.<get-textPrimary>|<get-textPrimary>(){}[0]
+    final val textSecondary // dev.unicompose.base/ColorTokens.textSecondary|{}textSecondary[0]
+        final fun <get-textSecondary>(): dev.unicompose.style/Color // dev.unicompose.base/ColorTokens.textSecondary.<get-textSecondary>|<get-textSecondary>(){}[0]
+
+    final fun component1(): dev.unicompose.style/Color // dev.unicompose.base/ColorTokens.component1|component1(){}[0]
+    final fun component10(): dev.unicompose.style/Color // dev.unicompose.base/ColorTokens.component10|component10(){}[0]
+    final fun component2(): dev.unicompose.style/Color // dev.unicompose.base/ColorTokens.component2|component2(){}[0]
+    final fun component3(): dev.unicompose.style/Color // dev.unicompose.base/ColorTokens.component3|component3(){}[0]
+    final fun component4(): dev.unicompose.style/Color // dev.unicompose.base/ColorTokens.component4|component4(){}[0]
+    final fun component5(): dev.unicompose.style/Color // dev.unicompose.base/ColorTokens.component5|component5(){}[0]
+    final fun component6(): dev.unicompose.style/Color // dev.unicompose.base/ColorTokens.component6|component6(){}[0]
+    final fun component7(): dev.unicompose.style/Color // dev.unicompose.base/ColorTokens.component7|component7(){}[0]
+    final fun component8(): dev.unicompose.style/Color // dev.unicompose.base/ColorTokens.component8|component8(){}[0]
+    final fun component9(): dev.unicompose.style/Color // dev.unicompose.base/ColorTokens.component9|component9(){}[0]
+    final fun copy(dev.unicompose.style/Color = ..., dev.unicompose.style/Color = ..., dev.unicompose.style/Color = ..., dev.unicompose.style/Color = ..., dev.unicompose.style/Color = ..., dev.unicompose.style/Color = ..., dev.unicompose.style/Color = ..., dev.unicompose.style/Color = ..., dev.unicompose.style/Color = ..., dev.unicompose.style/Color = ...): dev.unicompose.base/ColorTokens // dev.unicompose.base/ColorTokens.copy|copy(dev.unicompose.style.Color;dev.unicompose.style.Color;dev.unicompose.style.Color;dev.unicompose.style.Color;dev.unicompose.style.Color;dev.unicompose.style.Color;dev.unicompose.style.Color;dev.unicompose.style.Color;dev.unicompose.style.Color;dev.unicompose.style.Color){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // dev.unicompose.base/ColorTokens.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // dev.unicompose.base/ColorTokens.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // dev.unicompose.base/ColorTokens.toString|toString(){}[0]
+}
+
+final class dev.unicompose.base/RadiusTokens { // dev.unicompose.base/RadiusTokens|null[0]
+    constructor <init>(dev.unicompose.style/Dp, dev.unicompose.style/Dp, dev.unicompose.style/Dp) // dev.unicompose.base/RadiusTokens.<init>|<init>(dev.unicompose.style.Dp;dev.unicompose.style.Dp;dev.unicompose.style.Dp){}[0]
+
+    final val lg // dev.unicompose.base/RadiusTokens.lg|{}lg[0]
+        final fun <get-lg>(): dev.unicompose.style/Dp // dev.unicompose.base/RadiusTokens.lg.<get-lg>|<get-lg>(){}[0]
+    final val md // dev.unicompose.base/RadiusTokens.md|{}md[0]
+        final fun <get-md>(): dev.unicompose.style/Dp // dev.unicompose.base/RadiusTokens.md.<get-md>|<get-md>(){}[0]
+    final val sm // dev.unicompose.base/RadiusTokens.sm|{}sm[0]
+        final fun <get-sm>(): dev.unicompose.style/Dp // dev.unicompose.base/RadiusTokens.sm.<get-sm>|<get-sm>(){}[0]
+
+    final fun component1(): dev.unicompose.style/Dp // dev.unicompose.base/RadiusTokens.component1|component1(){}[0]
+    final fun component2(): dev.unicompose.style/Dp // dev.unicompose.base/RadiusTokens.component2|component2(){}[0]
+    final fun component3(): dev.unicompose.style/Dp // dev.unicompose.base/RadiusTokens.component3|component3(){}[0]
+    final fun copy(dev.unicompose.style/Dp = ..., dev.unicompose.style/Dp = ..., dev.unicompose.style/Dp = ...): dev.unicompose.base/RadiusTokens // dev.unicompose.base/RadiusTokens.copy|copy(dev.unicompose.style.Dp;dev.unicompose.style.Dp;dev.unicompose.style.Dp){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // dev.unicompose.base/RadiusTokens.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // dev.unicompose.base/RadiusTokens.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // dev.unicompose.base/RadiusTokens.toString|toString(){}[0]
+}
+
+final class dev.unicompose.base/SpaceTokens { // dev.unicompose.base/SpaceTokens|null[0]
+    constructor <init>(dev.unicompose.style/Dp, dev.unicompose.style/Dp, dev.unicompose.style/Dp, dev.unicompose.style/Dp, dev.unicompose.style/Dp) // dev.unicompose.base/SpaceTokens.<init>|<init>(dev.unicompose.style.Dp;dev.unicompose.style.Dp;dev.unicompose.style.Dp;dev.unicompose.style.Dp;dev.unicompose.style.Dp){}[0]
+
+    final val lg // dev.unicompose.base/SpaceTokens.lg|{}lg[0]
+        final fun <get-lg>(): dev.unicompose.style/Dp // dev.unicompose.base/SpaceTokens.lg.<get-lg>|<get-lg>(){}[0]
+    final val md // dev.unicompose.base/SpaceTokens.md|{}md[0]
+        final fun <get-md>(): dev.unicompose.style/Dp // dev.unicompose.base/SpaceTokens.md.<get-md>|<get-md>(){}[0]
+    final val sm // dev.unicompose.base/SpaceTokens.sm|{}sm[0]
+        final fun <get-sm>(): dev.unicompose.style/Dp // dev.unicompose.base/SpaceTokens.sm.<get-sm>|<get-sm>(){}[0]
+    final val xl // dev.unicompose.base/SpaceTokens.xl|{}xl[0]
+        final fun <get-xl>(): dev.unicompose.style/Dp // dev.unicompose.base/SpaceTokens.xl.<get-xl>|<get-xl>(){}[0]
+    final val xs // dev.unicompose.base/SpaceTokens.xs|{}xs[0]
+        final fun <get-xs>(): dev.unicompose.style/Dp // dev.unicompose.base/SpaceTokens.xs.<get-xs>|<get-xs>(){}[0]
+
+    final fun component1(): dev.unicompose.style/Dp // dev.unicompose.base/SpaceTokens.component1|component1(){}[0]
+    final fun component2(): dev.unicompose.style/Dp // dev.unicompose.base/SpaceTokens.component2|component2(){}[0]
+    final fun component3(): dev.unicompose.style/Dp // dev.unicompose.base/SpaceTokens.component3|component3(){}[0]
+    final fun component4(): dev.unicompose.style/Dp // dev.unicompose.base/SpaceTokens.component4|component4(){}[0]
+    final fun component5(): dev.unicompose.style/Dp // dev.unicompose.base/SpaceTokens.component5|component5(){}[0]
+    final fun copy(dev.unicompose.style/Dp = ..., dev.unicompose.style/Dp = ..., dev.unicompose.style/Dp = ..., dev.unicompose.style/Dp = ..., dev.unicompose.style/Dp = ...): dev.unicompose.base/SpaceTokens // dev.unicompose.base/SpaceTokens.copy|copy(dev.unicompose.style.Dp;dev.unicompose.style.Dp;dev.unicompose.style.Dp;dev.unicompose.style.Dp;dev.unicompose.style.Dp){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // dev.unicompose.base/SpaceTokens.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // dev.unicompose.base/SpaceTokens.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // dev.unicompose.base/SpaceTokens.toString|toString(){}[0]
+}
+
+final class dev.unicompose.base/Tokens { // dev.unicompose.base/Tokens|null[0]
+    constructor <init>(dev.unicompose.base/ColorTokens, dev.unicompose.base/SpaceTokens, dev.unicompose.base/TypeTokens, dev.unicompose.base/RadiusTokens) // dev.unicompose.base/Tokens.<init>|<init>(dev.unicompose.base.ColorTokens;dev.unicompose.base.SpaceTokens;dev.unicompose.base.TypeTokens;dev.unicompose.base.RadiusTokens){}[0]
+
+    final val colors // dev.unicompose.base/Tokens.colors|{}colors[0]
+        final fun <get-colors>(): dev.unicompose.base/ColorTokens // dev.unicompose.base/Tokens.colors.<get-colors>|<get-colors>(){}[0]
+    final val radii // dev.unicompose.base/Tokens.radii|{}radii[0]
+        final fun <get-radii>(): dev.unicompose.base/RadiusTokens // dev.unicompose.base/Tokens.radii.<get-radii>|<get-radii>(){}[0]
+    final val space // dev.unicompose.base/Tokens.space|{}space[0]
+        final fun <get-space>(): dev.unicompose.base/SpaceTokens // dev.unicompose.base/Tokens.space.<get-space>|<get-space>(){}[0]
+    final val type // dev.unicompose.base/Tokens.type|{}type[0]
+        final fun <get-type>(): dev.unicompose.base/TypeTokens // dev.unicompose.base/Tokens.type.<get-type>|<get-type>(){}[0]
+
+    final fun component1(): dev.unicompose.base/ColorTokens // dev.unicompose.base/Tokens.component1|component1(){}[0]
+    final fun component2(): dev.unicompose.base/SpaceTokens // dev.unicompose.base/Tokens.component2|component2(){}[0]
+    final fun component3(): dev.unicompose.base/TypeTokens // dev.unicompose.base/Tokens.component3|component3(){}[0]
+    final fun component4(): dev.unicompose.base/RadiusTokens // dev.unicompose.base/Tokens.component4|component4(){}[0]
+    final fun copy(dev.unicompose.base/ColorTokens = ..., dev.unicompose.base/SpaceTokens = ..., dev.unicompose.base/TypeTokens = ..., dev.unicompose.base/RadiusTokens = ...): dev.unicompose.base/Tokens // dev.unicompose.base/Tokens.copy|copy(dev.unicompose.base.ColorTokens;dev.unicompose.base.SpaceTokens;dev.unicompose.base.TypeTokens;dev.unicompose.base.RadiusTokens){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // dev.unicompose.base/Tokens.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // dev.unicompose.base/Tokens.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // dev.unicompose.base/Tokens.toString|toString(){}[0]
+}
+
+final class dev.unicompose.base/TypeTokens { // dev.unicompose.base/TypeTokens|null[0]
+    constructor <init>(dev.unicompose.style/Sp, dev.unicompose.style/Sp, dev.unicompose.style/Sp, dev.unicompose.style/Sp, dev.unicompose.style/Sp) // dev.unicompose.base/TypeTokens.<init>|<init>(dev.unicompose.style.Sp;dev.unicompose.style.Sp;dev.unicompose.style.Sp;dev.unicompose.style.Sp;dev.unicompose.style.Sp){}[0]
+
+    final val lg // dev.unicompose.base/TypeTokens.lg|{}lg[0]
+        final fun <get-lg>(): dev.unicompose.style/Sp // dev.unicompose.base/TypeTokens.lg.<get-lg>|<get-lg>(){}[0]
+    final val md // dev.unicompose.base/TypeTokens.md|{}md[0]
+        final fun <get-md>(): dev.unicompose.style/Sp // dev.unicompose.base/TypeTokens.md.<get-md>|<get-md>(){}[0]
+    final val sm // dev.unicompose.base/TypeTokens.sm|{}sm[0]
+        final fun <get-sm>(): dev.unicompose.style/Sp // dev.unicompose.base/TypeTokens.sm.<get-sm>|<get-sm>(){}[0]
+    final val xl // dev.unicompose.base/TypeTokens.xl|{}xl[0]
+        final fun <get-xl>(): dev.unicompose.style/Sp // dev.unicompose.base/TypeTokens.xl.<get-xl>|<get-xl>(){}[0]
+    final val xs // dev.unicompose.base/TypeTokens.xs|{}xs[0]
+        final fun <get-xs>(): dev.unicompose.style/Sp // dev.unicompose.base/TypeTokens.xs.<get-xs>|<get-xs>(){}[0]
+
+    final fun component1(): dev.unicompose.style/Sp // dev.unicompose.base/TypeTokens.component1|component1(){}[0]
+    final fun component2(): dev.unicompose.style/Sp // dev.unicompose.base/TypeTokens.component2|component2(){}[0]
+    final fun component3(): dev.unicompose.style/Sp // dev.unicompose.base/TypeTokens.component3|component3(){}[0]
+    final fun component4(): dev.unicompose.style/Sp // dev.unicompose.base/TypeTokens.component4|component4(){}[0]
+    final fun component5(): dev.unicompose.style/Sp // dev.unicompose.base/TypeTokens.component5|component5(){}[0]
+    final fun copy(dev.unicompose.style/Sp = ..., dev.unicompose.style/Sp = ..., dev.unicompose.style/Sp = ..., dev.unicompose.style/Sp = ..., dev.unicompose.style/Sp = ...): dev.unicompose.base/TypeTokens // dev.unicompose.base/TypeTokens.copy|copy(dev.unicompose.style.Sp;dev.unicompose.style.Sp;dev.unicompose.style.Sp;dev.unicompose.style.Sp;dev.unicompose.style.Sp){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // dev.unicompose.base/TypeTokens.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // dev.unicompose.base/TypeTokens.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // dev.unicompose.base/TypeTokens.toString|toString(){}[0]
+}
+
+final object dev.unicompose.base/BadgeDefaults { // dev.unicompose.base/BadgeDefaults|null[0]
+    final fun style(androidx.compose.runtime/Composer?, kotlin/Int): dev.unicompose.style/Style // dev.unicompose.base/BadgeDefaults.style|style(androidx.compose.runtime.Composer?;kotlin.Int){}[0]
+}
+
+final object dev.unicompose.base/ButtonDefaults { // dev.unicompose.base/ButtonDefaults|null[0]
+    final fun style(dev.unicompose.base/ButtonVariant, androidx.compose.runtime/Composer?, kotlin/Int): dev.unicompose.style/Style // dev.unicompose.base/ButtonDefaults.style|style(dev.unicompose.base.ButtonVariant;androidx.compose.runtime.Composer?;kotlin.Int){}[0]
+}
+
+final object dev.unicompose.base/CardDefaults { // dev.unicompose.base/CardDefaults|null[0]
+    final fun style(androidx.compose.runtime/Composer?, kotlin/Int): dev.unicompose.style/Style // dev.unicompose.base/CardDefaults.style|style(androidx.compose.runtime.Composer?;kotlin.Int){}[0]
+}
+
+final object dev.unicompose.base/HeadingDefaults { // dev.unicompose.base/HeadingDefaults|null[0]
+    final fun style(androidx.compose.runtime/Composer?, kotlin/Int): dev.unicompose.style/Style // dev.unicompose.base/HeadingDefaults.style|style(androidx.compose.runtime.Composer?;kotlin.Int){}[0]
+}
+
+final val dev.unicompose.base/DarkTokens // dev.unicompose.base/DarkTokens|{}DarkTokens[0]
+    final fun <get-DarkTokens>(): dev.unicompose.base/Tokens // dev.unicompose.base/DarkTokens.<get-DarkTokens>|<get-DarkTokens>(){}[0]
+final val dev.unicompose.base/LightTokens // dev.unicompose.base/LightTokens|{}LightTokens[0]
+    final fun <get-LightTokens>(): dev.unicompose.base/Tokens // dev.unicompose.base/LightTokens.<get-LightTokens>|<get-LightTokens>(){}[0]
+final val dev.unicompose.base/LocalTokens // dev.unicompose.base/LocalTokens|{}LocalTokens[0]
+    final fun <get-LocalTokens>(): androidx.compose.runtime/ProvidableCompositionLocal<dev.unicompose.base/Tokens> // dev.unicompose.base/LocalTokens.<get-LocalTokens>|<get-LocalTokens>(){}[0]
+final val dev.unicompose.base/dev_unicompose_base_BadgeDefaults$stableprop // dev.unicompose.base/dev_unicompose_base_BadgeDefaults$stableprop|#static{}dev_unicompose_base_BadgeDefaults$stableprop[0]
+final val dev.unicompose.base/dev_unicompose_base_ButtonDefaults$stableprop // dev.unicompose.base/dev_unicompose_base_ButtonDefaults$stableprop|#static{}dev_unicompose_base_ButtonDefaults$stableprop[0]
+final val dev.unicompose.base/dev_unicompose_base_CardDefaults$stableprop // dev.unicompose.base/dev_unicompose_base_CardDefaults$stableprop|#static{}dev_unicompose_base_CardDefaults$stableprop[0]
+final val dev.unicompose.base/dev_unicompose_base_ColorTokens$stableprop // dev.unicompose.base/dev_unicompose_base_ColorTokens$stableprop|#static{}dev_unicompose_base_ColorTokens$stableprop[0]
+final val dev.unicompose.base/dev_unicompose_base_HeadingDefaults$stableprop // dev.unicompose.base/dev_unicompose_base_HeadingDefaults$stableprop|#static{}dev_unicompose_base_HeadingDefaults$stableprop[0]
+final val dev.unicompose.base/dev_unicompose_base_RadiusTokens$stableprop // dev.unicompose.base/dev_unicompose_base_RadiusTokens$stableprop|#static{}dev_unicompose_base_RadiusTokens$stableprop[0]
+final val dev.unicompose.base/dev_unicompose_base_SpaceTokens$stableprop // dev.unicompose.base/dev_unicompose_base_SpaceTokens$stableprop|#static{}dev_unicompose_base_SpaceTokens$stableprop[0]
+final val dev.unicompose.base/dev_unicompose_base_Tokens$stableprop // dev.unicompose.base/dev_unicompose_base_Tokens$stableprop|#static{}dev_unicompose_base_Tokens$stableprop[0]
+final val dev.unicompose.base/dev_unicompose_base_TypeTokens$stableprop // dev.unicompose.base/dev_unicompose_base_TypeTokens$stableprop|#static{}dev_unicompose_base_TypeTokens$stableprop[0]
+
+final fun dev.unicompose.base/Badge(dev.unicompose.style/Style?, kotlin/Function2<androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // dev.unicompose.base/Badge|Badge(dev.unicompose.style.Style?;kotlin.Function2<androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
+final fun dev.unicompose.base/Badge(kotlin/String, dev.unicompose.style/Style?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // dev.unicompose.base/Badge|Badge(kotlin.String;dev.unicompose.style.Style?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
+final fun dev.unicompose.base/Button(kotlin/Function0<kotlin/Unit>, dev.unicompose.base/ButtonVariant?, kotlin/Boolean, dev.unicompose.style/Style?, kotlin/Function2<androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // dev.unicompose.base/Button|Button(kotlin.Function0<kotlin.Unit>;dev.unicompose.base.ButtonVariant?;kotlin.Boolean;dev.unicompose.style.Style?;kotlin.Function2<androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
+final fun dev.unicompose.base/Button(kotlin/Function0<kotlin/Unit>, kotlin/String, dev.unicompose.base/ButtonVariant?, kotlin/Boolean, dev.unicompose.style/Style?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // dev.unicompose.base/Button|Button(kotlin.Function0<kotlin.Unit>;kotlin.String;dev.unicompose.base.ButtonVariant?;kotlin.Boolean;dev.unicompose.style.Style?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
+final fun dev.unicompose.base/Card(dev.unicompose.style/Style?, kotlin/Function2<androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // dev.unicompose.base/Card|Card(dev.unicompose.style.Style?;kotlin.Function2<androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
+final fun dev.unicompose.base/H1(kotlin/String, dev.unicompose.style/Style?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // dev.unicompose.base/H1|H1(kotlin.String;dev.unicompose.style.Style?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
+final fun dev.unicompose.base/H2(kotlin/String, dev.unicompose.style/Style?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // dev.unicompose.base/H2|H2(kotlin.String;dev.unicompose.style.Style?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
+final fun dev.unicompose.base/H3(kotlin/String, dev.unicompose.style/Style?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // dev.unicompose.base/H3|H3(kotlin.String;dev.unicompose.style.Style?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
+final fun dev.unicompose.base/Heading(dev.unicompose/HeadingLevel, kotlin/String, dev.unicompose.style/Style?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // dev.unicompose.base/Heading|Heading(dev.unicompose.HeadingLevel;kotlin.String;dev.unicompose.style.Style?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
+final fun dev.unicompose.base/Text(kotlin/String, dev.unicompose.style/Style?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // dev.unicompose.base/Text|Text(kotlin.String;dev.unicompose.style.Style?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
+final fun dev.unicompose.base/TextField(kotlin/String, kotlin/Function1<kotlin/String, kotlin/Unit>, kotlin/String?, kotlin/String?, kotlin/Boolean, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // dev.unicompose.base/TextField|TextField(kotlin.String;kotlin.Function1<kotlin.String,kotlin.Unit>;kotlin.String?;kotlin.String?;kotlin.Boolean;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
+final fun dev.unicompose.base/UnicomposeTheme(dev.unicompose.base/Tokens?, kotlin/Function2<androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // dev.unicompose.base/UnicomposeTheme|UnicomposeTheme(dev.unicompose.base.Tokens?;kotlin.Function2<androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
+final fun dev.unicompose.base/currentTokens(androidx.compose.runtime/Composer?, kotlin/Int): dev.unicompose.base/Tokens // dev.unicompose.base/currentTokens|currentTokens(androidx.compose.runtime.Composer?;kotlin.Int){}[0]
+final fun dev.unicompose.base/dev_unicompose_base_BadgeDefaults$stableprop_getter(): kotlin/Int // dev.unicompose.base/dev_unicompose_base_BadgeDefaults$stableprop_getter|dev_unicompose_base_BadgeDefaults$stableprop_getter(){}[0]
+final fun dev.unicompose.base/dev_unicompose_base_ButtonDefaults$stableprop_getter(): kotlin/Int // dev.unicompose.base/dev_unicompose_base_ButtonDefaults$stableprop_getter|dev_unicompose_base_ButtonDefaults$stableprop_getter(){}[0]
+final fun dev.unicompose.base/dev_unicompose_base_CardDefaults$stableprop_getter(): kotlin/Int // dev.unicompose.base/dev_unicompose_base_CardDefaults$stableprop_getter|dev_unicompose_base_CardDefaults$stableprop_getter(){}[0]
+final fun dev.unicompose.base/dev_unicompose_base_ColorTokens$stableprop_getter(): kotlin/Int // dev.unicompose.base/dev_unicompose_base_ColorTokens$stableprop_getter|dev_unicompose_base_ColorTokens$stableprop_getter(){}[0]
+final fun dev.unicompose.base/dev_unicompose_base_HeadingDefaults$stableprop_getter(): kotlin/Int // dev.unicompose.base/dev_unicompose_base_HeadingDefaults$stableprop_getter|dev_unicompose_base_HeadingDefaults$stableprop_getter(){}[0]
+final fun dev.unicompose.base/dev_unicompose_base_RadiusTokens$stableprop_getter(): kotlin/Int // dev.unicompose.base/dev_unicompose_base_RadiusTokens$stableprop_getter|dev_unicompose_base_RadiusTokens$stableprop_getter(){}[0]
+final fun dev.unicompose.base/dev_unicompose_base_SpaceTokens$stableprop_getter(): kotlin/Int // dev.unicompose.base/dev_unicompose_base_SpaceTokens$stableprop_getter|dev_unicompose_base_SpaceTokens$stableprop_getter(){}[0]
+final fun dev.unicompose.base/dev_unicompose_base_Tokens$stableprop_getter(): kotlin/Int // dev.unicompose.base/dev_unicompose_base_Tokens$stableprop_getter|dev_unicompose_base_Tokens$stableprop_getter(){}[0]
+final fun dev.unicompose.base/dev_unicompose_base_TypeTokens$stableprop_getter(): kotlin/Int // dev.unicompose.base/dev_unicompose_base_TypeTokens$stableprop_getter|dev_unicompose_base_TypeTokens$stableprop_getter(){}[0]

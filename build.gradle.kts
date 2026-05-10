@@ -5,6 +5,23 @@ plugins {
     alias(libs.plugins.composeCompiler) apply false
     alias(libs.plugins.androidApplication) apply false
     alias(libs.plugins.androidLibrary) apply false
+    alias(libs.plugins.binaryCompatibilityValidator)
+}
+
+// Binary Compatibility Validator: locks the public API of every published
+// module by dumping a `.api` manifest into `<module>/api/`. CI's `check` task
+// re-dumps and diffs against the committed file — accidental renames, removed
+// declarations, or signature changes fail the build. Samples are excluded
+// (they're apps, not libraries).
+apiValidation {
+    ignoredProjects.addAll(listOf("kitchen-sink", "todo-app"))
+    // Opt in to klib ABI validation so the iOS / web (native + wasm) public
+    // surfaces are tracked too, not just the JVM side. Each module gets a
+    // sibling `<module>.klib.api` file under api/.
+    @OptIn(kotlinx.validation.ExperimentalBCVApi::class)
+    klib {
+        enabled = true
+    }
 }
 
 // `./gradlew visualPreview` assembles every sample's preview bundles into one

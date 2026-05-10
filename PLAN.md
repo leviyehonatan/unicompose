@@ -208,7 +208,7 @@ The proposed shape is `StyleStates(base, hover = …, disabled = …)`. `:focus`
 - [x] **`unicompose-base` themed widgets** — `Heading` wrapper (token color, level-default size/weight), `Button` with Primary/Secondary/Ghost variants (token-driven backgrounds, borders, padding, radius, typography), `TextField` with optional label. Each widget pairs with a namespaced `*Defaults` object exposing the resolved style for advanced consumers.
 - [x] **Todo app sample** — single-screen todo app on all four targets (Android, iOS, JS DOM, wasmJs canvas). Form (TextField + Add Button), list (Card + Checkbox rows + Ghost delete), footer (Badges + Clear-completed Ghost button), and a dark-mode toggle exercising the theming layer. State held in a plain `mutableStateOf`/`SnapshotStateList` — persistence deferred until a follow-up needs it. Web bundles wired into the Playwright suite as a second visual-regression sample.
 - [ ] **Snapshot tests** — Paparazzi (Android) + screenshot tests (iOS) + Playwright (web), kitchen-sink + todo-app golden screens. Light + dark variants per screen.
-- [ ] **API stability check** — Kotlinx Binary Compatibility Validator on `unicompose-style`, `unicompose`, and `unicompose-base` public surfaces.
+- [x] **API stability check** — Kotlinx Binary Compatibility Validator (0.18.0) wired in. Each published module has a committed `<module>.api` (JVM/Android signatures) and `<module>.klib.api` (iOS / JS / wasmJs ABI). `./gradlew apiCheck` (auto-wired into `check`) diffs against the committed manifests and fails on any unannounced public-API change. Samples are excluded.
 
 ## Post-v0.1
 
