@@ -130,11 +130,27 @@ val previewSite by tasks.registering(Copy::class) {
     dependsOn("jsBrowserDistribution", "wasmJsBrowserDevelopmentExecutableDistribution")
     from(layout.buildDirectory.dir("dist/js/productionExecutable")) { into("html") }
     from(layout.buildDirectory.dir("dist/wasmJs/developmentExecutable")) { into("canvas") }
-    // Pull in the build-time-extracted CSS file so the served HTML can <link>
-    // against /html/unicompose-generated.css. The compileKotlinJs configuration
-    // above ensures it exists before this Copy runs.
-    from(cssExtractorOutputDir) { into("html") }
+    // Pull in the build-time-extracted CSS files. Each module emits its own
+    // unicompose-generated.css; we concatenate them into a single file under
+    // /html/ so the runtime <link> picks up rules from this app *and* every
+    // base-library widget that's been refactored to top-level vals.
+    from(cssExtractorOutputDir) { into("html-extras-app") }
+    from(project(":unicompose-base").layout.buildDirectory.dir("generated/css")) { into("html-extras-base") }
     into(layout.buildDirectory.dir("dist/preview"))
+    dependsOn(":unicompose-base:compileKotlinJs")
+    doLast {
+        val htmlDir = layout.buildDirectory.file("dist/preview/html").get().asFile
+        val merged = listOf("html-extras-base", "html-extras-app").map { sub ->
+            layout.buildDirectory.file("dist/preview/$sub/unicompose-generated.css").get().asFile
+        }.filter { it.exists() }.joinToString("\n") { it.readText() }
+        if (merged.isNotEmpty()) {
+            File(htmlDir, "unicompose-generated.css").writeText(merged)
+        }
+        // clean up the staging dirs
+        listOf("html-extras-app", "html-extras-base").forEach {
+            layout.buildDirectory.file("dist/preview/$it").get().asFile.deleteRecursively()
+        }
+    }
     doLast {
         layout.buildDirectory.file("dist/preview/compare.html").get().asFile.writeText(
             """
