@@ -31,18 +31,19 @@ public fun Heading(
     text: String,
     style: Style = Style.Empty,
 ) {
-    UiHeading(level = level, text = text, style = (HeadingStyle + style).resolveRefs(currentTokens()))
+    UiHeading(level = level, text = text, style = (HeadingStyles.default + style).resolveRefs(currentTokens()))
 }
 
 /**
- * Default styling layered under user-provided overrides in [Heading]. Top-
- * level val so the IR plugin extracts it: emits a single `.uc-{hash}` class
- * with `color: var(--uc-colors-textPrimary)`. Size + weight per heading
- * level still come from `unicompose`'s `defaultHeadingStyle`.
+ * Style variants for [Heading]. In v0.1 there's only [default] (token-driven
+ * color); per-level size/weight still come from `unicompose`'s
+ * `defaultHeadingStyle`.
  */
-public val HeadingStyle: Style = Style(
-    color = Color.token(TokenRefs.colors.textPrimary),
-)
+public object HeadingStyles {
+    public val default: Style = Style(
+        color = Color.token(TokenRefs.colors.textPrimary),
+    )
+}
 
 /** HTML-aligned shortcut for `Heading(HeadingLevel.H1, text, style)`. */
 @Composable
@@ -59,12 +60,6 @@ public fun H2(text: String, style: Style = Style.Empty): Unit =
 public fun H3(text: String, style: Style = Style.Empty): Unit =
     Heading(HeadingLevel.H3, text, style)
 
-/** Default style helpers for [Heading] / [H1] / [H2] / [H3]. */
-public object HeadingDefaults {
-    /** Backwards-compatible accessor — returns the same [HeadingStyle] constant. */
-    @Composable
-    public fun style(): Style = HeadingStyle
-}
 
 /**
  * Plain inline text — an alias over [dev.unicompose.UiText] for natural reading

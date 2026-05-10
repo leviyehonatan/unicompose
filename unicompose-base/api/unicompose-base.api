@@ -1,27 +1,26 @@
-public final class dev/unicompose/base/BadgeDefaults {
-	public static final field $stable I
-	public static final field INSTANCE Ldev/unicompose/base/BadgeDefaults;
-	public final fun style (Landroidx/compose/runtime/Composer;I)Ldev/unicompose/style/Style;
-}
-
 public final class dev/unicompose/base/BadgeKt {
 	public static final fun Badge (Ldev/unicompose/style/Style;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;II)V
 	public static final fun Badge (Ljava/lang/String;Ldev/unicompose/style/Style;Landroidx/compose/runtime/Composer;II)V
-	public static final fun getBadgeStyle ()Ldev/unicompose/style/Style;
 }
 
-public final class dev/unicompose/base/ButtonDefaults {
+public final class dev/unicompose/base/BadgeStyles {
 	public static final field $stable I
-	public static final field INSTANCE Ldev/unicompose/base/ButtonDefaults;
-	public final fun style (Ldev/unicompose/base/ButtonVariant;Landroidx/compose/runtime/Composer;I)Ldev/unicompose/style/Style;
+	public static final field INSTANCE Ldev/unicompose/base/BadgeStyles;
+	public final fun getDefault ()Ldev/unicompose/style/Style;
 }
 
 public final class dev/unicompose/base/ButtonKt {
 	public static final fun Button (Lkotlin/jvm/functions/Function0;Ldev/unicompose/base/ButtonVariant;ZLdev/unicompose/style/Style;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;II)V
 	public static final fun Button (Lkotlin/jvm/functions/Function0;Ljava/lang/String;Ldev/unicompose/base/ButtonVariant;ZLdev/unicompose/style/Style;Landroidx/compose/runtime/Composer;II)V
-	public static final fun getButtonGhostStyle ()Ldev/unicompose/style/Style;
-	public static final fun getButtonPrimaryStyle ()Ldev/unicompose/style/Style;
-	public static final fun getButtonSecondaryStyle ()Ldev/unicompose/style/Style;
+}
+
+public final class dev/unicompose/base/ButtonStyles {
+	public static final field $stable I
+	public static final field INSTANCE Ldev/unicompose/base/ButtonStyles;
+	public final fun getGhost ()Ldev/unicompose/style/Style;
+	public final fun getPrimary ()Ldev/unicompose/style/Style;
+	public final fun getSecondary ()Ldev/unicompose/style/Style;
+	public final fun getShared ()Ldev/unicompose/style/Style;
 }
 
 public final class dev/unicompose/base/ButtonVariant : java/lang/Enum {
@@ -33,15 +32,14 @@ public final class dev/unicompose/base/ButtonVariant : java/lang/Enum {
 	public static fun values ()[Ldev/unicompose/base/ButtonVariant;
 }
 
-public final class dev/unicompose/base/CardDefaults {
-	public static final field $stable I
-	public static final field INSTANCE Ldev/unicompose/base/CardDefaults;
-	public final fun style (Landroidx/compose/runtime/Composer;I)Ldev/unicompose/style/Style;
-}
-
 public final class dev/unicompose/base/CardKt {
 	public static final fun Card (Ldev/unicompose/style/Style;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;II)V
-	public static final fun getCardStyle ()Ldev/unicompose/style/Style;
+}
+
+public final class dev/unicompose/base/CardStyles {
+	public static final field $stable I
+	public static final field INSTANCE Ldev/unicompose/base/CardStyles;
+	public final fun getDefault ()Ldev/unicompose/style/Style;
 }
 
 public final class dev/unicompose/base/ColorTokens {
@@ -74,19 +72,18 @@ public final class dev/unicompose/base/ColorTokens {
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class dev/unicompose/base/HeadingDefaults {
-	public static final field $stable I
-	public static final field INSTANCE Ldev/unicompose/base/HeadingDefaults;
-	public final fun style (Landroidx/compose/runtime/Composer;I)Ldev/unicompose/style/Style;
-}
-
 public final class dev/unicompose/base/HeadingKt {
 	public static final fun H1 (Ljava/lang/String;Ldev/unicompose/style/Style;Landroidx/compose/runtime/Composer;II)V
 	public static final fun H2 (Ljava/lang/String;Ldev/unicompose/style/Style;Landroidx/compose/runtime/Composer;II)V
 	public static final fun H3 (Ljava/lang/String;Ldev/unicompose/style/Style;Landroidx/compose/runtime/Composer;II)V
 	public static final fun Heading (Ldev/unicompose/HeadingLevel;Ljava/lang/String;Ldev/unicompose/style/Style;Landroidx/compose/runtime/Composer;II)V
 	public static final fun Text (Ljava/lang/String;Ldev/unicompose/style/Style;Landroidx/compose/runtime/Composer;II)V
-	public static final fun getHeadingStyle ()Ldev/unicompose/style/Style;
+}
+
+public final class dev/unicompose/base/HeadingStyles {
+	public static final field $stable I
+	public static final field INSTANCE Ldev/unicompose/base/HeadingStyles;
+	public final fun getDefault ()Ldev/unicompose/style/Style;
 }
 
 public final class dev/unicompose/base/LocalTokensKt {
@@ -136,8 +133,13 @@ public final class dev/unicompose/base/StyleResolverKt {
 
 public final class dev/unicompose/base/TextFieldKt {
 	public static final fun TextField (Ljava/lang/String;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Ljava/lang/String;ZLandroidx/compose/runtime/Composer;II)V
-	public static final fun getTextFieldLabelStyle ()Ldev/unicompose/style/Style;
-	public static final fun getTextFieldRowStyle ()Ldev/unicompose/style/Style;
+}
+
+public final class dev/unicompose/base/TextFieldStyles {
+	public static final field $stable I
+	public static final field INSTANCE Ldev/unicompose/base/TextFieldStyles;
+	public final fun getLabel ()Ldev/unicompose/style/Style;
+	public final fun getRow ()Ldev/unicompose/style/Style;
 }
 
 public final class dev/unicompose/base/TokenRefs {

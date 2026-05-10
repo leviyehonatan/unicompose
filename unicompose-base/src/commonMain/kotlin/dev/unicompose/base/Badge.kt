@@ -50,35 +50,29 @@ public fun Badge(
     style: Style = Style.Empty,
     content: @Composable () -> Unit,
 ) {
-    val merged = (BadgeStyle + style).resolveRefs(currentTokens())
+    val merged = (BadgeStyles.default + style).resolveRefs(currentTokens())
     UiBox(style = merged) {
         ProvideDefaultTextColor(merged.color, content)
     }
 }
 
 /**
- * Default styling layered under user-provided overrides in [Badge]. Top-level
- * val so the IR plugin extracts it. Mixes a literal vertical padding (2 dp —
- * pills are always tightly fit, not theme-driven) with a token horizontal
- * padding (`space.sm`); the new sealed-interface Dp lets that ride in a
- * single `Padding.symmetric(...)` without parallel `*Ref` shims.
+ * Style variants for [Badge]. Mixes a literal vertical padding (2 dp — pills
+ * are always tightly fit, not theme-driven) with a token horizontal padding
+ * (`space.sm`); the sealed-interface Dp lets both flow into one
+ * `Padding.symmetric(...)` without parallel `*Ref` shims.
  */
-public val BadgeStyle: Style = Style(
-    backgroundColor = Color.token(TokenRefs.colors.bgSubtle),
-    color = Color.token(TokenRefs.colors.textPrimary),
-    // 999dp = full pill — pills are always fully round regardless of theme.
-    borderRadius = BorderRadius.all(999.dp),
-    padding = Padding.symmetric(
-        vertical = 2.dp,
-        horizontal = Dp.token(TokenRefs.space.sm),
-    ),
-    fontSize = Sp.token(TokenRefs.type.xs),
-    fontWeight = FontWeight.Medium,
-)
-
-/** Default style helpers for [Badge]. Backwards-compatible API. */
-public object BadgeDefaults {
-    /** Backwards-compatible accessor — returns the same [BadgeStyle] constant. */
-    @Composable
-    public fun style(): Style = BadgeStyle
+public object BadgeStyles {
+    public val default: Style = Style(
+        backgroundColor = Color.token(TokenRefs.colors.bgSubtle),
+        color = Color.token(TokenRefs.colors.textPrimary),
+        // 999 dp = full pill — pills are always fully round regardless of theme.
+        borderRadius = BorderRadius.all(999.dp),
+        padding = Padding.symmetric(
+            vertical = 2.dp,
+            horizontal = Dp.token(TokenRefs.space.sm),
+        ),
+        fontSize = Sp.token(TokenRefs.type.xs),
+        fontWeight = FontWeight.Medium,
+    )
 }

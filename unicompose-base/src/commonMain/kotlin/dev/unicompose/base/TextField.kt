@@ -53,9 +53,9 @@ public fun TextField(
     enabled: Boolean = true,
 ) {
     val t = currentTokens()
-    UiColumn(style = TextFieldRowStyle.resolveRefs(t)) {
+    UiColumn(style = TextFieldStyles.row.resolveRefs(t)) {
         if (label != null) {
-            UiText(label, style = TextFieldLabelStyle.resolveRefs(t))
+            UiText(label, style = TextFieldStyles.label.resolveRefs(t))
         }
         UiTextField(
             value = value,
@@ -66,14 +66,17 @@ public fun TextField(
     }
 }
 
-/** Vertical gap between a TextField's label and its input. */
-public val TextFieldRowStyle: Style = Style(
-    gap = Dp.token(TokenRefs.space.xs),
-)
+/** Style variants for [TextField]. */
+public object TextFieldStyles {
+    /** Vertical gap between the label and the input. */
+    public val row: Style = Style(
+        gap = Dp.token(TokenRefs.space.xs),
+    )
 
-/** Default styling for the label rendered above a [TextField]. */
-public val TextFieldLabelStyle: Style = Style(
-    color = Color.token(TokenRefs.colors.textSecondary),
-    fontSize = Sp.token(TokenRefs.type.xs),
-    fontWeight = FontWeight.Medium,
-)
+    /** Default styling for the label rendered above a [TextField]. */
+    public val label: Style = Style(
+        color = Color.token(TokenRefs.colors.textSecondary),
+        fontSize = Sp.token(TokenRefs.type.xs),
+        fontWeight = FontWeight.Medium,
+    )
+}
